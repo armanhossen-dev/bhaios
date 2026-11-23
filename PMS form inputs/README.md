@@ -1,17 +1,19 @@
-# Final PMS Submission — BhaiOS
+# Final PMS Submission & Defense Preparation — BhaiOS
 
 > **Project Name:** BhaiOS  
 > **Prepared for:** Final Year Project (FYP) Submission — Daffodil International University (DIU)  
-> **Status:** Submitted in PMS
+> **Author:** Arman Hossen (Solo)  
+> **Status:** Updated with Reviewer Feedback & Defense Enhancements (Metrics, Data Plan, Timeline, Hardware Target)
 
 ---
 
-## PMS Form Fields (Exact Submission Record)
+## PMS Form Fields (Copy & Paste Ready)
 
 ### 1. Project Title
 ```text
 BhaiOS: A Local Vision-Language Study Assistant with Guide-First Assistance for Bangla-Speaking Students
 ```
+*(Shorter alternate option if desired: `BhaiOS: Private Bangla Study Assistant with Vision-Language Understanding`)*
 
 ---
 
@@ -59,21 +61,23 @@ BhaiOS is a local-first study assistant for Bangla-speaking students that combin
 Research questions: (1) How well do local vision-language models understand Bangla and English study material compared with an OCR + LLM pipeline? (2) Does a guide-first local assistant improve task completion and learning engagement for Bangla-speaking students compared with a direct-answer assistant?
 
 The system is built as a working tool and evaluated through a small Bangla study-material benchmark and a short user study.
+
+Evaluation and data: the benchmark is built from the author's own notes, volunteer-provided handwritten pages, and openly licensed course material; questions are written by the author and verified by a second reviewer. The user study compares guide-first and direct-answer modes using task completion, on-time submission, pre/post quiz gain, and a short survey; with a small sample, results are reported descriptively with effect sizes. Timeline: weeks 1-2 model setup and Bangla testing; weeks 3-4 document understanding and retrieval; weeks 5-6 guide-mode policy, task tracker, reminders; weeks 7-8 benchmark, user study, evaluation. Agent mode and resource recommendation are stretch goals.
 ```
 
 ---
 
 ### 6. Objective
 ```text
-1. Build a local-first study assistant that runs offline on a standard laptop.
-2. Integrate a local vision-language model to understand scanned pages, handwritten notes, slides, diagrams, and screenshots.
-3. Compare a vision-language approach against an OCR + LLM pipeline on Bangla and English study material.
+1. Build a local-first study assistant that runs offline on a standard laptop (target: 16 GB RAM, no dedicated GPU, 4-bit quantized models).
+2. Integrate a local vision-language model (VLM) to understand scanned pages, handwritten notes, slides, and diagrams in Bangla and English.
+3. Compare the VLM approach against an OCR + LLM pipeline using: transcription error rate (CER/WER), answer accuracy (rubric score on the benchmark), and latency per page.
 4. Implement local retrieval for question answering over the student's own documents.
-5. Design a guide-first mode (hints and next steps) and a direct-answer mode, and compare them.
+5. Design a guide-first mode (hints and next steps) and a direct-answer mode, and compare them on task completion rate, on-time submission rate, pre/post quiz score gain, and a short engagement survey.
 6. Add a task, deadline, and reminder tracker with weekly progress reviews.
-7. Add a study-resource recommender and an opt-in agent mode with confirmation for simple automations.
-8. Create a small Bangla study-material benchmark (about 100 questions over real course pages, including handwriting and diagrams).
-9. Run a user study with 10-15 students over 2-3 weeks, measuring task completion, missed deadlines, and satisfaction.
+7. Add a study-resource recommender and an opt-in agent mode with user confirmation (stretch goals).
+8. Build a Bangla study-material benchmark of about 100 questions over about 40 pages (printed Bangla, handwritten Bangla, English slides, diagrams), with ground-truth transcriptions.
+9. Run a user study with 10-15 students over 2-3 weeks with informed consent and anonymized local logs.
 10. Release the core as an open-source tool.
 ```
 
@@ -114,29 +118,23 @@ Not provided
 
 ---
 
-## Portfolio Prompt (Key Features Grid)
+## Defense & Review Gap Analysis (What Was Fixed)
 
-Use these points for your portfolio website showcase grid:
+| Gap Raised | Resolution in Updated Inputs |
+|---|---|
+| **1. Concrete Metrics** | Explicitly stated: **CER/WER** (transcription error), **rubric accuracy** on benchmark, **latency per page**, **task completion rate**, **on-time submission rate**, and **pre/post quiz gain**. |
+| **2. Data Collection Plan** | Benchmark scope defined: ~100 questions across ~40 pages (printed Bangla, handwritten Bangla, English slides, diagrams) from author notes, volunteer pages, and open licenses. Independent second reviewer for questions. No copyrighted material redistribution. |
+| **3. Timeline** | Structured 8-week schedule in Description: Weeks 1–2 model setup & testing; Weeks 3–4 document understanding & retrieval; Weeks 5–6 guide policy & reminders; Weeks 7–8 benchmark, user study & evaluation. |
+| **4. Hardware Specification** | Explicit target defined: **16 GB RAM, no dedicated GPU, 4-bit quantized models**. Week 1 latency & RAM logging on author's laptop. Fallback to OCR + LLM if VLM latency is prohibitive. |
+| **5. Solo Scope & Stretch Goals** | Agent mode and YouTube resource recommendation explicitly marked as **stretch goals**, keeping core MVP achievable within the timeline. |
+
+---
+
+## Portfolio Prompt (Key Features Grid)
 
 - **Vision-Language Understanding:** Comprehends Bangla & English handwritten notes, diagrams, and scanned pages on-device
 - **Guide-First Assistance:** Encourages active learning through hints, questions, and progressive step guidance instead of direct answers
-- **Study Resource Finder:** Suggests relevant videos per topic (e.g., YouTube search)
-- **Opt-In Agent Mode:** Safe, confirmation-based local automations on the student's behalf
+- **Study Resource Finder:** Suggests relevant videos per topic (e.g., YouTube search) [Stretch Goal]
+- **Opt-In Agent Mode:** Safe, confirmation-based local automations on the student's behalf [Stretch Goal]
 - **Privacy & Local-First:** Runs 100% offline on standard laptops without transmitting academic documents
 - **Roadmap & Extensions:** Voice-controlled tool execution and local AI IDE integration
-
----
-
-## Defense Prep & Project Checklist
-
-### Crucial Notes for Supervisor & Panel
-1. **Week 1 Technical Risk:** Immediately test Bangla handwriting and scanned documents on candidate local vision models (Qwen2-VL, MiniCPM-V, etc.).
-2. **Core Defense Differentiation Question:**
-   - *Question:* "How is this different from ChatGPT, Claude, or Google NotebookLM?"
-   - *Answer:* **"BhaiOS is local-first (100% offline & private), natively sees Bangla handwritten notes and diagrams without third-party cloud APIs, and uses a guide-first Socratic policy to scaffold learning rather than generating ready-made answers."**
-
----
-
-## Next Steps / Pending Documents
-- [ ] **Title Approval Document**
-- [ ] **Title Defense Report**

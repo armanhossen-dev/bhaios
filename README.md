@@ -20,24 +20,24 @@ BhaiOS is a local-first study assistant for Bangla-speaking students that combin
 - **Vision-Language Understanding:** Comprehends handwritten notes, scanned pages, textbook diagrams, and screenshots directly.
 - **Guide, Don't Solve:** Prompts with hints, breakdowns, and next steps instead of spoon-feeding final answers.
 - **Bangla & English Aware:** Native understanding across mixed Bangla and English course materials.
-- **Local-First & Private:** Core features run completely offline on a standard laptop—private study materials never leave your device.
+- **Local-First & Private:** Core features run completely offline on a standard laptop (target: 16 GB RAM, no dedicated GPU, 4-bit quantized models)—private study materials never leave your device.
 - **Accountability & Tracking:** Tracks tasks and deadlines, schedules reminders, and generates weekly progress reviews.
-- **Study Resource Recommender:** Suggests topic-specific video explanations (e.g., YouTube) and provides an opt-in agent mode with confirmation for simple automations.
+- **Study Resource Recommender:** Suggests topic-specific video explanations (e.g., YouTube) and provides an opt-in agent mode with confirmation for simple automations (stretch goals).
 
 ---
 
 ## Planned Features
 
-- [ ] Local Vision-Language Model inference (via Ollama / llama.cpp)
-- [ ] Handwritten notes, scanned documents, slides, and diagram comprehension
-- [ ] VLM vs. OCR + LLM pipeline comparative benchmark
+- [ ] Local Vision-Language Model inference (target: 16 GB RAM, 4-bit quantized via Ollama / llama.cpp)
+- [ ] Handwritten notes, scanned documents, slides, and diagram comprehension in Bangla & English
+- [ ] VLM vs. OCR + LLM comparative evaluation (CER/WER, answer accuracy, latency per page)
 - [ ] Local vector retrieval (ChromaDB) over course documents
-- [ ] Guide mode (Socratic hints) vs. Direct Answer mode
+- [ ] Guide mode (Socratic hints) vs. Direct Answer mode (evaluated via task completion, on-time rate, quiz gain)
 - [ ] Task, deadline, and reminder tracker with weekly progress reviews
-- [ ] Study-resource recommender (topic-based video search)
-- [ ] Opt-in Agent mode with confirmation for simple automations
-- [ ] Bangla study-material benchmark (~100 questions over real course pages)
-- [ ] User study & evaluation (10–15 students over 2–3 weeks)
+- [ ] Study-resource recommender (topic-based video search - stretch goal)
+- [ ] Opt-in Agent mode with confirmation for simple automations (stretch goal)
+- [ ] Bangla study-material benchmark (~100 questions over ~40 pages of real student course material)
+- [ ] User study & evaluation (10–15 students over 2–3 weeks with anonymized local logs)
 - [ ] Future: Voice input (Whisper) & local AI IDE integration
 
 ---
