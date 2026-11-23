@@ -65,8 +65,9 @@ Setup instructions will be added as the project develops.
 
 ## Author
 
-**Arman Hossen** · CSE, Daffodil International University
-Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev) · GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)
+**Arman Hossen** · CSE, Daffodil International University          
+Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev)     
+GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)       
 
 ## License
 
