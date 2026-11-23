@@ -4,7 +4,7 @@
 
 BhaiOS is a local-first study assistant for Bangla-speaking students that combines a large language model with a vision-language model. It can see and understand the student's study material—including scanned pages, handwritten notes, slides, diagrams, and screenshots—in Bangla and English. Instead of giving final answers, it works in **guide-first mode**: it provides hints, asks guiding questions, reminds students of deadlines, and reviews weekly progress so the student completes the work themselves.
 
-> **Status:** 🚧 Early development (Final Year Project, Daffodil International University)
+> **Status:** 🛡️ Published for Title Defense (Team: **Swift Lions** · ID: `PRJ-fall-2026-12485` · Daffodil International University)
 
 ---
 

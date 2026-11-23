@@ -1,60 +1,62 @@
-# Final PMS Submission & Defense Preparation — BhaiOS
+# Final PMS Submission Record — BhaiOS
 
-> **Project Name:** BhaiOS  
-> **Prepared for:** Final Year Project (FYP) Submission — Daffodil International University (DIU)  
-> **Author:** Arman Hossen (Solo)  
-> **Status:** Updated with Reviewer Feedback & Defense Enhancements (Metrics, Data Plan, Timeline, Hardware Target)
-
----
-
-## PMS Form Fields (Copy & Paste Ready)
-
-### 1. Project Title
-```text
-BhaiOS: A Local Vision-Language Study Assistant with Guide-First Assistance for Bangla-Speaking Students
-```
-*(Shorter alternate option if desired: `BhaiOS: Private Bangla Study Assistant with Vision-Language Understanding`)*
+> **Project Name:** BhaiOS: A Local Vision-Language Study Assistant with Guide-First Assistance for Bangla-Speaking Students  
+> **Team Name:** Swift Lions  
+> **Project ID:** PRJ-fall-2026-12485  
+> **Stage:** Title Defense  
+> **Status:** Published (Submitted in DIU PMS Portal)  
+> **Title Edits Used:** 0 / 3  
 
 ---
 
-### 2. Type
+## 📋 Exact Submitted Portal Data
+
+### Project Header
+- **Project Title:** `BhaiOS: A Local Vision-Language Study Assistant with Guide-First Assistance for Bangla-Speaking Students`
+- **Team:** `Swift Lions`
+- **Project ID:** `PRJ-fall-2026-12485`
+- **Stage:** `Title Defense`
+- **Publication Status:** `Published`
+- **Title Edits Used:** `0 / 3`
+
+---
+
+### Project Overview
+
+#### TYPE
 ```text
 Software, Research
 ```
 
----
+#### RESEARCH FIELDS
+- `Generative AI & LLMs`
+- `Computer vision`
+- `NLP & Bangla NLP`
+- `Human-computer interaction`
+- `Educational technology`
 
-### 3. Research Fields
-```text
-Generative AI & LLMs, Computer vision, NLP & Bangla NLP, Human-computer interaction, Educational technology
-```
-
----
-
-### 4. Technologies Used
+#### TECHNOLOGIES
 ```text
 Python, LLM, Ollama, llama.cpp, Vision-Language Models, Whisper, Tesseract OCR, OpenCV, ChromaDB, SQLite, FastAPI, PyQt, YouTube Data API, Hugging Face Transformers
 ```
+*(Status: Awaiting supervisor confirmation)*
 
-**Individual Items List:**
-- `Python`
-- `LLM`
-- `Ollama`
-- `llama.cpp`
-- `Vision-Language Models`
-- `Whisper`
-- `Tesseract OCR`
-- `OpenCV`
-- `ChromaDB`
-- `SQLite`
-- `FastAPI`
-- `PyQt`
-- `YouTube Data API`
-- `Hugging Face Transformers`
+#### GOOGLE SITE
+```text
+www.armanhossen.is-a.dev/bhaios
+```
+URL: [https://www.armanhossen.is-a.dev/bhaios](https://www.armanhossen.is-a.dev/bhaios)
+
+#### CODE, DEMO & VIDEO
+- **Code:** `https://github.com/armanhossen-dev/bhaios` *(Awaiting supervisor confirmation)*
+- **Live Demo:** `Not provided`
+- **Demo Video:** `Not provided`
 
 ---
 
-### 5. Description
+### Description & Goals
+
+#### DESCRIPTION
 ```text
 BhaiOS is a local-first study assistant for Bangla-speaking students that combines a large language model with a vision-language model. It can see and understand the student's study material, including scanned pages, handwritten notes, slides, diagrams, and screenshots, in Bangla and English. Instead of giving final answers, it works in guide-first mode: it gives hints, asks guiding questions, reminds students of deadlines, and reviews weekly progress so the student completes the work themselves. It also recommends study resources such as relevant YouTube videos, and in an optional opt-in agent mode with user confirmation it can run simple automations. Voice control and local AI IDE integration are planned as future extensions. All core features run offline on a laptop, so private documents never leave the device.
 
@@ -65,9 +67,7 @@ The system is built as a working tool and evaluated through a small Bangla study
 Evaluation and data: the benchmark is built from the author's own notes, volunteer-provided handwritten pages, and openly licensed course material; questions are written by the author and verified by a second reviewer. The user study compares guide-first and direct-answer modes using task completion, on-time submission, pre/post quiz gain, and a short survey; with a small sample, results are reported descriptively with effect sizes. Timeline: weeks 1-2 model setup and Bangla testing; weeks 3-4 document understanding and retrieval; weeks 5-6 guide-mode policy, task tracker, reminders; weeks 7-8 benchmark, user study, evaluation. Agent mode and resource recommendation are stretch goals.
 ```
 
----
-
-### 6. Objective
+#### OBJECTIVE
 ```text
 1. Build a local-first study assistant that runs offline on a standard laptop (target: 16 GB RAM, no dedicated GPU, 4-bit quantized models).
 2. Integrate a local vision-language model (VLM) to understand scanned pages, handwritten notes, slides, and diagrams in Bangla and English.
@@ -81,60 +81,18 @@ Evaluation and data: the benchmark is built from the author's own notes, volunte
 10. Release the core as an open-source tool.
 ```
 
----
-
-### 7. Motivation
+#### MOTIVATION
 ```text
 Most AI tools students use today give final answers, which weakens learning and builds dependence. They also support Bangla poorly, struggle with handwritten and scanned Bangla material, need internet, and send private academic documents to remote servers. Many students in Bangladesh struggle with deadlines and self-discipline and have no affordable tool that supports them in their own language. BhaiOS addresses this by being private, offline-capable, able to see Bangla study material, and designed to keep the student doing the work with guidance. The project also contributes a comparison of local vision-language models on Bangla study material and a reusable benchmark.
 ```
 
 ---
 
-### 8. Google Site URL
-```text
-https://www.armanhossen.is-a.dev/bhaios
-```
+## 🛡️ Defense Notes & Talking Points
 
----
-
-### 9. Code Repository
-```text
-https://github.com/armanhossen-dev/bhaios
-```
-
----
-
-### 10. Live Demo
-```text
-Not provided
-```
-
----
-
-### 11. Demo Video
-```text
-Not provided
-```
-
----
-
-## Defense & Review Gap Analysis (What Was Fixed)
-
-| Gap Raised | Resolution in Updated Inputs |
-|---|---|
-| **1. Concrete Metrics** | Explicitly stated: **CER/WER** (transcription error), **rubric accuracy** on benchmark, **latency per page**, **task completion rate**, **on-time submission rate**, and **pre/post quiz gain**. |
-| **2. Data Collection Plan** | Benchmark scope defined: ~100 questions across ~40 pages (printed Bangla, handwritten Bangla, English slides, diagrams) from author notes, volunteer pages, and open licenses. Independent second reviewer for questions. No copyrighted material redistribution. |
-| **3. Timeline** | Structured 8-week schedule in Description: Weeks 1–2 model setup & testing; Weeks 3–4 document understanding & retrieval; Weeks 5–6 guide policy & reminders; Weeks 7–8 benchmark, user study & evaluation. |
-| **4. Hardware Specification** | Explicit target defined: **16 GB RAM, no dedicated GPU, 4-bit quantized models**. Week 1 latency & RAM logging on author's laptop. Fallback to OCR + LLM if VLM latency is prohibitive. |
-| **5. Solo Scope & Stretch Goals** | Agent mode and YouTube resource recommendation explicitly marked as **stretch goals**, keeping core MVP achievable within the timeline. |
-
----
-
-## Portfolio Prompt (Key Features Grid)
-
-- **Vision-Language Understanding:** Comprehends Bangla & English handwritten notes, diagrams, and scanned pages on-device
-- **Guide-First Assistance:** Encourages active learning through hints, questions, and progressive step guidance instead of direct answers
-- **Study Resource Finder:** Suggests relevant videos per topic (e.g., YouTube search) [Stretch Goal]
-- **Opt-In Agent Mode:** Safe, confirmation-based local automations on the student's behalf [Stretch Goal]
-- **Privacy & Local-First:** Runs 100% offline on standard laptops without transmitting academic documents
-- **Roadmap & Extensions:** Voice-controlled tool execution and local AI IDE integration
+- **Team:** Swift Lions (`PRJ-fall-2026-12485`)
+- **Key Technical Priority:** Week 1 benchmarks for local vision-language models on handwritten Bangla.
+- **Differentiation vs. Cloud Assistants:**
+  - **100% Local & Private:** No sensitive notes sent to external servers.
+  - **Vision-Language Native:** Direct OCR-free understanding of diagrams and handwritten scripts.
+  - **Pedagogical Scaffolding (Guide-First):** Socratic hints rather than spoon-fed solutions.
