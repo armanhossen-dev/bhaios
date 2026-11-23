@@ -51,7 +51,7 @@ Python, Ollama, llama.cpp, Whisper, Tesseract OCR, ChromaDB, SQLite, FastAPI, Py
 
 ### 5. Description
 ```text
-BhaiOS is a local-first, Bangla-aware personal agent built for students. Instead of solving academic work for the student, it acts like a "big brother": it gives hints, asks guiding questions, reminds the student of deadlines, and reviews weekly progress so the student completes the work themselves. It reads Bangla and English documents (PDFs, scanned notes, slides) using on-device OCR and retrieval, then generates summaries, practice questions, and study plans from the student's own material. All core features run offline on a laptop, so private documents never leave the device; optional external APIs can be added for extra help.
+BhaiOS is a local-first, Bangla-aware personal agent built for students. Instead of solving academic work for the student, it acts like a "big brother": it gives hints, asks guiding questions, reminds the student of deadlines, and reviews weekly progress so the student completes the work themselves. It reads Bangla and English documents (PDFs, scanned notes, slides) using on-device OCR and retrieval, then generates summaries, practice questions, and study plans from the student's own material. All core features run offline on a laptop, so private documents never leave the device; optional external APIs can be added for extra help. Beyond guidance, BhaiOS can optionally recommend study resources (such as relevant YouTube videos for a topic) and, in an opt-in agent mode with user confirmation, run simple automations on the student's behalf. Voice-controlled tool use and IDE integration are planned as future extensions.
 
 Research question: Does a guide-first (hint-based) local assistant improve task completion and learning engagement for Bangla-speaking students compared with a direct-answer assistant?
 
@@ -69,6 +69,7 @@ The system is built as a working tool and evaluated as research through a small 
 5. Create a small Bangla student-document benchmark (about 100 questions over real course material) to evaluate retrieval and answer quality.
 6. Run a user study with 10-15 students over 2-3 weeks, measuring task completion, missed deadlines, and satisfaction.
 7. Release the core as an open-source tool.
+8. Add a study-resource recommender (topic-based video search) and an opt-in agent mode with confirmation for simple automations.
 ```
 
 ---
@@ -99,10 +100,20 @@ https://github.com/armanhossen-dev/bhaios
 
 ---
 
+## Portfolio Prompt (Key Features Grid)
+
+Use these points for your portfolio website showcase grid:
+
+- **Study resource finder:** Suggests relevant videos and materials per topic (e.g., YouTube video recommendation)
+- **Opt-in agent mode:** Confirmation-based execution for safe and simple automations on the student's behalf
+- **Roadmap & extensions:** Voice-controlled tools and local AI IDE integration
+
+---
+
 ## Submission Checklist
 
 - [x] Git repository created: [`https://github.com/armanhossen-dev/bhaios`](https://github.com/armanhossen-dev/bhaios)
-- [x] Initial `README.md` committed and pushed to GitHub
+- [x] Initial `README.md` updated with planned features and pushed
 - [ ] Title verified before submitting (allowed edits: **3**)
 - [ ] PMS form inputs submitted
 - [ ] Title Defense Report prepared

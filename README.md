@@ -27,8 +27,11 @@ Does a guide-first (hint-based) local assistant improve task completion and lear
 - [ ] Task, deadline, and reminder tracker
 - [ ] Weekly progress review
 - [ ] Voice input (Whisper)
+- [ ] Study-resource recommender (YouTube search by topic)
+- [ ] Opt-in Agent mode with confirmation (simple automations)
 - [ ] Bangla student-document benchmark
 - [ ] User study and evaluation
+- [ ] Future: voice-controlled tools and local AI IDE integration
 
 ## Tech Stack
 
