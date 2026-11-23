@@ -44,7 +44,7 @@ BhaiOS is a local-first study assistant for Bangla-speaking students that combin
 
 ## Tech Stack
 
-Python · Ollama · llama.cpp · Vision-Language Models · Whisper · Tesseract OCR · OpenCV · ChromaDB · SQLite · FastAPI · PyQt · YouTube Data API · Hugging Face Transformers
+Python · LLM · Ollama · llama.cpp · Vision-Language Models · Whisper · Tesseract OCR · OpenCV · ChromaDB · SQLite · FastAPI · PyQt · YouTube Data API · Hugging Face Transformers
 
 ---
 
@@ -88,7 +88,7 @@ pip install -r requirements.txt
 ## Author
 
 **Arman Hossen** · Department of Computer Science & Engineering, Daffodil International University  
-Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev) · GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)
+Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev) · Project Site: [armanhossen.is-a.dev/bhaios](https://www.armanhossen.is-a.dev/bhaios) · GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)
 
 ---
 

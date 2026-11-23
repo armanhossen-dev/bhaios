@@ -2,11 +2,11 @@
 
 > **Project Name:** BhaiOS  
 > **Prepared for:** Final Year Project (FYP) Submission — Daffodil International University (DIU)  
-> **Warning:** You only get **3 title edits** after saving in PMS. Verify everything before final submission!
+> **Status:** Submitted in PMS
 
 ---
 
-## PMS Form Fields (Copy & Paste)
+## PMS Form Fields (Exact Submission Record)
 
 ### 1. Project Title
 ```text
@@ -30,13 +30,13 @@ Generative AI & LLMs, Computer vision, NLP & Bangla NLP, Human-computer interact
 ---
 
 ### 4. Technologies Used
-*(Press **Enter** or comma after each in the portal)*
 ```text
-Python, Ollama, llama.cpp, Vision-Language Models, Whisper, Tesseract OCR, OpenCV, ChromaDB, SQLite, FastAPI, PyQt, YouTube Data API, Hugging Face Transformers
+Python, LLM, Ollama, llama.cpp, Vision-Language Models, Whisper, Tesseract OCR, OpenCV, ChromaDB, SQLite, FastAPI, PyQt, YouTube Data API, Hugging Face Transformers
 ```
 
 **Individual Items List:**
 - `Python`
+- `LLM`
 - `Ollama`
 - `llama.cpp`
 - `Vision-Language Models`
@@ -87,7 +87,9 @@ Most AI tools students use today give final answers, which weakens learning and 
 ---
 
 ### 8. Google Site URL
-*(Leave blank for now — create a one-page Google Site before Phase-I)*
+```text
+https://www.armanhossen.is-a.dev/bhaios
+```
 
 ---
 
@@ -98,8 +100,17 @@ https://github.com/armanhossen-dev/bhaios
 
 ---
 
-### 10. Live Demo / Demo Video
-*(Leave blank until you have a working version)*
+### 10. Live Demo
+```text
+Not provided
+```
+
+---
+
+### 11. Demo Video
+```text
+Not provided
+```
 
 ---
 
@@ -116,18 +127,16 @@ Use these points for your portfolio website showcase grid:
 
 ---
 
-## Defense Prep & Pre-Submission Checklist
+## Defense Prep & Project Checklist
 
-### Crucial Pre-Submission Notes
-1. **Title Edit Limit:** The title only gets **3 edits** after the first save. Double-check spelling and wording.
-2. **Repository Readiness:** Repo `https://github.com/armanhossen-dev/bhaios` is active and pushed.
-3. **Week 1 Technical Risk:** Immediately test Bangla handwriting and scanned documents on candidate local vision models (Qwen2-VL, LLaVA, etc.).
-4. **Core Defense Differentiation Question:**
+### Crucial Notes for Supervisor & Panel
+1. **Week 1 Technical Risk:** Immediately test Bangla handwriting and scanned documents on candidate local vision models (Qwen2-VL, MiniCPM-V, etc.).
+2. **Core Defense Differentiation Question:**
    - *Question:* "How is this different from ChatGPT, Claude, or Google NotebookLM?"
-   - *Answer:* **Local-first (complete privacy), Bangla-aware, vision-based on handwriting/scanned diagrams, and guide-first (pedagogical scaffolding rather than answer generator).**
+   - *Answer:* **"BhaiOS is local-first (100% offline & private), natively sees Bangla handwritten notes and diagrams without third-party cloud APIs, and uses a guide-first Socratic policy to scaffold learning rather than generating ready-made answers."**
 
 ---
 
-## Pending Documents
+## Next Steps / Pending Documents
 - [ ] **Title Approval Document**
 - [ ] **Title Defense Report**
