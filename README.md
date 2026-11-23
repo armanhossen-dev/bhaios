@@ -87,8 +87,10 @@ pip install -r requirements.txt
 
 ## Author
 
-**Arman Hossen** · Department of Computer Science & Engineering, Daffodil International University  
-Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev) · Project Site: [armanhossen.is-a.dev/bhaios](https://www.armanhossen.is-a.dev/bhaios) · GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)
+**Arman Hossen** · Department of Computer Science & Engineering, Daffodil International University   
+Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev)    
+Project Site: [armanhossen.is-a.dev/bhaios](https://www.armanhossen.is-a.dev/bhaios)   
+GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)    
 
 ---
 
