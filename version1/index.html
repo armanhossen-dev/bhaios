@@ -23,77 +23,82 @@
     <!-- =====================================================================
          LEFT SIDEBAR (280px)
          ===================================================================== -->
-    <aside class="sidebar">
-      <div class="brand-block">
-        <div class="brand-title">BhaiOS</div>
-        <div class="brand-subtitle">YOUR OFFLINE STUDY SPACE</div>
-      </div>
-
-      <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button">
-        <i class="bx bx-plus"></i>
-        <span>New conversation</span>
+    <aside class="sidebar" id="leftSidebar">
+      <!-- Workspace Switcher (Screenshot 3) -->
+      <button class="workspace-switcher" id="btnWorkspaceSwitcher" type="button" data-tooltip="HSC · Science">
+        <span class="workspace-avatar">B</span>
+        <span class="workspace-switcher-text">
+          <span class="workspace-switcher-name">BhaiOS · HSC</span>
+        </span>
+        <i class="bx bx-chevron-down workspace-chevron"></i>
       </button>
 
+      <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button" data-tooltip="New chat">
+        <i class="bx bx-plus"></i>
+        <span class="nav-label">New conversation</span>
+      </button>
+
+      <div class="sidebar-section-label">WORKSPACE</div>
+
       <nav class="nav-list" aria-label="Main navigation">
-        <button class="nav-item active" data-screen="chat" type="button">
+        <button class="nav-item active" data-screen="chat" type="button" data-tooltip="Chat">
           <span class="nav-item-left">
             <i class="bx bx-message-square-detail"></i>
-            <span>Chat</span>
+            <span class="nav-label">Chat</span>
           </span>
         </button>
 
-        <button class="nav-item" data-screen="documents" type="button">
+        <button class="nav-item" data-screen="documents" type="button" data-tooltip="Documents">
           <span class="nav-item-left">
             <i class="bx bx-file"></i>
-            <span>Documents</span>
+            <span class="nav-label">Documents</span>
           </span>
           <span class="nav-count" id="navDocCount">12</span>
         </button>
 
-        <button class="nav-item" data-screen="tasks" type="button">
+        <button class="nav-item" data-screen="tasks" type="button" data-tooltip="Tasks">
           <span class="nav-item-left">
             <i class="bx bx-list-ul"></i>
-            <span>Tasks</span>
+            <span class="nav-label">Tasks</span>
           </span>
           <span class="nav-count" id="navTaskCount">5</span>
         </button>
 
-        <button class="nav-item" data-screen="progress" type="button">
+        <button class="nav-item" data-screen="progress" type="button" data-tooltip="Progress">
           <span class="nav-item-left">
             <i class="bx bx-bar-chart-alt-2"></i>
-            <span>Progress</span>
+            <span class="nav-label">Progress</span>
           </span>
         </button>
 
-        <button class="nav-item" data-screen="settings" type="button">
+        <button class="nav-item" data-screen="benchmark" type="button" data-tooltip="Benchmark">
           <span class="nav-item-left">
-            <i class="bx bx-cog"></i>
-            <span>Settings</span>
+            <i class="bx bx-test-tube"></i>
+            <span class="nav-label">Benchmark</span>
           </span>
+          <span class="nav-badge-dev">DEV</span>
         </button>
       </nav>
 
-      <div class="sidebar-section-label">WORKSPACE</div>
-      <div class="workspace-card">
-        <div class="workspace-title">HSC · Science</div>
-        <div class="workspace-sub">Physics, Chemistry + 2</div>
-      </div>
-
-      <button class="nav-item" data-screen="benchmark" type="button">
-        <span class="nav-item-left">
-          <i class="bx bx-test-tube"></i>
-          <span>Benchmark</span>
-        </span>
-        <span class="nav-badge-dev">DEV</span>
-      </button>
-
       <div class="sidebar-footer">
-        <button class="guide-status-pill" id="sidebarModePill" type="button">
+        <button class="guide-status-pill" id="sidebarModePill" type="button" data-tooltip="Guide Mode">
           <i class="bx bx-compass"></i>
-          <span id="sidebarModeLabel">Guide Mode is on</span>
+          <span class="nav-label" id="sidebarModeLabel">Guide Mode is on</span>
         </button>
 
         <div class="sidebar-divider"></div>
+
+        <!-- Bottom Settings & Help Icons + Popover Anchor (Screenshots 1 & 2) -->
+        <div class="sidebar-bottom-actions">
+          <button class="sidebar-icon-btn" id="btnSettingsPopover" type="button" data-tooltip="Settings" aria-haspopup="true" aria-expanded="false">
+            <i class="bx bx-cog"></i>
+            <span class="nav-label">Settings</span>
+          </button>
+          <button class="sidebar-icon-btn" id="btnSidebarHelp" type="button" data-tooltip="Shortcuts (⌘K)">
+            <i class="bx bx-help-circle"></i>
+            <span class="nav-label">Shortcuts</span>
+          </button>
+        </div>
 
         <div class="device-status">
           <div class="status-green"><i class="bx bx-check"></i> All data stays on this device</div>
@@ -104,6 +109,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Floating Settings Popover Menu (Screenshot 2) -->
+      <div class="settings-popover" id="settingsPopover" role="menu">
+        <button class="popover-item" id="popProfile" type="button">
+          <span class="popover-item-left"><i class="bx bx-briefcase"></i><span>Student profile</span></span>
+          <span class="popover-item-right">Arman</span>
+        </button>
+        <button class="popover-item" id="popModels" type="button">
+          <span class="popover-item-left"><i class="bx bx-chip"></i><span>Local models</span></span>
+          <span class="popover-item-right">Qwen2.5</span>
+        </button>
+        <button class="popover-item" id="popAppearance" type="button">
+          <span class="popover-item-left"><i class="bx bx-moon"></i><span>Appearance</span></span>
+          <span class="popover-item-right" id="popThemeLabel">Dark</span>
+        </button>
+        <div class="popover-sep"></div>
+        <button class="popover-item" id="popAllSettings" type="button">
+          <span class="popover-item-left"><i class="bx bx-sliders"></i><span>All settings</span></span>
+          <i class="bx bx-chevron-right" style="color: var(--text-muted);"></i>
+        </button>
+      </div>
     </aside>
 
     <!-- =====================================================================
@@ -113,6 +139,9 @@
       <!-- Top Bar -->
       <header class="top-bar">
         <div class="top-bar-left">
+          <button class="sidebar-toggle-btn" id="btnToggleSidebar" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
+            <i class="bx bx-dock-left"></i>
+          </button>
           <h1 class="page-title" id="topBarTitle">Chat</h1>
 
           <div class="mode-switch" id="chatModeSwitch">
@@ -124,7 +153,11 @@
         </div>
 
         <div class="top-bar-right">
-          <span>LOCAL-FIRST &nbsp;/&nbsp; PRIVATE BY DEFAULT</span>
+          <button class="topbar-search-btn" id="btnOpenCommandSearch" type="button">
+            <i class="bx bx-search"></i>
+            <span>Search…</span>
+            <kbd class="kbd-hint">⌘K</kbd>
+          </button>
         </div>
       </header>
 
@@ -615,6 +648,18 @@
           <button data-slot="tabs-trigger" data-state="inactive" class="modal-pipe-btn" data-pipe="OCR" type="button">OCR (Printed)</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Centered Command / Search Modal (⌘K — Screenshot 4) -->
+  <div data-slot="dialog-overlay" id="commandModal" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="command-palette">
+      <div class="command-input-row">
+        <i class="bx bx-search" style="color: var(--text-muted); font-size: 17px;"></i>
+        <input type="text" class="command-input" id="commandSearchInput" placeholder="Search…" autocomplete="off" />
+        <button class="command-close-btn" id="btnCloseCommand" type="button" aria-label="Close search"><i class="bx bx-x"></i></button>
+      </div>
+      <div class="command-results" id="commandResults"></div>
     </div>
   </div>
 

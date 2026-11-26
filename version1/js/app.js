@@ -423,10 +423,127 @@ function renderBenchmark() {
   ).join('');
 }
 
+const COMMAND_ITEMS = [
+  { group: 'Last opened', icon: 'bx-message-square-detail', label: "Newton's second law · Physics", action: () => sendChatMessage('নিউটনের দ্বিতীয় সূত্রটা সহজ করে বুঝিয়ে দাও।') },
+  { group: 'Last opened', icon: 'bx-file', label: 'Physics · Chapter 03 notes', action: () => switchScreen('documents') },
+  { group: 'Recent chats', icon: 'bx-message-square-detail', label: 'Explain differentiation chain rule', action: () => sendChatMessage('Explain differentiation chain rule step by step') },
+  { group: 'Recent chats', icon: 'bx-message-square-detail', label: 'Summarize Organic chemistry flashcards', action: () => sendChatMessage('Summarize Organic chemistry flashcards') },
+  { group: 'Recent chats', icon: 'bx-list-ul', label: "Revise Newton's laws (Overdue task)", action: () => switchScreen('tasks') },
+  { group: 'Recent chats', icon: 'bx-test-tube', label: 'VLM vs OCR+LLM Benchmark results', action: () => switchScreen('benchmark') },
+];
+
+function renderCommandResults(query = '') {
+  const container = document.getElementById('commandResults');
+  const q = query.trim().toLowerCase();
+  const filtered = COMMAND_ITEMS.filter((item) => !q || item.label.toLowerCase().includes(q));
+  const groups = ['Last opened', 'Recent chats'];
+
+  container.innerHTML = groups
+    .map((g) => {
+      const items = filtered.filter((i) => i.group === g);
+      if (!items.length) return '';
+      return `
+        <div class="command-group-label">${g}</div>
+        ${items
+          .map(
+            (item, idx) => `
+          <button class="command-item ${g === 'Last opened' && idx === 0 ? 'active' : ''}" data-cmd-label="${item.label.replace(/"/g, '&quot;')}" type="button">
+            <i class="bx ${item.icon}"></i>
+            <span>${item.label}</span>
+          </button>
+        `
+          )
+          .join('')}
+      `;
+    })
+    .join('');
+
+  if (!filtered.length) {
+    container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">No matching chats or notes</div>';
+  }
+}
+
 /* ==========================================================================
    Event Wiring
    ========================================================================== */
 function init() {
+  // Sidebar Collapse Toggle (Screenshot 1 & 3)
+  const sidebar = document.getElementById('leftSidebar');
+  document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+  });
+
+  // Settings Popover Toggle (Screenshot 2)
+  const settingsPopover = document.getElementById('settingsPopover');
+  const btnSettingsPop = document.getElementById('btnSettingsPopover');
+  btnSettingsPop.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = settingsPopover.classList.toggle('open');
+    btnSettingsPop.classList.toggle('active', isOpen);
+    btnSettingsPop.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!settingsPopover.contains(e.target) && e.target !== btnSettingsPop) {
+      settingsPopover.classList.remove('open');
+      btnSettingsPop.classList.remove('active');
+    }
+  });
+
+  document.getElementById('popAppearance').addEventListener('click', () => {
+    const curr = document.documentElement.getAttribute('data-theme');
+    const next = curr === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.getElementById('popThemeLabel').textContent = next === 'dark' ? 'Dark' : 'Light';
+  });
+
+  document.getElementById('popAllSettings').addEventListener('click', () => {
+    settingsPopover.classList.remove('open');
+    switchScreen('settings');
+  });
+  document.getElementById('popProfile').addEventListener('click', () => {
+    settingsPopover.classList.remove('open');
+    showToast('Signed in locally as Arman Hossen');
+  });
+  document.getElementById('popModels').addEventListener('click', () => {
+    settingsPopover.classList.remove('open');
+    switchScreen('settings');
+  });
+  document.getElementById('btnWorkspaceSwitcher').addEventListener('click', () => {
+    showToast('Workspace: HSC · Science (4 subjects)');
+  });
+
+  // Centered Command Search Modal (⌘K — Screenshot 4)
+  const cmdModal = document.getElementById('commandModal');
+  const cmdInput = document.getElementById('commandSearchInput');
+  const openCommandModal = () => {
+    renderCommandResults('');
+    cmdInput.value = '';
+    cmdModal.classList.add('open');
+    setTimeout(() => cmdInput.focus(), 30);
+  };
+  document.getElementById('btnOpenCommandSearch').addEventListener('click', openCommandModal);
+  document.getElementById('btnSidebarHelp').addEventListener('click', openCommandModal);
+  document.getElementById('btnCloseCommand').addEventListener('click', () => cmdModal.classList.remove('open'));
+  cmdInput.addEventListener('input', (e) => renderCommandResults(e.target.value));
+  document.getElementById('commandResults').addEventListener('click', (e) => {
+    const btn = e.target.closest('.command-item');
+    if (!btn) return;
+    const found = COMMAND_ITEMS.find((i) => i.label === btn.dataset.cmdLabel);
+    cmdModal.classList.remove('open');
+    if (found) found.action();
+  });
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (cmdModal.classList.contains('open')) cmdModal.classList.remove('open');
+      else openCommandModal();
+    } else if (e.key === 'Escape') {
+      cmdModal.classList.remove('open');
+      settingsPopover.classList.remove('open');
+    }
+  });
+
   // Navigation
   document.querySelectorAll('.nav-item[data-screen]').forEach((btn) => {
     btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
