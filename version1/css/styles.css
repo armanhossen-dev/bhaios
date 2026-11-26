@@ -1611,7 +1611,7 @@ i.bx {
   min-width: 320px;
   border-left: 1px solid var(--border-hairline);
   background: var(--bg-sidebar);
-  padding: 20px 18px;
+  padding: 10px 16px 16px;
   display: flex;
   flex-direction: column;
   transition: width 0.2s ease, padding 0.2s ease;
@@ -1620,7 +1620,7 @@ i.bx {
 .context-panel.collapsed {
   width: 52px;
   min-width: 52px;
-  padding: 20px 10px;
+  padding: 10px 8px;
   align-items: center;
 }
 
@@ -1635,7 +1635,8 @@ i.bx {
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding-bottom: 14px;
+  padding-top: 2px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-hairline);
 }
 
@@ -1655,7 +1656,7 @@ i.bx {
 
 .right-clock-time {
   font-family: var(--font-mono);
-  font-size: 16.5px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -1664,23 +1665,175 @@ i.bx {
   white-space: nowrap;
 }
 
+.right-countdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .right-countdown-btn {
   font-family: var(--font-mono);
-  font-size: 16.5px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   line-height: 1.15;
   white-space: nowrap;
-  padding: 2px 7px;
-  border-radius: 7px;
+  padding: 3px 6px 3px 8px;
+  border-radius: 7px 0 0 7px;
+  background: var(--amber-900);
+  border: 1px solid var(--amber-border);
+  border-right: none;
+  color: var(--amber-400);
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.right-countdown-btn:hover {
+  opacity: 0.9;
+}
+
+.right-timer-options-btn {
+  height: 23px;
+  padding: 0 4px;
+  border-radius: 0 7px 7px 0;
   background: var(--amber-900);
   border: 1px solid var(--amber-border);
   color: var(--amber-400);
   display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
-  transition: opacity 0.15s ease;
+  justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.right-timer-options-btn:hover {
+  background: var(--amber-400);
+  color: var(--bg-root);
+}
+
+.focus-timer-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 190px;
+  padding: 8px;
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 85;
+}
+
+.focus-timer-popover.open {
+  display: flex;
+}
+
+.focus-pop-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 4px;
+}
+
+.focus-pop-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.focus-opt-btn {
+  padding: 6px 4px;
+  border-radius: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.focus-opt-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+}
+
+.focus-opt-btn.active {
+  background: var(--amber-900);
+  border-color: var(--amber-border);
+  color: var(--amber-400);
+}
+
+.focus-opt-sub {
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+.focus-pop-divider {
+  height: 1px;
+  background: var(--border-hairline);
+  margin: 4px 0;
+}
+
+.focus-pop-action {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.focus-pop-action:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.focus-presets-row {
+  margin: 8px 0 12px;
+  display: flex;
+  gap: 6px;
+}
+
+.focus-chip {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.focus-chip:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.focus-chip.active {
+  background: var(--amber-900);
+  border-color: var(--amber-border);
+  color: var(--amber-400);
+  font-weight: 600;
 }
 
 .right-countdown-btn:hover {

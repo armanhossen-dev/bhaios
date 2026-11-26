@@ -36,6 +36,7 @@ const state = {
   taskFilter: 'all',
   calendarAnchor: new Date(),
   selectedDateKey: null,
+  focusDurationMins: 45,
   focusRemainingSecs: 45 * 60,
   focusRunning: false,
   focusInterval: null,
@@ -281,6 +282,7 @@ function updateRightClock() {
   timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
 }
+updateRightClock();
 
 function renderNotifications() {
   const feed = document.getElementById('notificationsFeed');
@@ -872,8 +874,32 @@ function updateFocusTimerUI() {
   if (btnFocus) {
     btnFocus.innerHTML = state.focusRunning
       ? `<i class="bx bx-pause"></i> Pause focus (${formatted})`
-      : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < 45 * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
+      : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < state.focusDurationMins * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
   }
+}
+
+function setFocusDuration(mins) {
+  state.focusDurationMins = mins;
+  if (!state.focusRunning) {
+    state.focusRemainingSecs = mins * 60;
+  }
+  updateFocusTimerUI();
+  document.querySelectorAll('.focus-opt-btn, .focus-chip').forEach((b) => {
+    b.classList.toggle('active', Number(b.dataset.mins) === mins);
+  });
+  const bigLabel = document.getElementById('focusCardDuration');
+  if (bigLabel) bigLabel.textContent = `${mins} min`;
+  showToast(`Focus timer set to ${mins} minutes`);
+}
+
+function resetFocusTimer() {
+  if (state.focusRunning) {
+    clearInterval(state.focusInterval);
+    state.focusRunning = false;
+  }
+  state.focusRemainingSecs = state.focusDurationMins * 60;
+  updateFocusTimerUI();
+  showToast(`Focus timer reset to ${formatTimer(state.focusRemainingSecs)}`);
 }
 
 function toggleFocusTimer() {
@@ -885,10 +911,10 @@ function toggleFocusTimer() {
     return;
   }
 
-  if (state.focusRemainingSecs <= 0) state.focusRemainingSecs = 45 * 60;
+  if (state.focusRemainingSecs <= 0) state.focusRemainingSecs = state.focusDurationMins * 60;
   state.focusRunning = true;
   updateFocusTimerUI();
-  showToast('45-min reverse focus countdown started');
+  showToast(`${state.focusDurationMins}-min reverse focus countdown started`);
 
   state.focusInterval = setInterval(() => {
     state.focusRemainingSecs -= 1;
@@ -1868,6 +1894,44 @@ function init() {
 
   document.getElementById('btnStartFocus').addEventListener('click', toggleFocusTimer);
   document.getElementById('navbarFocusTimer').addEventListener('click', toggleFocusTimer);
+
+  const focusPop = document.getElementById('focusTimerPopover');
+  const btnFocusOpts = document.getElementById('btnFocusTimerOptions');
+  const focusWrap = document.getElementById('focusTimerWrap');
+
+  btnFocusOpts?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = focusPop?.classList.toggle('open');
+    btnFocusOpts.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  focusPop?.addEventListener('click', (e) => {
+    const optBtn = e.target.closest('.focus-opt-btn');
+    if (optBtn) {
+      setFocusDuration(Number(optBtn.dataset.mins));
+      focusPop.classList.remove('open');
+      btnFocusOpts?.setAttribute('aria-expanded', 'false');
+      return;
+    }
+    const resetBtn = e.target.closest('#btnResetFocusTimer');
+    if (resetBtn) {
+      resetFocusTimer();
+      focusPop.classList.remove('open');
+      btnFocusOpts?.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.getElementById('focusPresetsRow')?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.focus-chip');
+    if (chip) setFocusDuration(Number(chip.dataset.mins));
+  });
+
+  document.addEventListener('click', (e) => {
+    if (focusWrap && !focusWrap.contains(e.target)) {
+      focusPop?.classList.remove('open');
+      btnFocusOpts?.setAttribute('aria-expanded', 'false');
+    }
+  });
   document.getElementById('tokenUsagePill')?.addEventListener('click', () => {
     const { prompt, completion, total } = state.sessionTokens;
     showToast(`Tokens — ${prompt} in · ${completion} out · ${total} total`);

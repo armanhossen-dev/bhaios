@@ -280,12 +280,42 @@
               <div class="right-time-card">
                 <div class="right-clock-row">
                   <div class="right-clock-time" id="rightClockTime">--:--:--</div>
-                  <button class="right-countdown-btn" id="navbarFocusTimer" type="button"
-                    title="Click to start/pause reverse focus timer">
-                    <span id="navbarTimerText">45:00</span>
-                  </button>
+                  <div class="right-countdown-wrap" id="focusTimerWrap">
+                    <button class="right-countdown-btn" id="navbarFocusTimer" type="button"
+                      title="Click to start/pause reverse focus timer">
+                      <span id="navbarTimerText">45:00</span>
+                    </button>
+                    <button class="right-timer-options-btn" id="btnFocusTimerOptions" type="button"
+                      title="Focus timer options" aria-haspopup="true" aria-expanded="false">
+                      <i class="bx bx-chevron-down"></i>
+                    </button>
+                    <div class="focus-timer-popover" id="focusTimerPopover" role="menu">
+                      <div class="focus-pop-title">Focus Duration</div>
+                      <div class="focus-pop-options">
+                        <button class="focus-opt-btn" data-mins="15" type="button">15m <span class="focus-opt-sub">Sprint</span></button>
+                        <button class="focus-opt-btn" data-mins="25" type="button">25m <span class="focus-opt-sub">Pomodoro</span></button>
+                        <button class="focus-opt-btn active" data-mins="45" type="button">45m <span class="focus-opt-sub">Deep</span></button>
+                        <button class="focus-opt-btn" data-mins="60" type="button">60m <span class="focus-opt-sub">Exam</span></button>
+                      </div>
+                      <div class="focus-pop-divider"></div>
+                      <button class="focus-pop-action" id="btnResetFocusTimer" type="button">
+                        <i class="bx bx-reset"></i> Reset timer
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div class="right-clock-date" id="rightClockDate">Loading date…</div>
+                <script>
+                  (function() {
+                    try {
+                      var n = new Date();
+                      var t = document.getElementById('rightClockTime');
+                      var d = document.getElementById('rightClockDate');
+                      if (t) t.textContent = n.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                      if (d) d.textContent = n.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+                    } catch (e) {}
+                  })();
+                </script>
               </div>
               <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel"
                 aria-label="Toggle right panel">
@@ -449,7 +479,13 @@
                 <div class="serif" style="font-size: 20px; margin-bottom: 10px;">Focus timer</div>
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.08em;">SESSION
                 </div>
-                <div class="focus-card-big">45 min</div>
+                <div class="focus-card-big" id="focusCardDuration">45 min</div>
+                <div class="focus-presets-row" id="focusPresetsRow">
+                  <button class="focus-chip" data-mins="15" type="button">15m</button>
+                  <button class="focus-chip" data-mins="25" type="button">25m</button>
+                  <button class="focus-chip active" data-mins="45" type="button">45m</button>
+                  <button class="focus-chip" data-mins="60" type="button">60m</button>
+                </div>
                 <div style="font-size: 12px; color: var(--text-secondary);" id="focusTasksMeta">0 active tasks</div>
                 <button class="btn-outline-full" id="btnStartFocus" type="button"><i class="bx bx-play"></i> Start focus
                   session</button>
