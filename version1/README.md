@@ -25,13 +25,15 @@ version1/
 5. **Benchmark / Dev (`Dark`):** Side-by-side VLM vs. OCR+LLM pipeline cards, CER/WER/latency/RAM comparison table, and working `Export CSV` button.
 6. **Settings (`Dark`):** Local runtime configuration overview (`Qwen2.5 · 3B · Q4`, `Qwen2.5-VL · 3B`, strict offline mode).
 
-## How to Run
+## How to Run (Full Local AI Backend: Text + Vision + Voice + Model Manager)
 
-Because `index.html` uses ES modules (`type="module"`), serve `version1/` over a local HTTP server:
-
-```bash
-cd version1
-python3 -m http.server 8080
-```
-
-Then open [http://localhost:8080](http://localhost:8080) in your browser.
+1. Install Python dependencies (already installed on this system):
+   ```bash
+   pip3 install -r version1/requirements.txt
+   ```
+2. Ensure **Ollama** is running (`ollama serve`) and start the BhaiOS local server:
+   ```bash
+   python3 version1/server.py
+   ```
+3. Open [http://127.0.0.1:8080](http://127.0.0.1:8080) in your browser.
+   *(If port 8080 is busy, run `python3 -m uvicorn version1.server:app --port 8000`.)*

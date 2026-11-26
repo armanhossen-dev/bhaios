@@ -1,0 +1,28 @@
+# Local AI Models & Weights (never push to GitHub)
+models/
+*.gguf
+*.bin
+*.pt
+*.pth
+*.safetensors
+*.onnx
+.ollama/
+
+# Python environments & caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local runtime data, uploads & SQLite DBs
+uploads/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# OS & Editor files
+.DS_Store
+.vscode/
+.idea/

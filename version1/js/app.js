@@ -16,6 +16,10 @@ const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
   uploadPipeline: 'VLM',
+  activeModel: 'qwen2.5:3b',
+  activeVisionModel: 'llava-phi3:latest',
+  attachedImageBase64: null,
+  attachedFilename: null,
   chatStarted: false,
   messages: [...INITIAL_MESSAGES],
   documents: [...DOCUMENTS_DATA],
@@ -175,7 +179,7 @@ function setChatMode(mode) {
   if (effortLabel) effortLabel.textContent = mode === 'guide' ? 'Guide Mode' : 'Answer Mode';
 }
 
-function sendChatMessage(customText) {
+async function sendChatMessage(customText) {
   const input = document.getElementById('chatInput');
   const welcomeInput = document.getElementById('welcomeInput');
   const text = (customText ?? (state.chatStarted ? input.value : welcomeInput.value)).trim();
@@ -193,40 +197,79 @@ function sendChatMessage(customText) {
     bangla: hasBangla ? text : '',
     english: hasBangla ? '' : text,
   });
+
+  const pendingId = `a-pending-${Date.now()}`;
+  state.messages.push({
+    id: pendingId,
+    role: 'assistant',
+    mode: state.chatMode,
+    english: state.attachedImageBase64
+      ? `Analyzing "${state.attachedFilename || 'image'}" with ${state.activeVisionModel}…`
+      : `Thinking locally with ${state.activeModel}…`,
+    hintChip: state.chatMode === 'guide' ? 'Guide Mode' : 'Answer Mode',
+  });
+
   input.value = '';
   welcomeInput.value = '';
   renderChat();
 
-  setTimeout(() => {
-    if (state.chatMode === 'guide') {
-      state.messages.push({
+  const history = state.messages
+    .filter((m) => m.id !== pendingId)
+    .slice(-6)
+    .map((m) => ({
+      role: m.role === 'student' ? 'user' : 'assistant',
+      content: m.bangla || m.english || '',
+    }));
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        mode: state.chatMode,
+        model: state.activeModel,
+        vision_model: state.activeVisionModel,
+        image_base64: state.attachedImageBase64,
+        history,
+      }),
+    });
+
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+
+    const idx = state.messages.findIndex((m) => m.id === pendingId);
+    if (idx !== -1) {
+      state.messages[idx] = {
         id: `a-${Date.now()}`,
         role: 'assistant',
-        mode: 'guide',
-        bangla: hasBangla
-          ? 'ভালো প্রশ্ন! সূত্রটি সরাসরি না দেখে বলো তো—এখানে কোন দুটি রাশি পরিবর্তন হচ্ছে?'
-          : '',
-        english:
-          'Good step! Before jumping to the formula, which two quantities are changing in this problem based on your class notes?',
-        hintChip: 'Hint: identify variables first',
-        meta: 'Grounded in 2 local sources · 6.2s',
+        mode: state.chatMode,
+        english: data.reply || 'No response received.',
+        hintChip: data.used_vision
+          ? `VLM · ${data.model_used} · ${data.latency_s}s`
+          : `${data.model_used} · ${data.latency_s}s`,
         sourceId: 's2',
-      });
-    } else {
-      state.messages.push({
-        id: `a-${Date.now()}`,
-        role: 'assistant',
-        mode: 'answer',
-        bangla: hasBangla ? 'নিউটনের দ্বিতীয় সূত্র অনুযায়ী: F = ma (বল = ভর × ত্বরণ)।' : '',
-        english:
-          "According to Newton's second law, net force equals mass times acceleration (F = ma), as noted on p. 26 of class-notes.pdf.",
-        hintChip: 'Direct Answer',
-        meta: 'Grounded in class-notes.pdf · 5.4s',
-        sourceId: 's2',
-      });
+      };
     }
-    renderChat();
-  }, 350);
+    document.getElementById('latencyChip').textContent = `${data.latency_s}s / resp`;
+    state.attachedImageBase64 = null;
+    state.attachedFilename = null;
+  } catch (err) {
+    const idx = state.messages.findIndex((m) => m.id === pendingId);
+    if (idx !== -1) {
+      state.messages[idx] = {
+        id: `a-${Date.now()}`,
+        role: 'assistant',
+        mode: state.chatMode,
+        english:
+          state.chatMode === 'guide'
+            ? 'Start the local backend (`python3 version1/server.py`) for live Ollama answers. Hint: break the problem into knowns and unknowns first.'
+            : 'Start the local backend (`python3 version1/server.py`) for live Ollama responses.',
+        hintChip: 'Offline Demo Fallback',
+      };
+    }
+  }
+  renderChat();
 }
 
 /* ==========================================================================
@@ -279,41 +322,61 @@ function renderDocuments() {
     .join('');
 }
 
-function addSimulatedDocument(fileOrName, attachToChat = false) {
-  const filename = typeof fileOrName === 'string' ? fileOrName : fileOrName.name;
+async function addSimulatedDocument(fileOrName, attachToChat = false) {
+  const isFileObj = typeof fileOrName === 'object' && fileOrName instanceof File;
+  const filename = isFileObj ? fileOrName.name : String(fileOrName);
   const sizeStr =
-    typeof fileOrName === 'object' && fileOrName.size
+    isFileObj && fileOrName.size
       ? `${Math.max(0.1, fileOrName.size / (1024 * 1024)).toFixed(1)} MB`
       : '1.9 MB';
 
-  state.documents.unshift({
+  const docObj = {
     id: `d-${Date.now()}`,
     topic: 'Uploaded note',
     formula: filename.replace(/\.[^/.]+$/, ''),
     title: filename,
-    pages: 8,
+    pages: 1,
     size: sizeStr,
     subject: 'Physics',
     mode: state.uploadPipeline,
     status: 'processing',
-    progress: 40,
-    eta: '1 min left',
+    progress: 45,
+    eta: 'indexing…',
     isBangla: false,
-  });
+  };
+  state.documents.unshift(docObj);
   renderDocuments();
-  showToast(`Indexing "${filename}" locally via ${state.uploadPipeline}...`);
+  showToast(`Indexing "${filename}" locally via ${state.uploadPipeline}…`);
+
+  if (isFileObj) {
+    try {
+      const form = new FormData();
+      form.append('file', fileOrName);
+      form.append('pipeline', state.uploadPipeline);
+      const res = await fetch('/api/upload', { method: 'POST', body: form });
+      if (res.ok) {
+        const data = await res.json();
+        docObj.pages = data.pages || 1;
+        docObj.size = data.size || sizeStr;
+        if (data.has_image && data.image_base64) {
+          state.attachedImageBase64 = data.image_base64;
+          state.attachedFilename = filename;
+        }
+      }
+    } catch {
+      // fallback to local preview if backend is not running
+    }
+  }
+
+  docObj.status = 'indexed';
+  docObj.progress = 100;
+  renderDocuments();
+  showToast(`"${filename}" indexed on-device`);
 
   if (attachToChat) {
     document.getElementById('uploadModal').classList.remove('open');
-    sendChatMessage(`Uploaded "${filename}" (${state.uploadPipeline}). Help me study this.`);
+    sendChatMessage(`I uploaded "${filename}". Give me a quick guide or summary of what is in it.`);
   }
-
-  setTimeout(() => {
-    state.documents[0].status = 'indexed';
-    state.documents[0].progress = 100;
-    renderDocuments();
-    showToast(`"${filename}" indexed on-device`);
-  }, 1800);
 }
 
 /* ==========================================================================
@@ -464,6 +527,187 @@ function renderCommandResults(query = '') {
 }
 
 /* ==========================================================================
+   Model Manager & Whisper Voice Input
+   ========================================================================== */
+function updateActiveModelLabels() {
+  document.getElementById('activeTextModelLabel').textContent = state.activeModel;
+  document.getElementById('activeVisionModelLabel').textContent = state.activeVisionModel;
+  document.getElementById('sidebarActiveModel').textContent = state.activeModel;
+  const welcomeModelBtn = document.getElementById('btnWelcomeModel');
+  if (welcomeModelBtn) {
+    welcomeModelBtn.querySelector('span').textContent = state.activeModel;
+  }
+}
+
+async function loadModels() {
+  const tbody = document.getElementById('installedModelsTbody');
+  const grid = document.getElementById('suggestedModelsGrid');
+  if (!tbody || !grid) return;
+
+  try {
+    const res = await fetch('/api/models');
+    if (!res.ok) throw new Error('Backend offline');
+    const data = await res.json();
+
+    document.getElementById('sidebarRuntimeStatus').textContent = 'Ollama Live';
+    if (data.whisper) {
+      document.getElementById('whisperStatusLabel').textContent = data.whisper.installed
+        ? `${data.whisper.name} (${data.whisper.size} · Ready)`
+        : `${data.whisper.name} (Not downloaded)`;
+    }
+
+    tbody.innerHTML = data.installed
+      .map((m) => {
+        const isActiveText = m.name === state.activeModel;
+        const isActiveVision = m.name === state.activeVisionModel;
+        return `
+          <tr>
+            <td style="font-weight: 500;">${m.name}</td>
+            <td>
+              <span class="status-dot-inline ${m.is_vision ? 'blue' : 'green'}">${m.is_vision ? 'Vision + Text' : 'Text'}</span>
+            </td>
+            <td class="mono">${m.size}</td>
+            <td style="display:flex; gap:8px; align-items:center;">
+              <button data-slot="button" data-size="sm" data-variant="${isActiveText ? 'default' : 'outline'}" class="btn-set-text-model" data-model="${m.name}" type="button">
+                ${isActiveText ? 'Active Text' : 'Use Text'}
+              </button>
+              ${
+                m.is_vision
+                  ? `<button data-slot="button" data-size="sm" data-variant="${isActiveVision ? 'default' : 'outline'}" class="btn-set-vision-model" data-model="${m.name}" type="button">
+                      ${isActiveVision ? 'Active Vision' : 'Use Vision'}
+                    </button>`
+                  : ''
+              }
+              <button data-slot="button" data-size="sm" data-variant="ghost" class="btn-delete-model" data-model="${m.name}" type="button" title="Remove model">
+                <i class="bx bx-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      })
+      .join('');
+
+    grid.innerHTML = data.suggestions
+      .map(
+        (s) => `
+        <div class="model-suggest-card">
+          <div class="model-suggest-head">
+            <div>
+              <div style="font-weight: 600; font-size: 14px;">${s.title}</div>
+              <div class="mono" style="font-size: 11.5px; color: var(--text-muted);">${s.name} · ${s.size} · ${s.ram}</div>
+            </div>
+            ${
+              s.installed
+                ? `<span data-slot="badge" data-variant="secondary"><i class="bx bx-check"></i> Installed</span>`
+                : `<button data-slot="button" data-size="sm" data-variant="default" class="btn-pull-model" data-model="${s.name}" type="button">
+                    <i class="bx bx-download"></i> Download
+                  </button>`
+            }
+          </div>
+          <div style="font-size: 12.5px; color: var(--text-secondary);">${s.description}</div>
+          <div class="model-tags-row">
+            ${s.tags.map((t) => `<span class="model-tag">${t}</span>`).join('')}
+          </div>
+          <div class="mono pull-status" id="pull-status-${s.name.replace(/[^a-zA-Z0-9]/g, '_')}" style="font-size: 11px; color: var(--teal-400); display:none;"></div>
+        </div>
+      `
+      )
+      .join('');
+  } catch {
+    document.getElementById('sidebarRuntimeStatus').textContent = 'Demo Mode';
+    tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted);">Start local server (<code>python3 version1/server.py</code>) to manage Ollama models.</td></tr>`;
+  }
+}
+
+async function pullOllamaModel(modelName, btn) {
+  const statusEl = document.getElementById(`pull-status-${modelName.replace(/[^a-zA-Z0-9]/g, '_')}`);
+  if (btn) btn.disabled = true;
+  if (statusEl) {
+    statusEl.style.display = 'block';
+    statusEl.textContent = `Starting download for ${modelName}…`;
+  }
+  showToast(`Downloading ${modelName} via Ollama…`);
+
+  try {
+    const res = await fetch('/api/models/pull', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: modelName }),
+    });
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const lines = decoder.decode(value).trim().split('\n');
+      const last = lines[lines.length - 1];
+      try {
+        const obj = JSON.parse(last);
+        if (obj.total && obj.completed && statusEl) {
+          const pct = Math.round((obj.completed / obj.total) * 100);
+          statusEl.textContent = `${obj.status || 'Downloading'} · ${pct}%`;
+        } else if (obj.status && statusEl) {
+          statusEl.textContent = obj.status;
+        }
+      } catch {}
+    }
+    showToast(`${modelName} downloaded!`);
+    await loadModels();
+  } catch (err) {
+    showToast(`Failed to download ${modelName}`);
+    if (btn) btn.disabled = false;
+  }
+}
+
+let mediaRecorder = null;
+let audioChunks = [];
+
+async function toggleVoiceRecording() {
+  const micBtn = document.getElementById('btnChatVoice');
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    micBtn.classList.remove('recording');
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+    };
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const form = new FormData();
+      form.append('file', blob, 'voice.webm');
+      showToast('Transcribing with local Whisper…');
+      try {
+        const res = await fetch('/api/transcribe', { method: 'POST', body: form });
+        if (!res.ok) throw new Error('Transcription failed');
+        const data = await res.json();
+        if (data.text) {
+          const input = state.chatStarted
+            ? document.getElementById('chatInput')
+            : document.getElementById('welcomeInput');
+          input.value = data.text;
+          input.focus();
+          showToast(`Transcribed (${data.language}) in ${data.latency_s}s`);
+        }
+      } catch {
+        showToast('Whisper transcription requires running version1/server.py');
+      }
+    };
+    mediaRecorder.start();
+    micBtn.classList.add('recording');
+    showToast('Recording… click mic again to transcribe');
+  } catch {
+    showToast('Microphone permission denied or unavailable');
+  }
+}
+
+/* ==========================================================================
    Event Wiring
    ========================================================================== */
 function init() {
@@ -566,8 +810,42 @@ function init() {
   document.getElementById('btnWelcomeScan').addEventListener('click', () => uploadModal.classList.add('open'));
   document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));
   document.getElementById('btnCloseUploadX').addEventListener('click', () => uploadModal.classList.remove('open'));
-  document.getElementById('btnChatVoice').addEventListener('click', () => {
-    showToast('Whisper offline voice input is planned in Phase 2');
+  document.getElementById('btnChatVoice').addEventListener('click', toggleVoiceRecording);
+  document.getElementById('btnWelcomeModel').addEventListener('click', () => {
+    switchScreen('settings');
+    loadModels();
+  });
+  document.getElementById('btnRefreshModels').addEventListener('click', loadModels);
+
+  document.getElementById('installedModelsTbody').addEventListener('click', async (e) => {
+    const txtBtn = e.target.closest('.btn-set-text-model');
+    if (txtBtn) {
+      state.activeModel = txtBtn.dataset.model;
+      updateActiveModelLabels();
+      loadModels();
+      showToast(`Active Text LLM: ${state.activeModel}`);
+      return;
+    }
+    const visBtn = e.target.closest('.btn-set-vision-model');
+    if (visBtn) {
+      state.activeVisionModel = visBtn.dataset.model;
+      updateActiveModelLabels();
+      loadModels();
+      showToast(`Active Vision Model: ${state.activeVisionModel}`);
+      return;
+    }
+    const delBtn = e.target.closest('.btn-delete-model');
+    if (delBtn) {
+      const name = delBtn.dataset.model;
+      await fetch(`/api/models/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      showToast(`Removed ${name}`);
+      loadModels();
+    }
+  });
+
+  document.getElementById('suggestedModelsGrid').addEventListener('click', (e) => {
+    const pullBtn = e.target.closest('.btn-pull-model');
+    if (pullBtn) pullOllamaModel(pullBtn.dataset.model, pullBtn);
   });
 
   // Pipeline toggles (Documents & Upload Modal)
@@ -770,6 +1048,8 @@ function init() {
   });
 
   // Initial Render
+  updateActiveModelLabels();
+  loadModels();
   renderChat();
   renderSnippets();
   renderDocuments();

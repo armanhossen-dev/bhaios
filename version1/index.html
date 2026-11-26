@@ -102,10 +102,10 @@
 
         <div class="device-status">
           <div class="status-green"><i class="bx bx-check"></i> All data stays on this device</div>
-          <div class="model-name">Qwen2.5 · 3B · Q4</div>
+          <div class="model-name" id="sidebarActiveModel">qwen2.5:3b</div>
           <div class="ram-line">
-            <span><i class="bx bxs-circle dot-ready" style="font-size: 8px;"></i> Ready</span>
-            <span>RAM 3.2 / 8 GB</span>
+            <span><i class="bx bxs-circle dot-ready" style="font-size: 8px;"></i> <span id="sidebarRuntimeStatus">Ready</span></span>
+            <span>RAM 16 GB</span>
           </div>
         </div>
       </div>
@@ -548,36 +548,66 @@
       </section>
 
       <!-- ===================================================================
-           SCREEN 6 — SETTINGS
+           SCREEN 6 — SETTINGS & LOCAL MODEL MANAGER
            =================================================================== -->
       <section class="screen" id="screen-settings">
         <div class="screen-scroll">
-          <div class="screen-subtitle" style="margin-bottom: 22px;">Local model, privacy, and workspace preferences.</div>
-          <div class="pipeline-card" style="max-width: 640px;">
-            <div class="serif" style="font-size: 24px;">Local Runtime Configuration</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid var(--border-hairline);">
-              <div>
-                <div style="font-weight: 500;">Active Language Model</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">Runs offline via Ollama / llama.cpp (Q4_K_M)</div>
+          <div class="screen-header-row">
+            <span class="screen-subtitle">Manage local Ollama LLMs, Vision-Language models, and Whisper voice.</span>
+            <button data-slot="button" data-variant="outline" id="btnRefreshModels" type="button">
+              <i class="bx bx-refresh"></i> Refresh models
+            </button>
+          </div>
+
+          <div class="bento-shell" style="margin-bottom: 22px;">
+            <div class="pipeline-grid">
+              <div class="pipeline-card">
+                <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">ACTIVE TEXT LLM</div>
+                <div class="serif" style="font-size: 20px;" id="activeTextModelLabel">qwen2.5:3b</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary);">Used for Guide Mode hints, Bangla/English Q&amp;A, and summaries.</div>
               </div>
-              <span class="mono" style="font-size: 12px; color: var(--teal-400);">Qwen2.5 · 3B · Q4</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid var(--border-hairline);">
-              <div>
-                <div style="font-weight: 500;">Active Vision-Language Model</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">Used for handwritten Bangla notes &amp; diagrams</div>
+              <div class="pipeline-card">
+                <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">ACTIVE VISION MODEL (VLM)</div>
+                <div class="serif" style="font-size: 20px;" id="activeVisionModelLabel">llava-phi3:latest</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary);">Used automatically when you upload handwritten notes or diagrams.</div>
               </div>
-              <span class="mono" style="font-size: 12px; color: var(--teal-400);">Qwen2.5-VL · 3B</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0;">
-              <div>
-                <div style="font-weight: 500;">Strict Offline Mode</div>
-                <div style="font-size: 12px; color: var(--text-secondary);">Block all outbound network calls</div>
+            <div style="padding: 14px 24px; display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; align-items:center; gap:18px;">
+                <span style="font-size: 13px; font-weight: 500;">Voice Input: <span class="mono" style="color: var(--success);" id="whisperStatusLabel">whisper-base (139 MB · Ready)</span></span>
+                <span style="font-size: 13px; font-weight: 500;">Strict Offline Mode</span>
               </div>
               <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" id="switchOfflineMode" type="button">
                 <span data-slot="switch-thumb"></span>
               </button>
             </div>
+          </div>
+
+          <div class="bench-table-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+              <div>
+                <h2 class="serif" style="font-size: 20px;">Installed Local Models</h2>
+                <p style="font-size: 12px; color: var(--text-secondary);">Stored locally via Ollama. Excluded from Git via <code>.gitignore</code>.</p>
+              </div>
+            </div>
+            <table class="bench-table">
+              <thead>
+                <tr>
+                  <th>MODEL</th><th>TYPE</th><th>SIZE</th><th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="installedModelsTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="bench-table-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
+              <div>
+                <h2 class="serif" style="font-size: 20px;">Recommended Models to Download</h2>
+                <p style="font-size: 12px; color: var(--text-secondary);">Curated for 16 GB RAM Apple Silicon &amp; standard laptops.</p>
+              </div>
+            </div>
+            <div class="model-suggestions-grid" id="suggestedModelsGrid"></div>
           </div>
         </div>
       </section>
