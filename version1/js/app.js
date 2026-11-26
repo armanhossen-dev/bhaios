@@ -353,9 +353,10 @@ function renderChat() {
       const group = document.createElement('div');
       group.className = 'msg-assistant-group';
       const paragraphs = [msg.bangla, msg.english].filter(Boolean);
+      const hasBn = paragraphs.some((p) => /[\u0980-\u09FF]/.test(p));
       const copyText = paragraphs.join('\n\n').replace(/"/g, '&quot;');
       group.innerHTML = `
-        <div class="msg-assistant-prose ${msg.bangla ? 'bangla' : ''}">
+        <div class="msg-assistant-prose ${hasBn ? 'bangla' : ''}">
           ${paragraphs.map((p) => `<p>${p}</p>`).join('')}
         </div>
         <div class="msg-assistant-meta">

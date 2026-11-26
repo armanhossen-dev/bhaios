@@ -45,6 +45,9 @@ button {
 .bangla {
   font-family: var(--font-bangla);
   line-height: 1.75;
+  letter-spacing: 0 !important;
+  font-feature-settings: "kern" 1, "liga" 1, "clig" 1;
+  text-rendering: optimizeLegibility;
 }
 
 .bangla-serif,
@@ -54,6 +57,9 @@ button {
 .serif.bangla {
   font-family: var(--font-bangla-serif);
   line-height: 1.55;
+  letter-spacing: 0 !important;
+  font-feature-settings: "kern" 1, "liga" 1, "clig" 1;
+  text-rendering: optimizeLegibility;
 }
 
 .mono {

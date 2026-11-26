@@ -8,9 +8,11 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import subprocess
 import tempfile
 import time
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -104,15 +106,23 @@ GUIDE_SYSTEM_PROMPT = """You are BhaiOS, a warm, supportive "big brother" study 
 You are in GUIDE-FIRST MODE:
 1. NEVER give the final direct answer or complete solved homework immediately.
 2. Give a helpful hint, break the problem into one small step, or ask a guiding Socratic question so the student thinks and solves it themselves.
-3. If the student asks in Bangla (or asks for Bangla), respond naturally in clear Bangla (and/or English if helpful).
+3. If the student asks in Bangla (or asks for Bangla), write in clean, grammatically correct standard Unicode Bengali (শুদ্ধ বাংলা). Never invent non-existent Bangla words or broken spellings.
 4. Keep your response concise (2-4 sentences) and encouraging.
 5. Ground your hints in the student's uploaded notes when provided."""
 
 ANSWER_SYSTEM_PROMPT = """You are BhaiOS, a local-first study assistant for Bangladeshi university students.
 You are in DIRECT ANSWER MODE:
 1. Give a clear, accurate, step-by-step explanation and direct answer.
-2. Respond in the same language the student uses (Bangla or English).
+2. Respond in the same language the student uses (clean, standard Unicode Bangla or English).
 3. Ground your answer in the student's uploaded notes when provided."""
+
+
+def clean_bangla_text(text: str) -> str:
+    text = unicodedata.normalize("NFC", text)
+    # Collapse repeated virama (hasanta) and remove orphaned combining marks after spaces
+    text = re.sub(r"্{2,}", "্", text)
+    text = re.sub(r"(^|\s)[া-ৌ্ংঃঁ]+", r"\1", text)
+    return text.strip()
 
 
 def get_whisper():
@@ -353,7 +363,7 @@ async def chat(req: ChatRequest) -> dict[str, Any]:
         raise HTTPException(status_code=502, detail=f"Ollama error ({target_model}): {exc}")
 
     elapsed = round(time.perf_counter() - t0, 1)
-    reply_text = data.get("message", {}).get("content", "").strip()
+    reply_text = clean_bangla_text(data.get("message", {}).get("content", ""))
     prompt_tok = int(data.get("prompt_eval_count", 0) or 0)
     eval_tok = int(data.get("eval_count", 0) or 0)
     return {
