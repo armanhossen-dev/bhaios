@@ -1217,6 +1217,7 @@ i.bx {
 }
 
 .chat-main {
+  position: relative;
   flex: 1;
   min-width: 0;
   display: flex;
@@ -1875,19 +1876,50 @@ i.bx {
   padding: 10px 16px 16px;
   display: flex;
   flex-direction: column;
-  transition: width 0.2s ease, padding 0.2s ease;
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), padding 0.22s ease, opacity 0.2s ease;
 }
 
 .context-panel.collapsed {
-  width: 52px;
-  min-width: 52px;
-  padding: 10px 8px;
-  align-items: center;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  border-left: none !important;
+  overflow: hidden !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.context-panel.collapsed .right-time-card,
-.context-panel.collapsed .context-body {
-  display: none;
+.btn-open-context {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: all 0.15s ease;
+}
+
+.btn-open-context:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.btn-open-context i {
+  font-size: 16px;
+  color: var(--teal-400);
 }
 
 .context-header {

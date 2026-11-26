@@ -206,6 +206,10 @@
       <section class="screen active" id="screen-chat">
         <div class="chat-layout">
           <div class="chat-main">
+            <button class="btn-open-context" id="btnOpenContext" type="button" title="Open right sidebar" aria-label="Open right sidebar" style="display: none;">
+              <i class="bx bx-dock-right"></i>
+              <span>Panel</span>
+            </button>
             <!-- Empty / Welcome State (Screenshot 2 style) -->
             <div class="chat-welcome" id="chatWelcome">
               <h2 class="welcome-greeting" id="welcomeGreeting">Hi Arman, How can I help you today?</h2>
@@ -376,9 +380,9 @@
                   })();
                 </script>
               </div>
-              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel"
-                aria-label="Toggle right panel">
-                <i class="bx bx-chevron-right"></i>
+              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Close right sidebar"
+                aria-label="Close right sidebar">
+                <i class="bx bx-x"></i>
               </button>
             </div>
 

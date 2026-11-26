@@ -1943,14 +1943,33 @@ function init() {
     if (e.key === 'Enter') sendChatMessage();
   });
 
-  // Right Panel Collapse, Notifications & Uploaded Files
-  document.getElementById('btnToggleContext').addEventListener('click', () => {
-    const panel = document.getElementById('contextPanel');
-    panel.classList.toggle('collapsed');
-    document.getElementById('btnToggleContext').innerHTML = panel.classList.contains('collapsed')
-      ? '<i class="bx bx-chevron-left"></i>'
-      : '<i class="bx bx-chevron-right"></i>';
+  // Right Panel Close & Reopen (with state persistence)
+  const contextPanel = document.getElementById('contextPanel');
+  const btnToggleContext = document.getElementById('btnToggleContext');
+  const btnOpenContext = document.getElementById('btnOpenContext');
+
+  const setRightPanelClosed = (isClosed) => {
+    if (!contextPanel) return;
+    contextPanel.classList.toggle('collapsed', isClosed);
+    if (btnOpenContext) {
+      btnOpenContext.style.display = isClosed ? 'inline-flex' : 'none';
+    }
+    localStorage.setItem('bhaios_right_panel_closed', String(isClosed));
+  };
+
+  btnToggleContext?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setRightPanelClosed(true);
   });
+
+  btnOpenContext?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setRightPanelClosed(false);
+  });
+
+  if (localStorage.getItem('bhaios_right_panel_closed') === 'true') {
+    setRightPanelClosed(true);
+  }
 
   document.getElementById('btnClearNotifications')?.addEventListener('click', () => {
     state.notifications = [];
