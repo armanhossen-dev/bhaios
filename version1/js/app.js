@@ -15,6 +15,7 @@ import {
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
+  chatStarted: false,
   messages: [...INITIAL_MESSAGES],
   documents: [...DOCUMENTS_DATA],
   tasks: [...INITIAL_TASKS],
@@ -71,56 +72,57 @@ function switchScreen(screenName) {
 }
 
 /* ==========================================================================
-   Chat Screen
+   Chat Screen (Welcome State + Active Pill/Prose Conversation)
    ========================================================================== */
 function renderChat() {
+  const welcomeEl = document.getElementById('chatWelcome');
+  const activeEl = document.getElementById('chatActiveWrap');
+
+  if (!state.chatStarted) {
+    welcomeEl.style.display = 'flex';
+    activeEl.style.display = 'none';
+    return;
+  }
+
+  welcomeEl.style.display = 'none';
+  activeEl.style.display = 'flex';
+
   const container = document.getElementById('chatMessages');
   container.innerHTML = '';
 
   state.messages.forEach((msg) => {
     if (msg.role === 'student') {
-      const div = document.createElement('div');
-      if (msg.bangla) {
-        div.className = 'student-bubble';
-        div.innerHTML = `
-          <div class="student-bubble-bn">${msg.bangla}</div>
-          <div class="student-bubble-en">${msg.english}</div>
-        `;
-      } else {
-        div.className = 'student-reply-simple';
-        div.textContent = msg.english;
-      }
-      container.appendChild(div);
-    } else if (msg.role === 'assistant') {
-      const head = document.createElement('div');
-      head.className = 'assistant-header';
-      head.innerHTML = `
-        <span class="assistant-name"><i class="bx bx-compass"></i> BhaiOS</span>
-        <span class="assistant-sub">${
-          msg.mode === 'answer'
-            ? 'Answer Mode · Direct explanation'
-            : "Guide Mode · Let’s work it out together"
-        }</span>
-      `;
-      container.appendChild(head);
-
-      const card = document.createElement('div');
-      card.className = 'hint-card';
-      card.innerHTML = `
-        ${msg.bangla ? `<div class="hint-card-bn">${msg.bangla}</div>` : ''}
-        <div class="hint-card-en">${msg.english}</div>
-        <div class="hint-card-actions">
-          <span class="hint-chip">${msg.hintChip || 'Hint'}</span>
-          <button class="link-source" data-source="${msg.sourceId || 's1'}" type="button">Show source <i class="bx bx-link-external"></i></button>
+      const group = document.createElement('div');
+      group.className = 'msg-user-group';
+      const text = msg.bangla && msg.english ? `${msg.bangla} — ${msg.english}` : msg.bangla || msg.english;
+      group.innerHTML = `
+        <div class="msg-user-pill ${msg.bangla ? 'bangla' : ''}">${text}</div>
+        <div class="msg-actions">
+          <button class="msg-action-btn copy-msg-btn" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
+          <button class="msg-action-btn edit-msg-btn" type="button" title="Edit"><i class="bx bx-pencil"></i></button>
         </div>
-        <div class="hint-card-meta">${msg.meta || 'Grounded in local notes · 6.4s'}</div>
       `;
-      container.appendChild(card);
-    } else if (msg.role === 'assistant-inline') {
-      const note = document.createElement('div');
-      note.className = 'assistant-inline-note';
-      note.textContent = msg.english;
-      container.appendChild(note);
+      container.appendChild(group);
+    } else if (msg.role === 'assistant' || msg.role === 'assistant-inline') {
+      const group = document.createElement('div');
+      group.className = 'msg-assistant-group';
+      const paragraphs = [msg.bangla, msg.english].filter(Boolean);
+      const copyText = paragraphs.join('\n\n').replace(/"/g, '&quot;');
+      group.innerHTML = `
+        <div class="msg-assistant-prose ${msg.bangla ? 'bangla' : ''}">
+          ${paragraphs.map((p) => `<p>${p}</p>`).join('')}
+        </div>
+        <div class="msg-assistant-meta">
+          <div class="msg-actions" style="padding: 0;">
+            <button class="msg-action-btn copy-msg-btn" data-text="${copyText}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
+            <button class="msg-action-btn regen-msg-btn" type="button" title="Regenerate"><i class="bx bx-refresh"></i></button>
+            <button class="msg-action-btn" type="button" title="More"><i class="bx bx-dots-horizontal-rounded"></i></button>
+          </div>
+          ${msg.hintChip ? `<span class="hint-chip">${msg.hintChip}</span>` : ''}
+          ${msg.sourceId ? `<button class="link-source" data-source="${msg.sourceId}" type="button">Show source <i class="bx bx-link-external"></i></button>` : ''}
+        </div>
+      `;
+      container.appendChild(group);
     }
   });
 
@@ -162,12 +164,20 @@ function setChatMode(mode) {
   aBtn.className = `mode-btn ${mode === 'answer' ? 'active-answer' : ''}`;
   document.getElementById('sidebarModeLabel').textContent =
     mode === 'guide' ? 'Guide Mode is on' : 'Answer Mode is on';
+  const effortLabel = document.getElementById('effortLabel');
+  if (effortLabel) effortLabel.textContent = mode === 'guide' ? 'Guide Mode' : 'Answer Mode';
 }
 
-function sendChatMessage() {
+function sendChatMessage(customText) {
   const input = document.getElementById('chatInput');
-  const text = input.value.trim();
+  const welcomeInput = document.getElementById('welcomeInput');
+  const text = (customText ?? (state.chatStarted ? input.value : welcomeInput.value)).trim();
   if (!text) return;
+
+  if (!state.chatStarted) {
+    state.chatStarted = true;
+    state.messages = [];
+  }
 
   const hasBangla = /[\u0980-\u09FF]/.test(text);
   state.messages.push({
@@ -177,6 +187,7 @@ function sendChatMessage() {
     english: hasBangla ? '' : text,
   });
   input.value = '';
+  welcomeInput.value = '';
   renderChat();
 
   setTimeout(() => {
@@ -404,20 +415,35 @@ function init() {
   });
 
   document.getElementById('btnNewChat').addEventListener('click', () => {
+    state.chatStarted = false;
     switchScreen('chat');
-    document.getElementById('chatInput').focus();
+    renderChat();
+    document.getElementById('welcomeInput').focus();
     showToast('Started a fresh study session');
+  });
+
+  // Welcome screen interactions
+  document.getElementById('btnWelcomeSend').addEventListener('click', () => sendChatMessage());
+  document.getElementById('welcomeInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendChatMessage();
+  });
+  document.getElementById('btnWelcomeScan').addEventListener('click', () => switchScreen('documents'));
+  document.querySelectorAll('.suggestion-pill').forEach((pill) => {
+    pill.addEventListener('click', () => sendChatMessage(pill.dataset.prompt));
   });
 
   // Chat Mode Switch
   document.getElementById('btnModeGuide').addEventListener('click', () => setChatMode('guide'));
   document.getElementById('btnModeAnswer').addEventListener('click', () => setChatMode('answer'));
+  document.getElementById('btnEffortMode').addEventListener('click', () => {
+    setChatMode(state.chatMode === 'guide' ? 'answer' : 'guide');
+  });
   document.getElementById('sidebarModePill').addEventListener('click', () => {
     setChatMode(state.chatMode === 'guide' ? 'answer' : 'guide');
   });
 
   // Chat Send
-  document.getElementById('btnSend').addEventListener('click', sendChatMessage);
+  document.getElementById('btnSend').addEventListener('click', () => sendChatMessage());
   document.getElementById('chatInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
   });
@@ -442,11 +468,17 @@ function init() {
   });
 
   document.getElementById('chatMessages').addEventListener('click', (e) => {
-    const btn = e.target.closest('.link-source');
-    if (btn) {
-      state.highlightedSnippet = btn.dataset.source;
+    const srcBtn = e.target.closest('.link-source');
+    if (srcBtn) {
+      state.highlightedSnippet = srcBtn.dataset.source;
       renderSnippets();
       showToast('Highlighted local source in context panel');
+      return;
+    }
+    const copyBtn = e.target.closest('.copy-msg-btn');
+    if (copyBtn && navigator.clipboard) {
+      navigator.clipboard.writeText(copyBtn.dataset.text || '');
+      showToast('Copied to clipboard');
     }
   });
 
