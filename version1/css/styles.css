@@ -1198,6 +1198,15 @@ i.bx {
   margin: 0;
 }
 
+.btn-send-circle.is-stop {
+  background: var(--text-primary);
+  color: var(--bg-main);
+}
+
+.btn-send-circle.is-stop:hover {
+  background: var(--text-secondary);
+}
+
 .suggestion-pills {
   margin-top: 16px;
   display: flex;

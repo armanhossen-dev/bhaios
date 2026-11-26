@@ -11,7 +11,7 @@ import {
   SUBJECT_FOCUS,
   BENCHMARK_METRICS,
 } from './data.js';
-import { phoneticToBangla, getAvroSuggestions, AI_STUDY_PROMPTS_BN } from './avro.js';
+import { phoneticToBangla, getAvroSuggestions } from './avro.js';
 
 const state = {
   screen: 'chat',
@@ -45,6 +45,8 @@ const state = {
   snippetQuery: '',
   highlightedSnippet: null,
   notifications: [],
+  isGenerating: false,
+  abortController: null,
 };
 
 const SCREEN_TITLES = {
@@ -189,8 +191,8 @@ function updateAvroBar(input, barEl) {
   const word = getLastWord(val);
   const phoneticChips = getAvroSuggestions(word);
 
-  barEl.style.display = 'flex';
   if (phoneticChips.length) {
+    barEl.style.display = 'flex';
     barEl.innerHTML = phoneticChips
       .map(
         (w, i) =>
@@ -198,15 +200,11 @@ function updateAvroBar(input, barEl) {
       )
       .join('') + `<span class="mono" style="font-size:10.5px;color:var(--text-muted);margin-left:4px;">Space/Tab</span>`;
   } else {
-    barEl.innerHTML = AI_STUDY_PROMPTS_BN.slice(0, 3)
-      .map(
-        (p) =>
-          `<button class="avro-chip ai" data-ai-prompt="${p}" type="button"><i class="bx bx-sparkles"></i> ${p}</button>`
-      )
-      .join('');
+    barEl.style.display = 'none';
+    barEl.innerHTML = '';
   }
 
-  // Fetch live AI suggestions when user has typed >= 4 chars and pauses
+  // Fetch live AI suggestions only when user has typed >= 4 chars and pauses
   clearTimeout(aiSuggestTimer);
   if (val.trim().length >= 4 && !word) {
     aiSuggestTimer = setTimeout(async () => {
@@ -218,7 +216,8 @@ function updateAvroBar(input, barEl) {
         });
         if (!res.ok) return;
         const data = await res.json();
-        if (data.suggestions?.length && state.avroEnabled) {
+        if (data.suggestions?.length && state.avroEnabled && input.value.trim().length >= 4) {
+          barEl.style.display = 'flex';
           barEl.innerHTML = data.suggestions
             .map(
               (s) =>
@@ -453,7 +452,14 @@ function setChatMode(mode) {
   if (effortLabel) effortLabel.textContent = mode === 'guide' ? 'Guide Mode' : 'Answer Mode';
 }
 
+function stopChatGeneration() {
+  if (state.abortController) {
+    state.abortController.abort();
+  }
+}
+
 async function sendChatMessage(customText) {
+  if (state.isGenerating) return;
   const input = document.getElementById('chatInput');
   const welcomeInput = document.getElementById('welcomeInput');
   const text = (customText ?? (state.chatStarted ? input.value : welcomeInput.value)).trim();
@@ -485,6 +491,8 @@ async function sendChatMessage(customText) {
 
   input.value = '';
   welcomeInput.value = '';
+  state.isGenerating = true;
+  state.abortController = new AbortController();
   syncSendButtons();
   renderChat();
 
@@ -500,6 +508,7 @@ async function sendChatMessage(customText) {
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: state.abortController.signal,
       body: JSON.stringify({
         message: text,
         mode: state.chatMode,
@@ -545,17 +554,32 @@ async function sendChatMessage(customText) {
   } catch (err) {
     const idx = state.messages.findIndex((m) => m.id === pendingId);
     if (idx !== -1) {
-      state.messages[idx] = {
-        id: `a-${Date.now()}`,
-        role: 'assistant',
-        mode: state.chatMode,
-        english:
-          state.chatMode === 'guide'
-            ? 'Start the local backend (`python3 version1/server.py`) for live Ollama answers. Hint: break the problem into knowns and unknowns first.'
-            : 'Start the local backend (`python3 version1/server.py`) for live Ollama responses.',
-        hintChip: 'Offline Demo Fallback',
-      };
+      if (err && err.name === 'AbortError') {
+        state.messages[idx] = {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          mode: state.chatMode,
+          english: 'Stopped.',
+          hintChip: 'Stopped',
+        };
+        showToast('Generation stopped');
+      } else {
+        state.messages[idx] = {
+          id: `a-${Date.now()}`,
+          role: 'assistant',
+          mode: state.chatMode,
+          english:
+            state.chatMode === 'guide'
+              ? 'Start the local backend (`python3 version1/server.py`) for live Ollama answers. Hint: break the problem into knowns and unknowns first.'
+              : 'Start the local backend (`python3 version1/server.py`) for live Ollama responses.',
+          hintChip: 'Offline Demo Fallback',
+        };
+      }
     }
+  } finally {
+    state.isGenerating = false;
+    state.abortController = null;
+    syncSendButtons();
   }
   renderChat();
 }
@@ -1191,8 +1215,26 @@ async function pullOllamaModel(modelName, btn) {
 function syncSendButtons() {
   const wVal = (document.getElementById('welcomeInput')?.value || '').trim();
   const cVal = (document.getElementById('chatInput')?.value || '').trim();
-  document.getElementById('btnWelcomeSend')?.classList.toggle('is-hidden', wVal.length === 0);
-  document.getElementById('btnSend')?.classList.toggle('is-hidden', cVal.length === 0);
+  const btns = [
+    [document.getElementById('btnWelcomeSend'), wVal.length === 0],
+    [document.getElementById('btnSend'), cVal.length === 0],
+  ];
+  for (const [btn, isEmpty] of btns) {
+    if (!btn) continue;
+    if (state.isGenerating) {
+      btn.classList.remove('is-hidden');
+      btn.classList.add('is-stop');
+      btn.setAttribute('aria-label', 'Stop generating');
+      btn.title = 'Stop generating';
+      btn.innerHTML = '<i class="bx bx-stop"></i>';
+    } else {
+      btn.classList.remove('is-stop');
+      btn.classList.toggle('is-hidden', isEmpty);
+      btn.setAttribute('aria-label', 'Send message');
+      btn.title = 'Send message';
+      btn.innerHTML = '<i class="bx bx-up-arrow-alt"></i>';
+    }
+  }
 }
 
 function cycleVoiceLang() {
@@ -1411,7 +1453,10 @@ function init() {
   attachAvroHandlers('chatInput', 'chatAvroBar');
 
   // Welcome screen interactions
-  document.getElementById('btnWelcomeSend').addEventListener('click', () => sendChatMessage());
+  document.getElementById('btnWelcomeSend').addEventListener('click', () => {
+    if (state.isGenerating) stopChatGeneration();
+    else sendChatMessage();
+  });
   document.getElementById('welcomeInput').addEventListener('input', syncSendButtons);
   document.getElementById('welcomeInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
@@ -1504,7 +1549,10 @@ function init() {
   });
 
   // Chat Send
-  document.getElementById('btnSend').addEventListener('click', () => sendChatMessage());
+  document.getElementById('btnSend').addEventListener('click', () => {
+    if (state.isGenerating) stopChatGeneration();
+    else sendChatMessage();
+  });
   document.getElementById('chatInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
   });
