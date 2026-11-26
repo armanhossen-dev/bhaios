@@ -2160,7 +2160,7 @@ i.bx {
 .rhythm-bar {
   width: 34px;
   border-radius: 6px 6px 2px 2px;
-  background: #B9CED3;
+  background: rgba(59, 130, 246, 0.25);
   transition: height 0.25s ease;
 }
 

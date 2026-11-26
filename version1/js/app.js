@@ -75,7 +75,7 @@ function switchScreen(screenName) {
 
   if (state.themePref === 'system') {
     const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.documentElement.setAttribute('data-theme', screenName === 'progress' ? 'light' : sysDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', sysDark ? 'dark' : 'light');
   } else {
     document.documentElement.setAttribute('data-theme', state.themePref);
   }
