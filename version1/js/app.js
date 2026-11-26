@@ -22,6 +22,7 @@ const state = {
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
+  questionsCount: Number(localStorage.getItem('bhaios_questions') || 0),
   sessionTokens: { prompt: 0, completion: 0, total: 0 },
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
@@ -30,17 +31,18 @@ const state = {
   attachedFilename: null,
   chatStarted: false,
   messages: [...INITIAL_MESSAGES],
+  snippets: [...RETRIEVED_SNIPPETS],
   documents: [...DOCUMENTS_DATA],
-  tasks: [...INITIAL_TASKS],
+  tasks: JSON.parse(localStorage.getItem('bhaios_tasks') || '[]'),
   taskFilter: 'all',
-  calendarAnchor: new Date(2025, 6, 16), // July 16, 2025
+  calendarAnchor: new Date(),
   selectedDateKey: null,
   focusRemainingSecs: 45 * 60,
   focusRunning: false,
   focusInterval: null,
   docFilter: 'All',
   docQuery: '',
-  snippetQuery: "Newton's second law",
+  snippetQuery: '',
   highlightedSnippet: null,
 };
 
@@ -376,23 +378,27 @@ function renderChat() {
 function renderSnippets() {
   const list = document.getElementById('snippetsList');
   const q = state.snippetQuery.trim().toLowerCase();
-  const filtered = RETRIEVED_SNIPPETS.filter(
+  const filtered = state.snippets.filter(
     (s) =>
       !q ||
       s.title.toLowerCase().includes(q) ||
       s.body.toLowerCase().includes(q) ||
-      s.index.toLowerCase().includes(q) ||
-      q.includes('newton')
+      s.index.toLowerCase().includes(q)
   );
 
-  document.getElementById('snippetCountLabel').textContent = `${filtered.length} snippets from your documents`;
+  document.getElementById('snippetCountLabel').textContent = `${filtered.length} snippet${filtered.length === 1 ? '' : 's'} from your documents`;
+  if (!filtered.length) {
+    list.innerHTML = `<div style="padding: 18px 8px; font-size: 12.5px; color: var(--text-muted); text-align: center;">Upload a PDF or image to see retrieved context here.</div>`;
+    return;
+  }
+
   list.innerHTML = filtered
     .map(
       (s) => `
       <div class="snippet-card ${state.highlightedSnippet === s.id ? 'highlighted' : ''}" id="snippet-${s.id}">
         <div class="snippet-top">
           <span class="snippet-index">${s.index}</span>
-          <span class="snippet-badge ${s.isBangla ? 'note' : 'pdf'}">${s.isBangla ? 'VLM Note' : 'PDF'}</span>
+          <span class="snippet-badge ${s.isBangla ? 'note' : 'pdf'}">${s.isBangla ? 'VLM' : 'PDF'}</span>
         </div>
         <div class="snippet-title ${s.isBangla ? 'bangla' : ''}">${s.title}</div>
         <div class="snippet-body ${s.isBangla ? 'bangla' : ''}">${s.body}</div>
@@ -500,6 +506,11 @@ async function sendChatMessage(customText) {
     const tokEl = document.getElementById('tokenUsageText');
     if (tokEl) tokEl.textContent = `${state.sessionTokens.total.toLocaleString()} tok`;
 
+    state.questionsCount += 1;
+    localStorage.setItem('bhaios_questions', String(state.questionsCount));
+    const qEl = document.getElementById('kpiQuestionsCount');
+    if (qEl) qEl.textContent = String(state.questionsCount);
+
     state.attachedImageBase64 = null;
     state.attachedFilename = null;
   } catch (err) {
@@ -533,8 +544,14 @@ function renderDocuments() {
     return matchSubject && matchQuery;
   });
 
-  document.getElementById('navDocCount').textContent = String(state.documents.length + 6);
-  document.getElementById('docsShowingLabel').textContent = `Showing ${list.length} of ${state.documents.length + 6} documents`;
+  document.getElementById('navDocCount').textContent = String(state.documents.length);
+  document.getElementById('libraryCountLabel').textContent = `${state.documents.length} document${state.documents.length === 1 ? '' : 's'}`;
+  document.getElementById('docsShowingLabel').textContent = `Showing ${list.length} of ${state.documents.length} documents`;
+
+  if (!list.length) {
+    grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border-card); border-radius: 12px;">No documents uploaded yet. Drop a PDF, JPG, or PNG above.</div>`;
+    return;
+  }
 
   grid.innerHTML = list
     .map(
@@ -610,6 +627,15 @@ async function addSimulatedDocument(fileOrName, attachToChat = false) {
           state.attachedImageBase64 = data.image_base64;
           state.attachedFilename = filename;
         }
+        state.snippets.unshift({
+          id: data.id || `s-${Date.now()}`,
+          index: `${String(state.snippets.length + 1).padStart(2, '0')} / ${state.uploadPipeline}`,
+          title: filename,
+          body: data.preview || 'Indexed locally for Q&A.',
+          source: `${data.pages || 1}p · ${filename}`,
+          isBangla: data.has_image,
+        });
+        renderSnippets();
       }
     } catch {
       // fallback to local preview if backend is not running
@@ -632,15 +658,28 @@ async function addSimulatedDocument(fileOrName, attachToChat = false) {
    ========================================================================== */
 function renderTasks() {
   const container = document.getElementById('tasksContainer');
+  localStorage.setItem('bhaios_tasks', JSON.stringify(state.tasks));
   const activeCount = state.tasks.filter((t) => !t.completed).length;
+  const doneCount = state.tasks.filter((t) => t.completed).length;
   document.getElementById('navTaskCount').textContent = String(activeCount);
   document.getElementById('pillAllCount').textContent = String(state.tasks.length);
+  const metaEl = document.getElementById('focusTasksMeta');
+  if (metaEl) metaEl.textContent = `${activeCount} active task${activeCount === 1 ? '' : 's'}`;
+  const kpiTC = document.getElementById('kpiTasksCompleted');
+  if (kpiTC) kpiTC.textContent = `${doneCount} / ${state.tasks.length}`;
+  const kpiTP = document.getElementById('kpiTasksPending');
+  if (kpiTP) kpiTP.textContent = `${activeCount} remaining`;
 
   const filtered = state.tasks.filter((t) => {
     if (state.taskFilter === 'today') return t.today && !t.completed;
     if (state.taskFilter === 'completed') return t.completed;
     return true;
   });
+
+  if (!filtered.length) {
+    container.innerHTML = `<div style="padding: 32px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border-card); border-radius: 12px;">No tasks yet. Click <strong>+ New task</strong> to add one.</div>`;
+    return;
+  }
 
   const groups = [
     { key: 'overdue', title: '<i class="bx bx-error-circle"></i> Overdue', cls: 'overdue' },
@@ -782,31 +821,44 @@ function toggleFocusTimer() {
    Progress & Benchmark Screens
    ========================================================================== */
 function renderProgress() {
+  const totalMins = Math.floor(state.sessionSeconds / 60);
+  const hrs = Math.floor(totalMins / 60);
+  const remMins = String(totalMins % 60).padStart(2, '0');
+  const kpiTime = document.getElementById('kpiStudyTime');
+  if (kpiTime) kpiTime.textContent = `${hrs}h ${remMins}m`;
+  const kpiQ = document.getElementById('kpiQuestionsCount');
+  if (kpiQ) kpiQ.textContent = String(state.questionsCount);
+
   const rhythm = document.getElementById('rhythmBars');
-  rhythm.innerHTML = STUDY_RHYTHM.map(
+  const rhythmData = STUDY_RHYTHM.map((d) => (d.active ? { ...d, mins: totalMins } : d));
+  rhythm.innerHTML = rhythmData.map(
     (d) => `
       <div class="rhythm-col">
         <span class="rhythm-val">${d.mins}</span>
-        <div class="rhythm-bar ${d.active ? 'active' : ''}" style="height: ${Math.max(4, d.mins * 1.1)}px"></div>
+        <div class="rhythm-bar ${d.active ? 'active' : ''}" style="height: ${Math.max(4, Math.min(130, d.mins * 2))}px"></div>
         <span class="rhythm-day">${d.day}</span>
       </div>
     `
   ).join('');
 
   const focus = document.getElementById('focusBars');
-  focus.innerHTML = SUBJECT_FOCUS.map(
-    (s) => `
-      <div class="focus-bar-row">
-        <div class="focus-bar-head">
-          <span>${s.name}</span>
-          <span class="mono" style="color: var(--text-secondary);">${s.mins} min</span>
+  if (!SUBJECT_FOCUS.length) {
+    focus.innerHTML = `<div style="padding: 20px 0; font-size: 12.5px; color: var(--text-muted);">Subject focus will appear as you complete study tasks.</div>`;
+  } else {
+    focus.innerHTML = SUBJECT_FOCUS.map(
+      (s) => `
+        <div class="focus-bar-row">
+          <div class="focus-bar-head">
+            <span>${s.name}</span>
+            <span class="mono" style="color: var(--text-secondary);">${s.mins} min</span>
+          </div>
+          <div class="focus-track">
+            <div class="focus-fill" style="width: ${s.pct}%"></div>
+          </div>
         </div>
-        <div class="focus-track">
-          <div class="focus-fill" style="width: ${s.pct}%"></div>
-        </div>
-      </div>
-    `
-  ).join('');
+      `
+    ).join('');
+  }
 
   renderHeatmap();
   renderAppTimeGraph();
@@ -817,25 +869,22 @@ function renderHeatmap() {
   const info = document.getElementById('heatmapHoverInfo');
   if (!grid) return;
 
-  const days = 112; // 16 weeks * 7 days
+  const days = 112;
   const today = new Date();
-  let totalHours = 0;
+  const todayHrs = +(state.sessionSeconds / 3600).toFixed(2);
   const cells = [];
 
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    // Deterministic realistic study hours
-    const seed = (d.getDate() * 13 + d.getMonth() * 7 + i * 3) % 11;
-    const hours = i === 0 ? 1.5 : seed < 3 ? 0 : seed < 6 ? 0.8 : seed < 8 ? 1.6 : seed < 10 ? 2.5 : 3.6;
-    totalHours += hours;
-    const level = hours === 0 ? 0 : hours < 1 ? 1 : hours < 2 ? 2 : hours < 3 ? 3 : 4;
+    const hours = i === 0 ? todayHrs : 0;
+    const level = hours === 0 ? 0 : hours < 0.5 ? 1 : hours < 1.5 ? 2 : hours < 2.5 ? 3 : 4;
     const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    cells.push(`<div class="heatmap-cell level-${level}" data-info="${label} · ${hours.toFixed(1)} hrs studied"></div>`);
+    cells.push(`<div class="heatmap-cell level-${level}" data-info="${label} · ${hours.toFixed(2)} hrs studied"></div>`);
   }
 
   grid.innerHTML = cells.join('');
-  document.getElementById('heatmapTotalHours').textContent = `${totalHours.toFixed(1)} hrs total`;
+  document.getElementById('heatmapTotalHours').textContent = `${todayHrs.toFixed(2)} hrs total`;
 
   grid.addEventListener('mouseover', (e) => {
     const cell = e.target.closest('.heatmap-cell');
@@ -850,9 +899,9 @@ function renderAppTimeGraph() {
   const wrap = document.getElementById('appTimeGraph');
   if (!wrap) return;
 
-  const extraMins = Math.floor(state.sessionSeconds / 60);
-  const thisWeek = [42, 68, 35, 92, 54, 78, 65 + extraMins];
-  const lastWeek = [38, 52, 48, 64, 40, 62, 55];
+  const liveMins = Math.floor(state.sessionSeconds / 60);
+  const thisWeek = [0, 0, 0, 0, 0, 0, liveMins];
+  const lastWeek = [0, 0, 0, 0, 0, 0, 0];
   const labels = ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed'];
 
   const w = 520;
@@ -900,6 +949,10 @@ function renderAppTimeGraph() {
 
 function renderBenchmark() {
   const tbody = document.getElementById('benchmarkTbody');
+  if (!BENCHMARK_METRICS.length) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted); text-align: center; padding: 20px 0;">No benchmark run yet. Click <strong>Run benchmark</strong> to measure local VLM vs OCR+LLM.</td></tr>`;
+    return;
+  }
   tbody.innerHTML = BENCHMARK_METRICS.map(
     (m) => `
       <tr>
@@ -914,44 +967,33 @@ function renderBenchmark() {
   ).join('');
 }
 
-const COMMAND_ITEMS = [
-  { group: 'Last opened', icon: 'bx-message-square-detail', label: "Newton's second law · Physics", action: () => sendChatMessage('নিউটনের দ্বিতীয় সূত্রটা সহজ করে বুঝিয়ে দাও।') },
-  { group: 'Last opened', icon: 'bx-file', label: 'Physics · Chapter 03 notes', action: () => switchScreen('documents') },
-  { group: 'Recent chats', icon: 'bx-message-square-detail', label: 'Explain differentiation chain rule', action: () => sendChatMessage('Explain differentiation chain rule step by step') },
-  { group: 'Recent chats', icon: 'bx-message-square-detail', label: 'Summarize Organic chemistry flashcards', action: () => sendChatMessage('Summarize Organic chemistry flashcards') },
-  { group: 'Recent chats', icon: 'bx-list-ul', label: "Revise Newton's laws (Overdue task)", action: () => switchScreen('tasks') },
-  { group: 'Recent chats', icon: 'bx-test-tube', label: 'VLM vs OCR+LLM Benchmark results', action: () => switchScreen('benchmark') },
-];
-
 function renderCommandResults(query = '') {
   const container = document.getElementById('commandResults');
   const q = query.trim().toLowerCase();
-  const filtered = COMMAND_ITEMS.filter((item) => !q || item.label.toLowerCase().includes(q));
-  const groups = ['Last opened', 'Recent chats'];
 
-  container.innerHTML = groups
-    .map((g) => {
-      const items = filtered.filter((i) => i.group === g);
-      if (!items.length) return '';
-      return `
-        <div class="command-group-label">${g}</div>
-        ${items
-          .map(
-            (item, idx) => `
-          <button class="command-item ${g === 'Last opened' && idx === 0 ? 'active' : ''}" data-cmd-label="${item.label.replace(/"/g, '&quot;')}" type="button">
-            <i class="bx ${item.icon}"></i>
-            <span>${item.label}</span>
-          </button>
-        `
-          )
-          .join('')}
-      `;
-    })
+  const liveItems = [
+    ...state.documents.map((d) => ({ group: 'Documents', icon: 'bx-file', label: d.title, action: () => switchScreen('documents') })),
+    ...state.tasks.map((t) => ({ group: 'Tasks', icon: 'bx-list-ul', label: t.title, action: () => switchScreen('tasks') })),
+  ];
+
+  const filtered = liveItems.filter((item) => !q || item.label.toLowerCase().includes(q));
+  if (!filtered.length) {
+    container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">No documents or tasks yet.</div>';
+    return;
+  }
+
+  container.innerHTML = filtered
+    .map(
+      (item, idx) => `
+        <button class="command-item ${idx === 0 ? 'active' : ''}" data-cmd-idx="${idx}" type="button">
+          <i class="bx ${item.icon}"></i>
+          <span>${item.label}</span>
+        </button>
+      `
+    )
     .join('');
 
-  if (!filtered.length) {
-    container.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">No matching chats or notes</div>';
-  }
+  container._items = filtered;
 }
 
 /* ==========================================================================
@@ -1258,7 +1300,8 @@ function init() {
   document.getElementById('commandResults').addEventListener('click', (e) => {
     const btn = e.target.closest('.command-item');
     if (!btn) return;
-    const found = COMMAND_ITEMS.find((i) => i.label === btn.dataset.cmdLabel);
+    const container = document.getElementById('commandResults');
+    const found = container._items?.[Number(btn.dataset.cmdIdx)];
     cmdModal.classList.remove('open');
     if (found) found.action();
   });
