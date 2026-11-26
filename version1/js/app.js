@@ -445,6 +445,8 @@ function deleteSavedChat(chatId) {
 }
 
 function renderSavedChats() {
+  const countEl = document.getElementById('navPastChatsCount');
+  if (countEl) countEl.textContent = String(state.savedChats.length);
   const list = document.getElementById('savedChatsList');
   if (!list) return;
   if (!state.savedChats.length) {
@@ -1494,6 +1496,20 @@ function init() {
   // Navigation
   document.querySelectorAll('.nav-item[data-screen]').forEach((btn) => {
     btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+  });
+
+  document.getElementById('btnPastChats')?.addEventListener('click', () => {
+    const sidebar = document.getElementById('leftSidebar');
+    const sec = document.getElementById('savedChatsSection');
+    if (sidebar && sidebar.classList.contains('collapsed')) {
+      sidebar.classList.remove('collapsed');
+      sec?.classList.remove('collapsed');
+      document.getElementById('btnPastChats')?.setAttribute('aria-expanded', 'true');
+      return;
+    }
+    if (!sec) return;
+    const isCollapsed = sec.classList.toggle('collapsed');
+    document.getElementById('btnPastChats')?.setAttribute('aria-expanded', String(!isCollapsed));
   });
 
   document.getElementById('btnNewChat').addEventListener('click', () => {

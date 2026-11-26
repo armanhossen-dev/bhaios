@@ -52,6 +52,23 @@
           </span>
         </button>
 
+        <button class="nav-item" id="btnPastChats" type="button" data-tooltip="Past chats" aria-expanded="true">
+          <span class="nav-item-left">
+            <i class="bx bx-history"></i>
+            <span class="nav-label">Past chats</span>
+          </span>
+          <span class="nav-count" id="navPastChatsCount">0</span>
+        </button>
+
+        <div class="sidebar-chats-section" id="savedChatsSection">
+          <div class="sidebar-chats-head">
+            <span class="sidebar-section-label" style="margin: 0; padding: 0;">SAVED CHATS</span>
+            <button class="sidebar-chats-clear" id="btnClearSavedChats" type="button"
+              title="Delete all saved chats">Clear</button>
+          </div>
+          <div class="sidebar-chats-list" id="savedChatsList"></div>
+        </div>
+
         <button class="nav-item" data-screen="documents" type="button" data-tooltip="Documents">
           <span class="nav-item-left">
             <i class="bx bx-file"></i>
@@ -83,15 +100,6 @@
           <span class="nav-badge-dev">DEV</span>
         </button>
       </nav>
-
-      <div class="sidebar-chats-section" id="savedChatsSection">
-        <div class="sidebar-chats-head">
-          <span class="sidebar-section-label" style="margin: 0; padding: 0;">SAVED CHATS</span>
-          <button class="sidebar-chats-clear" id="btnClearSavedChats" type="button"
-            title="Delete all saved chats">Clear</button>
-        </div>
-        <div class="sidebar-chats-list" id="savedChatsList"></div>
-      </div>
 
       <div class="sidebar-footer">
         <button class="guide-status-pill" id="sidebarModePill" type="button" data-tooltip="Guide Mode">
