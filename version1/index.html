@@ -170,6 +170,10 @@
         </div>
 
         <div class="top-bar-right" style="gap: 10px;">
+          <button class="navbar-timer-pill" id="navbarFocusTimer" type="button" style="display: none;" title="Click to pause/resume focus timer">
+            <i class="bx bx-time-five"></i>
+            <span id="navbarTimerText">45:00</span>
+          </button>
           <div data-slot="tabs-list" class="lang-switch" role="group" aria-label="Language">
             <button data-slot="tabs-trigger" data-state="active" class="lang-btn" data-lang="en" type="button">EN</button>
             <button data-slot="tabs-trigger" data-state="inactive" class="lang-btn" data-lang="bn" type="button">বাংলা</button>
@@ -393,22 +397,15 @@
             <aside class="tasks-aside">
               <div class="aside-card">
                 <div class="calendar-head">
-                  <span class="serif" style="font-size: 20px;">July 2025</span>
-                  <span style="color: var(--text-muted); display: inline-flex; gap: 8px; font-size: 18px;"><i class="bx bx-chevron-left"></i><i class="bx bx-chevron-right"></i></span>
+                  <span class="serif" id="calendarMonthLabel" style="font-size: 20px;">July 2025</span>
+                  <span style="display: inline-flex; gap: 4px;">
+                    <button class="context-collapse-btn" id="btnCalPrev" type="button" aria-label="Previous week"><i class="bx bx-chevron-left"></i></button>
+                    <button class="context-collapse-btn" id="btnCalNext" type="button" aria-label="Next week"><i class="bx bx-chevron-right"></i></button>
+                  </span>
                 </div>
-                <div class="calendar-grid">
-                  <span class="cal-dow">M</span><span class="cal-dow">T</span><span class="cal-dow">W</span><span class="cal-dow">T</span><span class="cal-dow">F</span><span class="cal-dow">S</span><span class="cal-dow">S</span>
-                  <span class="cal-day">14</span>
-                  <span class="cal-day">15</span>
-                  <span class="cal-day today">16</span>
-                  <span class="cal-day">17</span>
-                  <span class="cal-day">18</span>
-                  <span class="cal-day">19</span>
-                  <span class="cal-day">20</span>
-                  <span></span><span class="cal-dot"></span><span class="cal-dot"></span><span class="cal-dot"></span><span class="cal-dot"></span><span></span><span></span>
-                </div>
-                <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary);">
-                  Wednesday, 16 July
+                <div class="calendar-grid" id="calendarGrid"></div>
+                <div id="calendarSelectedLabel" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+                  <span>Wednesday, 16 July</span>
                 </div>
               </div>
 

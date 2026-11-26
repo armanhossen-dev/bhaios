@@ -29,6 +29,11 @@ const state = {
   documents: [...DOCUMENTS_DATA],
   tasks: [...INITIAL_TASKS],
   taskFilter: 'all',
+  calendarAnchor: new Date(2025, 6, 16), // July 16, 2025
+  selectedDateKey: null,
+  focusRemainingSecs: 45 * 60,
+  focusRunning: false,
+  focusInterval: null,
   docFilter: 'All',
   docQuery: '',
   snippetQuery: "Newton's second law",
@@ -528,7 +533,12 @@ function renderTasks() {
                       </div>
                     </div>
                   </div>
-                  <span class="priority-dot priority-${t.priority}">${t.priority}</span>
+                  <div class="task-right-actions">
+                    <span class="priority-dot priority-${t.priority}">${t.priority}</span>
+                    <button class="task-delete-btn" data-delete-id="${t.id}" type="button" title="Delete task" aria-label="Delete task">
+                      <i class="bx bx-trash"></i>
+                    </button>
+                  </div>
                 </div>
               `
               )
@@ -538,6 +548,92 @@ function renderTasks() {
       `;
     })
     .join('');
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const monthLabel = document.getElementById('calendarMonthLabel');
+  const selectedLabel = document.getElementById('calendarSelectedLabel');
+  if (!grid) return;
+
+  const anchor = state.calendarAnchor;
+  monthLabel.textContent = anchor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  // Get Monday of anchor's week
+  const day = anchor.getDay();
+  const diffToMon = (day === 0 ? -6 : 1 - day);
+  const monday = new Date(anchor);
+  monday.setDate(anchor.getDate() + diffToMon);
+
+  const dows = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+  const cells = dows.map((d) => `<span class="cal-dow">${d}</span>`);
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    const isSelected = (state.selectedDateKey || anchor.toISOString().slice(0, 10)) === key;
+    const hasDot = i >= 1 && i <= 4;
+    cells.push(`
+      <button class="cal-day-btn ${isSelected ? 'selected' : ''}" data-cal-date="${key}" type="button">
+        <span>${d.getDate()}</span>
+        ${hasDot ? '<span class="cal-dot"></span>' : ''}
+      </button>
+    `);
+  }
+
+  grid.innerHTML = cells.join('');
+  const activeDate = state.selectedDateKey ? new Date(state.selectedDateKey + 'T12:00:00') : anchor;
+  selectedLabel.innerHTML = `<span>${activeDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}</span>`;
+}
+
+function formatTimer(secs) {
+  const m = String(Math.floor(secs / 60)).padStart(2, '0');
+  const s = String(secs % 60).padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function updateFocusTimerUI() {
+  const navPill = document.getElementById('navbarFocusTimer');
+  const navText = document.getElementById('navbarTimerText');
+  const btnFocus = document.getElementById('btnStartFocus');
+  const formatted = formatTimer(state.focusRemainingSecs);
+
+  if (navText) navText.textContent = formatted;
+  if (navPill) {
+    navPill.style.display = state.focusRunning || state.focusRemainingSecs < 45 * 60 ? 'inline-flex' : 'none';
+  }
+  if (btnFocus) {
+    btnFocus.innerHTML = state.focusRunning
+      ? `<i class="bx bx-pause"></i> Pause focus (${formatted})`
+      : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < 45 * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
+  }
+}
+
+function toggleFocusTimer() {
+  if (state.focusRunning) {
+    clearInterval(state.focusInterval);
+    state.focusRunning = false;
+    updateFocusTimerUI();
+    showToast('Focus timer paused');
+    return;
+  }
+
+  if (state.focusRemainingSecs <= 0) state.focusRemainingSecs = 45 * 60;
+  state.focusRunning = true;
+  updateFocusTimerUI();
+  showToast('45-min reverse focus countdown started');
+
+  state.focusInterval = setInterval(() => {
+    state.focusRemainingSecs -= 1;
+    updateFocusTimerUI();
+    if (state.focusRemainingSecs <= 0) {
+      clearInterval(state.focusInterval);
+      state.focusRunning = false;
+      updateFocusTimerUI();
+      showToast('Focus session complete! Great work.');
+    }
+  }, 1000);
 }
 
 /* ==========================================================================
@@ -1204,8 +1300,15 @@ function init() {
     }
   });
 
-  // Tasks Toggle, Filters & Modal
+  // Tasks Toggle, Delete & Filters
   document.getElementById('tasksContainer').addEventListener('click', (e) => {
+    const delBtn = e.target.closest('.task-delete-btn');
+    if (delBtn) {
+      state.tasks = state.tasks.filter((t) => t.id !== delBtn.dataset.deleteId);
+      renderTasks();
+      showToast('Task deleted');
+      return;
+    }
     const box = e.target.closest('.task-checkbox');
     if (!box) return;
     const task = state.tasks.find((t) => t.id === box.dataset.taskId);
@@ -1213,6 +1316,23 @@ function init() {
       task.completed = !task.completed;
       renderTasks();
     }
+  });
+
+  // Calendar Navigation & Date Selection
+  document.getElementById('btnCalPrev').addEventListener('click', () => {
+    state.calendarAnchor.setDate(state.calendarAnchor.getDate() - 7);
+    renderCalendar();
+  });
+  document.getElementById('btnCalNext').addEventListener('click', () => {
+    state.calendarAnchor.setDate(state.calendarAnchor.getDate() + 7);
+    renderCalendar();
+  });
+  document.getElementById('calendarGrid').addEventListener('click', (e) => {
+    const dayBtn = e.target.closest('.cal-day-btn');
+    if (!dayBtn) return;
+    state.selectedDateKey = dayBtn.dataset.calDate;
+    renderCalendar();
+    showToast(`Selected ${state.selectedDateKey}`);
   });
 
   document.querySelectorAll('.filter-pill').forEach((pill) => {
@@ -1258,9 +1378,8 @@ function init() {
     showToast('Task saved to local SQLite store');
   });
 
-  document.getElementById('btnStartFocus').addEventListener('click', () => {
-    showToast('45-min offline focus timer started');
-  });
+  document.getElementById('btnStartFocus').addEventListener('click', toggleFocusTimer);
+  document.getElementById('navbarFocusTimer').addEventListener('click', toggleFocusTimer);
   document.getElementById('btnManageReminders').addEventListener('click', () => switchScreen('settings'));
 
   // Progress quick review CTA
@@ -1294,6 +1413,7 @@ function init() {
   renderSnippets();
   renderDocuments();
   renderTasks();
+  renderCalendar();
   renderProgress();
   renderBenchmark();
 
