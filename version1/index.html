@@ -383,6 +383,25 @@
             </div>
 
             <div class="context-body">
+              <div class="right-section" id="rightTasksSection">
+                <div class="right-section-head">
+                  <span class="right-section-title">
+                    <i class="bx bx-check-square"></i> Tasks
+                    <span class="right-count-badge" id="rightTaskCount">0</span>
+                  </span>
+                  <div style="display: flex; gap: 4px; align-items: center;">
+                    <button class="right-clear-btn" id="btnRightViewAllTasks" type="button" title="View all tasks">View all</button>
+                    <button class="right-clear-btn" id="btnRightAddTask" type="button" title="Add quick task">
+                      <i class="bx bx-plus"></i> Add
+                    </button>
+                  </div>
+                </div>
+                <div class="right-task-quick-add" id="rightTaskQuickAdd" style="display: none;">
+                  <input type="text" class="right-task-input" id="rightTaskInput" placeholder="Quick task title… (Enter to save)" />
+                </div>
+                <div class="right-list right-tasks-list" id="rightTasksList"></div>
+              </div>
+
               <div class="right-section">
                 <div class="right-section-head">
                   <span class="right-section-title">

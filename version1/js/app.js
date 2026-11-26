@@ -770,14 +770,22 @@ function renderTasks() {
   localStorage.setItem('bhaios_tasks', JSON.stringify(state.tasks));
   const activeCount = state.tasks.filter((t) => !t.completed).length;
   const doneCount = state.tasks.filter((t) => t.completed).length;
-  document.getElementById('navTaskCount').textContent = String(activeCount);
-  document.getElementById('pillAllCount').textContent = String(state.tasks.length);
+  const navCount = document.getElementById('navTaskCount');
+  if (navCount) navCount.textContent = String(activeCount);
+  const pillAll = document.getElementById('pillAllCount');
+  if (pillAll) pillAll.textContent = String(state.tasks.length);
   const metaEl = document.getElementById('focusTasksMeta');
   if (metaEl) metaEl.textContent = `${activeCount} active task${activeCount === 1 ? '' : 's'}`;
   const kpiTC = document.getElementById('kpiTasksCompleted');
   if (kpiTC) kpiTC.textContent = `${doneCount} / ${state.tasks.length}`;
   const kpiTP = document.getElementById('kpiTasksPending');
   if (kpiTP) kpiTP.textContent = `${activeCount} remaining`;
+
+  const rightTaskCount = document.getElementById('rightTaskCount');
+  if (rightTaskCount) rightTaskCount.textContent = String(activeCount);
+  renderRightTasks();
+
+  if (!container) return;
 
   const filtered = state.tasks.filter((t) => {
     if (state.taskFilter === 'today') return t.today && !t.completed;
@@ -837,6 +845,41 @@ function renderTasks() {
         </div>
       `;
     })
+    .join('');
+}
+
+function renderRightTasks() {
+  const list = document.getElementById('rightTasksList');
+  if (!list) return;
+
+  if (!state.tasks.length) {
+    list.innerHTML = `<div class="right-empty">No tasks yet. Click <strong>+ Add</strong> to create one.</div>`;
+    return;
+  }
+
+  const sorted = [...state.tasks]
+    .sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1))
+    .slice(0, 6);
+
+  list.innerHTML = sorted
+    .map(
+      (t) => `
+      <div class="right-task-row ${t.completed ? 'done' : ''}">
+        <button class="right-task-check ${t.completed ? 'checked' : ''}" data-right-task-id="${t.id}" type="button" title="${t.completed ? 'Mark pending' : 'Mark done'}">
+          ${t.completed ? '<i class="bx bx-check"></i>' : ''}
+        </button>
+        <div class="right-task-info">
+          <span class="right-task-title">${escapeHtml(t.title)}</span>
+          <div class="right-task-meta">
+            <span class="right-task-chip">${escapeHtml(t.subject || 'Study')}</span>
+            ${t.due ? `<span class="right-task-due">${escapeHtml(t.due)}</span>` : ''}
+          </div>
+        </div>
+        <button class="right-task-del" data-right-delete-id="${t.id}" type="button" title="Delete task">
+          <i class="bx bx-trash"></i>
+        </button>
+      </div>`
+    )
     .join('');
 }
 
@@ -2021,6 +2064,68 @@ function init() {
     if (task) {
       task.completed = !task.completed;
       renderTasks();
+    }
+  });
+
+  // Right Sidebar Compact Tasks Controls
+  const rightTaskQuickAdd = document.getElementById('rightTaskQuickAdd');
+  const rightTaskInput = document.getElementById('rightTaskInput');
+
+  document.getElementById('btnRightAddTask')?.addEventListener('click', () => {
+    if (!rightTaskQuickAdd) return;
+    const isHidden = rightTaskQuickAdd.style.display === 'none';
+    rightTaskQuickAdd.style.display = isHidden ? 'block' : 'none';
+    if (isHidden && rightTaskInput) {
+      rightTaskInput.focus();
+    }
+  });
+
+  rightTaskInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const val = rightTaskInput.value.trim();
+      if (!val) return;
+      state.tasks.unshift({
+        id: `t-${Date.now()}`,
+        title: val,
+        subject: 'General',
+        due: 'Today',
+        bucket: 'week',
+        priority: 'med',
+        completed: false,
+        today: true,
+      });
+      rightTaskInput.value = '';
+      rightTaskQuickAdd.style.display = 'none';
+      renderTasks();
+      showToast(`Added: ${val}`);
+    } else if (e.key === 'Escape') {
+      rightTaskQuickAdd.style.display = 'none';
+    }
+  });
+
+  document.getElementById('btnRightViewAllTasks')?.addEventListener('click', () => {
+    switchScreen('tasks');
+  });
+
+  document.getElementById('rightTasksList')?.addEventListener('click', (e) => {
+    const chk = e.target.closest('[data-right-task-id]');
+    if (chk) {
+      const id = chk.dataset.rightTaskId;
+      const t = state.tasks.find((task) => task.id === id);
+      if (t) {
+        t.completed = !t.completed;
+        renderTasks();
+        showToast(t.completed ? 'Task completed' : 'Task marked pending');
+      }
+      return;
+    }
+    const del = e.target.closest('[data-right-delete-id]');
+    if (del) {
+      const id = del.dataset.rightDeleteId;
+      state.tasks = state.tasks.filter((t) => t.id !== id);
+      renderTasks();
+      showToast('Task removed');
+      return;
     }
   });
 
