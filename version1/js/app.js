@@ -15,6 +15,7 @@ import {
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
+  voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
   activeVisionModel: 'llava-phi3:latest',
@@ -211,6 +212,7 @@ async function sendChatMessage(customText) {
 
   input.value = '';
   welcomeInput.value = '';
+  syncSendButtons();
   renderChat();
 
   const history = state.messages
@@ -659,14 +661,31 @@ async function pullOllamaModel(modelName, btn) {
   }
 }
 
+function syncSendButtons() {
+  const wVal = (document.getElementById('welcomeInput')?.value || '').trim();
+  const cVal = (document.getElementById('chatInput')?.value || '').trim();
+  document.getElementById('btnWelcomeSend')?.classList.toggle('is-hidden', wVal.length === 0);
+  document.getElementById('btnSend')?.classList.toggle('is-hidden', cVal.length === 0);
+}
+
+function cycleVoiceLang() {
+  const order = ['auto', 'bn', 'en'];
+  const next = order[(order.indexOf(state.voiceLang) + 1) % order.length];
+  state.voiceLang = next;
+  const labels = { auto: 'Auto', bn: 'Bangla', en: 'English' };
+  document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = `Voice: ${labels[next]}`;
+  document.getElementById('btnChatVoiceLang').querySelector('span').textContent = labels[next];
+  showToast(`Whisper voice language: ${labels[next]}`);
+}
+
 let mediaRecorder = null;
 let audioChunks = [];
 
 async function toggleVoiceRecording() {
-  const micBtn = document.getElementById('btnChatVoice');
+  const micBtns = document.querySelectorAll('.mic-trigger');
   if (mediaRecorder && mediaRecorder.state === 'recording') {
     mediaRecorder.stop();
-    micBtn.classList.remove('recording');
+    micBtns.forEach((b) => b.classList.remove('recording'));
     return;
   }
 
@@ -682,6 +701,7 @@ async function toggleVoiceRecording() {
       const blob = new Blob(audioChunks, { type: 'audio/webm' });
       const form = new FormData();
       form.append('file', blob, 'voice.webm');
+      form.append('language', state.voiceLang);
       showToast('Transcribing with local Whisper…');
       try {
         const res = await fetch('/api/transcribe', { method: 'POST', body: form });
@@ -692,6 +712,7 @@ async function toggleVoiceRecording() {
             ? document.getElementById('chatInput')
             : document.getElementById('welcomeInput');
           input.value = data.text;
+          syncSendButtons();
           input.focus();
           showToast(`Transcribed (${data.language}) in ${data.latency_s}s`);
         }
@@ -700,7 +721,7 @@ async function toggleVoiceRecording() {
       }
     };
     mediaRecorder.start();
-    micBtn.classList.add('recording');
+    micBtns.forEach((b) => b.classList.add('recording'));
     showToast('Recording… click mic again to transcribe');
   } catch {
     showToast('Microphone permission denied or unavailable');
@@ -803,9 +824,14 @@ function init() {
 
   // Welcome screen interactions
   document.getElementById('btnWelcomeSend').addEventListener('click', () => sendChatMessage());
+  document.getElementById('welcomeInput').addEventListener('input', syncSendButtons);
   document.getElementById('welcomeInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
   });
+  document.getElementById('chatInput').addEventListener('input', syncSendButtons);
+  document.getElementById('btnWelcomeVoice').addEventListener('click', toggleVoiceRecording);
+  document.getElementById('btnWelcomeVoiceLang').addEventListener('click', cycleVoiceLang);
+  document.getElementById('btnChatVoiceLang').addEventListener('click', cycleVoiceLang);
   const uploadModal = document.getElementById('uploadModal');
   document.getElementById('btnWelcomeScan').addEventListener('click', () => uploadModal.classList.add('open'));
   document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));

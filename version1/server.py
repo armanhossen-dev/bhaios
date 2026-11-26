@@ -264,7 +264,7 @@ async def upload_file(file: UploadFile = File(...), pipeline: str = Form("VLM"))
 
 
 @app.post("/api/transcribe")
-async def transcribe_audio(file: UploadFile = File(...)) -> dict[str, Any]:
+async def transcribe_audio(file: UploadFile = File(...), language: str = Form("auto")) -> dict[str, Any]:
     audio_bytes = await file.read()
     suffix = Path(file.filename or "audio.webm").suffix or ".webm"
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
@@ -274,11 +274,12 @@ async def transcribe_audio(file: UploadFile = File(...)) -> dict[str, Any]:
     try:
         t0 = time.perf_counter()
         model = get_whisper()
-        result = model.transcribe(tmp_path)
+        kwargs = {"language": language} if language in ("bn", "en") else {}
+        result = model.transcribe(tmp_path, **kwargs)
         elapsed = round(time.perf_counter() - t0, 2)
         return {
             "text": (result.get("text") or "").strip(),
-            "language": result.get("language", "unknown"),
+            "language": result.get("language", language),
             "latency_s": elapsed,
         }
     finally:

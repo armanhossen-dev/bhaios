@@ -190,10 +190,16 @@
                     </button>
                   </div>
                   <div class="composer-tools-right">
+                    <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button" title="Whisper voice language">
+                      <span>Voice: Auto</span>
+                    </button>
                     <button class="icon-circle-btn" id="btnWelcomeScan" type="button" title="Scan handwritten notes">
                       <i class="bx bx-scan"></i>
                     </button>
-                    <button class="btn-send-circle" id="btnWelcomeSend" type="button" aria-label="Send message">
+                    <button class="icon-circle-btn mic-trigger" id="btnWelcomeVoice" type="button" title="Voice input (Whisper)">
+                      <i class="bx bx-microphone"></i>
+                    </button>
+                    <button class="btn-send-circle is-hidden" id="btnWelcomeSend" type="button" aria-label="Send message">
                       <i class="bx bx-up-arrow-alt"></i>
                     </button>
                   </div>
@@ -232,14 +238,17 @@
                     placeholder="Ask anything"
                   />
                   <div class="pill-composer-right">
-                    <button class="pill-composer-mic" id="btnChatVoice" type="button" title="Voice input (Whisper)">
-                      <i class="bx bx-microphone"></i>
-                    </button>
                     <button class="effort-pill" id="btnEffortMode" type="button">
                       <span id="effortLabel">Guide Mode</span>
                       <i class="bx bx-chevron-down"></i>
                     </button>
-                    <button class="btn-send-circle active" id="btnSend" type="button" aria-label="Send message">
+                    <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button" title="Whisper voice language">
+                      <span>Auto</span>
+                    </button>
+                    <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button" title="Voice input (Whisper)">
+                      <i class="bx bx-microphone"></i>
+                    </button>
+                    <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
                       <i class="bx bx-up-arrow-alt"></i>
                     </button>
                   </div>
