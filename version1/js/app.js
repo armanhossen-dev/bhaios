@@ -1280,7 +1280,7 @@ function init() {
     settingsPopover.classList.remove('open');
     switchScreen('settings');
   });
-  document.getElementById('btnWorkspaceSwitcher').addEventListener('click', () => {
+  document.getElementById('btnWorkspaceSwitcher')?.addEventListener('click', () => {
     showToast('Workspace: HSC · Science (4 subjects)');
   });
 

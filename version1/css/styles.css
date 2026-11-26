@@ -2699,22 +2699,44 @@ html[data-font-size="small"] .snippet-body {
   color: var(--violet-400);
 }
 
+.sidebar-token-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar-token-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
 .toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  padding: 10px 16px;
+  top: 16px;
+  left: 50%;
+  transform: translate(-50%, -8px);
+  padding: 9px 18px;
   background: var(--bg-card-elevated);
-  border: 1px solid var(--teal-500);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
   font-size: 13px;
   color: var(--text-primary);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-  z-index: 60;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 90;
 }
 
 .toast.show {
   opacity: 1;
+  transform: translate(-50%, 0);
 }
