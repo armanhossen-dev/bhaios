@@ -95,7 +95,7 @@ function renderChat() {
       const head = document.createElement('div');
       head.className = 'assistant-header';
       head.innerHTML = `
-        <span class="assistant-name">✦ BhaiOS</span>
+        <span class="assistant-name"><i class="bx bx-compass"></i> BhaiOS</span>
         <span class="assistant-sub">${
           msg.mode === 'answer'
             ? 'Answer Mode · Direct explanation'
@@ -111,7 +111,7 @@ function renderChat() {
         <div class="hint-card-en">${msg.english}</div>
         <div class="hint-card-actions">
           <span class="hint-chip">${msg.hintChip || 'Hint'}</span>
-          <button class="link-source" data-source="${msg.sourceId || 's1'}" type="button">Show source ↗</button>
+          <button class="link-source" data-source="${msg.sourceId || 's1'}" type="button">Show source <i class="bx bx-link-external"></i></button>
         </div>
         <div class="hint-card-meta">${msg.meta || 'Grounded in local notes · 6.4s'}</div>
       `;
@@ -249,9 +249,9 @@ function renderDocuments() {
         <div class="doc-footer">
           ${
             d.status === 'indexed'
-              ? `<span class="doc-status-ok">✓ Indexed</span>
-                 <button class="link-source doc-open-btn" data-doc="${d.title}" type="button" style="color: var(--text-secondary);">Open ↗</button>`
-              : `<span class="doc-status-proc">◔ Processing · ${d.progress}%</span>
+              ? `<span class="doc-status-ok"><i class="bx bx-check"></i> Indexed</span>
+                 <button class="link-source doc-open-btn" data-doc="${d.title}" type="button" style="color: var(--text-secondary);">Open <i class="bx bx-link-external"></i></button>`
+              : `<span class="doc-status-proc"><i class="bx bx-loader-alt bx-spin"></i> Processing · ${d.progress}%</span>
                  <span class="mono" style="font-size: 11px; color: var(--text-muted);">${d.eta}</span>`
           }
         </div>
@@ -303,7 +303,7 @@ function renderTasks() {
   });
 
   const groups = [
-    { key: 'overdue', title: '! Overdue', cls: 'overdue' },
+    { key: 'overdue', title: '<i class="bx bx-error-circle"></i> Overdue', cls: 'overdue' },
     { key: 'week', title: 'This week', cls: '' },
     { key: 'upcoming', title: 'Upcoming', cls: '' },
   ];
@@ -315,7 +315,7 @@ function renderTasks() {
       return `
         <div class="task-group">
           <div class="task-group-header">
-            <h3 class="task-group-title ${g.cls}">${g.title}</h3>
+            <h3 class="task-group-title ${g.cls}" style="display:flex; align-items:center; gap:6px;">${g.title}</h3>
             <span class="task-group-count">0${items.length}</span>
           </div>
           <div class="task-list">
@@ -325,7 +325,7 @@ function renderTasks() {
                 <div class="task-row ${t.completed ? 'done' : ''}">
                   <div class="task-left">
                     <button class="task-checkbox ${t.completed ? 'checked' : ''}" data-task-id="${t.id}" type="button">
-                      ${t.completed ? '✓' : ''}
+                      ${t.completed ? '<i class="bx bx-check"></i>' : ''}
                     </button>
                     <div>
                       <div class="task-title">${t.title}</div>
@@ -387,7 +387,7 @@ function renderBenchmark() {
         <td class="mono">${m.vlm}</td>
         <td class="mono">${m.ocr}</td>
         <td style="color: ${m.preferredType === 'vlm' ? 'var(--teal-400)' : 'var(--success)'};">
-          ✓ &nbsp;${m.preferred}
+          <i class="bx bx-check"></i> &nbsp;${m.preferred}
         </td>
       </tr>
     `
@@ -431,7 +431,9 @@ function init() {
   document.getElementById('btnToggleContext').addEventListener('click', () => {
     const panel = document.getElementById('contextPanel');
     panel.classList.toggle('collapsed');
-    document.getElementById('btnToggleContext').textContent = panel.classList.contains('collapsed') ? '‹' : '›';
+    document.getElementById('btnToggleContext').innerHTML = panel.classList.contains('collapsed')
+      ? '<i class="bx bx-chevron-left"></i>'
+      : '<i class="bx bx-chevron-right"></i>';
   });
 
   document.getElementById('snippetSearch').addEventListener('input', (e) => {

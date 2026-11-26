@@ -144,11 +144,20 @@ button {
   gap: 12px;
 }
 
-.nav-item svg {
+.nav-item svg,
+.nav-item i.bx {
   width: 18px;
   height: 18px;
-  stroke-width: 1.75;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+}
+
+i.bx {
+  line-height: 1;
+  vertical-align: middle;
 }
 
 .nav-item:hover {
