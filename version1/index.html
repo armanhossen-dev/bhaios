@@ -137,6 +137,10 @@
           <span class="popover-item-left"><i class="bx bx-moon"></i><span>Appearance</span></span>
           <span class="popover-item-right" id="popThemeLabel">Dark</span>
         </button>
+        <button class="popover-item" id="popLanguage" type="button">
+          <span class="popover-item-left"><i class="bx bx-globe"></i><span>Language</span></span>
+          <span class="popover-item-right" id="popLangLabel">English</span>
+        </button>
         <div class="popover-sep"></div>
         <button class="popover-item" id="popAllSettings" type="button">
           <span class="popover-item-left"><i class="bx bx-sliders"></i><span>All settings</span></span>
@@ -165,7 +169,11 @@
           <div class="latency-chip" id="latencyChip">~8s / resp</div>
         </div>
 
-        <div class="top-bar-right">
+        <div class="top-bar-right" style="gap: 10px;">
+          <div data-slot="tabs-list" class="lang-switch" role="group" aria-label="Language">
+            <button data-slot="tabs-trigger" data-state="active" class="lang-btn" data-lang="en" type="button">EN</button>
+            <button data-slot="tabs-trigger" data-state="inactive" class="lang-btn" data-lang="bn" type="button">বাংলা</button>
+          </div>
           <button class="topbar-search-btn" id="btnOpenCommandSearch" type="button">
             <i class="bx bx-search"></i>
             <span>Search…</span>

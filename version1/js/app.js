@@ -15,6 +15,7 @@ import {
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
+  uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
@@ -51,6 +52,82 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+const I18N = {
+  en: {
+    newChat: 'New conversation',
+    nav: { chat: 'Chat', documents: 'Documents', tasks: 'Tasks', progress: 'Progress', benchmark: 'Benchmark', settings: 'Settings' },
+    titles: { chat: 'Chat', documents: 'Documents', tasks: 'Tasks', progress: 'Progress', benchmark: 'Benchmark / Dev', settings: 'Settings' },
+    greeting: 'Hi Arman, How can I help you today?',
+    askPlaceholder: 'Ask anything',
+    guideMode: 'Guide Mode is on',
+    answerMode: 'Answer Mode is on',
+    guideBtn: 'Guide',
+    answerBtn: 'Answer',
+    disclaimer: 'BhaiOS can make mistakes. Check important info.',
+    contextTitle: 'Retrieved context',
+    privacy: 'All data stays on this device',
+    dropTitle: 'Drop your notes. Keep them yours.',
+    browseFiles: 'Browse files',
+    newTask: 'New task',
+    searchPlaceholder: 'Search…',
+  },
+  bn: {
+    newChat: 'নতুন কথোপকথন',
+    nav: { chat: 'চ্যাট', documents: 'ডকুমেন্টস', tasks: 'কাজ ও ডেডলাইন', progress: 'অগ্রগতি', benchmark: 'বেঞ্চমার্ক', settings: 'সেটিংস' },
+    titles: { chat: 'চ্যাট', documents: 'ডকুমেন্টস', tasks: 'কাজ ও ডেডলাইন', progress: 'অগ্রগতি', benchmark: 'বেঞ্চমার্ক / ডেভ', settings: 'সেটিংস' },
+    greeting: 'হাই আরমান, আজকে তোমাকে কীভাবে সাহায্য করতে পারি?',
+    askPlaceholder: 'যেকোনো প্রশ্ন করো…',
+    guideMode: 'গাইড মোড চালু আছে',
+    answerMode: 'উত্তর মোড চালু আছে',
+    guideBtn: 'গাইড',
+    answerBtn: 'উত্তর',
+    disclaimer: 'BhaiOS ভুল করতে পারে। গুরুত্বপূর্ণ তথ্য নোটের সাথে মিলিয়ে নাও।',
+    contextTitle: 'সংগৃহীত নোট',
+    privacy: 'সব ডেটা তোমার ডিভাইসেই সুরক্ষিত থাকে',
+    dropTitle: 'তোমার নোট এখানে ড্রপ করো।',
+    browseFiles: 'ফাইল বাছাই করো',
+    newTask: 'নতুন কাজ',
+    searchPlaceholder: 'খুঁজুন…',
+  },
+};
+
+function applyLanguage(lang) {
+  state.uiLang = lang;
+  localStorage.setItem('bhaios_lang', lang);
+  const t = I18N[lang];
+
+  document.querySelectorAll('.lang-btn').forEach((b) => {
+    b.setAttribute('data-state', b.dataset.lang === lang ? 'active' : 'inactive');
+  });
+
+  document.querySelector('#btnNewChat .nav-label').textContent = t.newChat;
+  document.querySelectorAll('.nav-item[data-screen]').forEach((btn) => {
+    const key = btn.dataset.screen;
+    const lbl = btn.querySelector('.nav-label');
+    if (lbl && t.nav[key]) lbl.textContent = t.nav[key];
+  });
+
+  document.getElementById('topBarTitle').textContent = t.titles[state.screen] || 'BhaiOS';
+  document.getElementById('welcomeGreeting').textContent = t.greeting;
+  document.getElementById('welcomeGreeting').classList.toggle('bangla', lang === 'bn');
+  document.getElementById('welcomeInput').placeholder = t.askPlaceholder;
+  document.getElementById('chatInput').placeholder = t.askPlaceholder;
+  document.getElementById('sidebarModeLabel').textContent = state.chatMode === 'guide' ? t.guideMode : t.answerMode;
+  document.querySelector('.composer-disclaimer').textContent = t.disclaimer;
+  document.querySelector('.context-title').textContent = t.contextTitle;
+  document.querySelector('.dropzone-title').textContent = t.dropTitle;
+  document.querySelector('.topbar-search-btn span').textContent = t.searchPlaceholder;
+  const popLang = document.getElementById('popLangLabel');
+  if (popLang) popLang.textContent = lang === 'bn' ? 'বাংলা' : 'English';
+
+  // Sync voice language automatically when switching to Bangla
+  if (lang === 'bn') {
+    state.voiceLang = 'bn';
+    document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = 'Voice: Bangla';
+    document.getElementById('btnChatVoiceLang').querySelector('span').textContent = 'Bangla';
+  }
 }
 
 function applyThemePreference(pref) {
@@ -92,7 +169,8 @@ function switchScreen(screenName) {
   });
 
   // Update Top Bar
-  document.getElementById('topBarTitle').textContent = SCREEN_TITLES[screenName] || 'BhaiOS';
+  const t = I18N[state.uiLang] || I18N.en;
+  document.getElementById('topBarTitle').textContent = t.titles[screenName] || SCREEN_TITLES[screenName] || 'BhaiOS';
   const showChatControls = screenName === 'chat';
   document.getElementById('chatModeSwitch').style.display = showChatControls ? 'inline-flex' : 'none';
   document.getElementById('latencyChip').style.display = showChatControls ? 'inline-flex' : 'none';
@@ -865,6 +943,19 @@ function init() {
     }
   });
 
+  // Bangla / English UI & Voice Language Switcher
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyLanguage(btn.dataset.lang);
+      showToast(btn.dataset.lang === 'bn' ? 'ভাষা: বাংলা' : 'Language: English');
+    });
+  });
+
+  document.getElementById('popLanguage').addEventListener('click', () => {
+    const next = state.uiLang === 'en' ? 'bn' : 'en';
+    applyLanguage(next);
+  });
+
   // 3-Way Theme Switcher (Device / Light / Dark)
   document.querySelectorAll('.theme-icon-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1196,6 +1287,7 @@ function init() {
   });
 
   // Initial Render
+  applyLanguage(state.uiLang);
   updateActiveModelLabels();
   loadModels();
   renderChat();
