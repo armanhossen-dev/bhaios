@@ -7,14 +7,17 @@
   --ring: rgba(32, 134, 247, 0.45);
 }
 
-/* Focus-visible ring matching shadcn/ui focus-visible:ring-[3px] */
+/* Clean focus — no browser/ring outlines */
+[data-slot]:focus,
 [data-slot]:focus-visible,
+button:focus,
 button:focus-visible,
+input:focus,
 input:focus-visible,
+select:focus,
 select:focus-visible {
   outline: none;
-  border-color: var(--teal-500);
-  box-shadow: 0 0 0 3px var(--ring);
+  box-shadow: none;
 }
 
 /* Button (data-slot="button") */
