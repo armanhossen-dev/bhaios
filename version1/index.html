@@ -226,6 +226,29 @@
                       </button>
                       <div class="model-dropdown-menu" id="welcomeModelMenu" role="menu"></div>
                     </div>
+                    <div class="mode-dropdown-wrap" id="welcomeModeWrap">
+                      <button class="effort-pill mode-toggle-btn guide" id="btnWelcomeMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
+                        <i class="bx bx-compass mode-icon"></i>
+                        <span class="mode-label">Guide Mode</span>
+                        <i class="bx bx-chevron-down"></i>
+                      </button>
+                      <div class="mode-dropdown-menu" role="menu">
+                        <button class="mode-dropdown-item active" data-set-mode="guide" type="button">
+                          <i class="bx bx-compass"></i>
+                          <div>
+                            <div class="mode-item-title">Guide Mode</div>
+                            <div class="mode-item-sub">Socratic step-by-step guidance</div>
+                          </div>
+                        </button>
+                        <button class="mode-dropdown-item" data-set-mode="answer" type="button">
+                          <i class="bx bx-bolt-circle"></i>
+                          <div>
+                            <div class="mode-item-title">Answer Mode</div>
+                            <div class="mode-item-sub">Direct, complete answers</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                   <div class="composer-tools-right">
                     <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button"
@@ -259,10 +282,29 @@
                   </button>
                   <input type="text" class="composer-input" id="chatInput" placeholder="Ask anything" />
                   <div class="pill-composer-right">
-                    <button class="effort-pill" id="btnEffortMode" type="button">
-                      <span id="effortLabel">Guide Mode</span>
-                      <i class="bx bx-chevron-down"></i>
-                    </button>
+                    <div class="mode-dropdown-wrap" id="chatModeWrap">
+                      <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
+                        <i class="bx bx-compass mode-icon"></i>
+                        <span class="mode-label" id="effortLabel">Guide Mode</span>
+                        <i class="bx bx-chevron-down"></i>
+                      </button>
+                      <div class="mode-dropdown-menu" role="menu">
+                        <button class="mode-dropdown-item active" data-set-mode="guide" type="button">
+                          <i class="bx bx-compass"></i>
+                          <div>
+                            <div class="mode-item-title">Guide Mode</div>
+                            <div class="mode-item-sub">Socratic step-by-step guidance</div>
+                          </div>
+                        </button>
+                        <button class="mode-dropdown-item" data-set-mode="answer" type="button">
+                          <i class="bx bx-bolt-circle"></i>
+                          <div>
+                            <div class="mode-item-title">Answer Mode</div>
+                            <div class="mode-item-sub">Direct, complete answers</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                     <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button"
                       title="Whisper voice language">
                       <span>Auto</span>

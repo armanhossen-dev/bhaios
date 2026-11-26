@@ -954,11 +954,18 @@ i.bx {
   gap: 10px;
   font-size: 13px;
   font-weight: 500;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .guide-status-pill:hover {
   opacity: 0.92;
+}
+
+.guide-status-pill.answer-mode {
+  background: var(--teal-900);
+  border-color: var(--teal-500);
+  color: var(--teal-400);
 }
 
 .sidebar-divider {
@@ -1585,10 +1592,95 @@ i.bx {
   align-items: center;
   gap: 5px;
   white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .effort-pill:hover {
   color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.effort-pill.guide {
+  background: var(--amber-900);
+  border-color: var(--amber-border);
+  color: var(--amber-400);
+}
+
+.effort-pill.answer {
+  background: var(--teal-900);
+  border-color: var(--teal-border);
+  color: var(--teal-400);
+}
+
+.mode-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.mode-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 230px;
+  padding: 6px;
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 85;
+}
+
+.mode-dropdown-wrap.open .mode-dropdown-menu {
+  display: flex;
+}
+
+.mode-dropdown-item {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.mode-dropdown-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.mode-dropdown-item.active {
+  background: var(--amber-900);
+  color: var(--amber-400);
+}
+
+.mode-dropdown-item[data-set-mode="answer"].active {
+  background: var(--teal-900);
+  color: var(--teal-400);
+}
+
+.mode-dropdown-item i {
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.mode-item-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.mode-item-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.3;
 }
 
 .composer-input {

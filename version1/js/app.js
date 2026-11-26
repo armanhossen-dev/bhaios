@@ -343,14 +343,39 @@ function renderSnippets() {
 
 function setChatMode(mode) {
   state.chatMode = mode;
+  const isGuide = mode === 'guide';
+
   const gBtn = document.getElementById('btnModeGuide');
   const aBtn = document.getElementById('btnModeAnswer');
-  if (gBtn) gBtn.className = `mode-btn ${mode === 'guide' ? 'active-guide' : ''}`;
-  if (aBtn) aBtn.className = `mode-btn ${mode === 'answer' ? 'active-answer' : ''}`;
-  document.getElementById('sidebarModeLabel').textContent =
-    mode === 'guide' ? 'Guide Mode is on' : 'Answer Mode is on';
-  const effortLabel = document.getElementById('effortLabel');
-  if (effortLabel) effortLabel.textContent = mode === 'guide' ? 'Guide Mode' : 'Answer Mode';
+  if (gBtn) gBtn.className = `mode-btn ${isGuide ? 'active-guide' : ''}`;
+  if (aBtn) aBtn.className = `mode-btn ${!isGuide ? 'active-answer' : ''}`;
+
+  const sidebarPill = document.getElementById('sidebarModePill');
+  const sidebarLabel = document.getElementById('sidebarModeLabel');
+  if (sidebarPill) {
+    sidebarPill.classList.toggle('answer-mode', !isGuide);
+    sidebarPill.setAttribute('data-tooltip', isGuide ? 'Guide Mode' : 'Answer Mode');
+    const icon = sidebarPill.querySelector('i');
+    if (icon) icon.className = isGuide ? 'bx bx-compass' : 'bx bx-bolt-circle';
+  }
+  if (sidebarLabel) {
+    sidebarLabel.textContent = isGuide ? 'Guide Mode is on' : 'Answer Mode is on';
+  }
+
+  document.querySelectorAll('.mode-toggle-btn').forEach((btn) => {
+    btn.classList.toggle('guide', isGuide);
+    btn.classList.toggle('answer', !isGuide);
+    const lbl = btn.querySelector('.mode-label');
+    if (lbl) lbl.textContent = isGuide ? 'Guide Mode' : 'Answer Mode';
+    const icon = btn.querySelector('.mode-icon');
+    if (icon) icon.className = isGuide ? 'bx bx-compass mode-icon' : 'bx bx-bolt-circle mode-icon';
+  });
+
+  document.querySelectorAll('.mode-dropdown-item').forEach((item) => {
+    item.classList.toggle('active', item.dataset.setMode === mode);
+  });
+
+  showToast(isGuide ? 'Guide Mode: Socratic hints' : 'Answer Mode: Direct answers');
 }
 
 function detectChatSubject(messages) {
@@ -1689,13 +1714,40 @@ function init() {
     pill.addEventListener('click', () => sendChatMessage(pill.dataset.prompt));
   });
 
-  // Chat Mode Switch
-  document.getElementById('btnModeGuide')?.addEventListener('click', () => setChatMode('guide'));
-  document.getElementById('btnModeAnswer')?.addEventListener('click', () => setChatMode('answer'));
-  document.getElementById('btnEffortMode').addEventListener('click', () => {
-    setChatMode(state.chatMode === 'guide' ? 'answer' : 'guide');
+  // Chat Mode Switchers
+  const toggleModeWrap = (wrapId) => {
+    const wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    const wasOpen = wrap.classList.contains('open');
+    document.querySelectorAll('.mode-dropdown-wrap.open').forEach((w) => w.classList.remove('open'));
+    if (!wasOpen) wrap.classList.add('open');
+  };
+
+  document.getElementById('btnWelcomeMode')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleModeWrap('welcomeModeWrap');
   });
-  document.getElementById('sidebarModePill').addEventListener('click', () => {
+
+  document.getElementById('btnEffortMode')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleModeWrap('chatModeWrap');
+  });
+
+  document.querySelectorAll('.mode-dropdown-item').forEach((item) => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setChatMode(item.dataset.setMode);
+      document.querySelectorAll('.mode-dropdown-wrap.open').forEach((w) => w.classList.remove('open'));
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.mode-dropdown-wrap')) {
+      document.querySelectorAll('.mode-dropdown-wrap.open').forEach((w) => w.classList.remove('open'));
+    }
+  });
+
+  document.getElementById('sidebarModePill')?.addEventListener('click', () => {
     setChatMode(state.chatMode === 'guide' ? 'answer' : 'guide');
   });
 
