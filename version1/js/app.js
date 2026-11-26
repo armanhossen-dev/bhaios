@@ -17,6 +17,7 @@ const state = {
   chatMode: 'guide', // 'guide' | 'answer'
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
+  sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
   activeVisionModel: 'llava-phi3:latest',
@@ -490,6 +491,95 @@ function renderProgress() {
       </div>
     `
   ).join('');
+
+  renderHeatmap();
+  renderAppTimeGraph();
+}
+
+function renderHeatmap() {
+  const grid = document.getElementById('studyHeatmap');
+  const info = document.getElementById('heatmapHoverInfo');
+  if (!grid) return;
+
+  const days = 112; // 16 weeks * 7 days
+  const today = new Date();
+  let totalHours = 0;
+  const cells = [];
+
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    // Deterministic realistic study hours
+    const seed = (d.getDate() * 13 + d.getMonth() * 7 + i * 3) % 11;
+    const hours = i === 0 ? 1.5 : seed < 3 ? 0 : seed < 6 ? 0.8 : seed < 8 ? 1.6 : seed < 10 ? 2.5 : 3.6;
+    totalHours += hours;
+    const level = hours === 0 ? 0 : hours < 1 ? 1 : hours < 2 ? 2 : hours < 3 ? 3 : 4;
+    const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    cells.push(`<div class="heatmap-cell level-${level}" data-info="${label} · ${hours.toFixed(1)} hrs studied"></div>`);
+  }
+
+  grid.innerHTML = cells.join('');
+  document.getElementById('heatmapTotalHours').textContent = `${totalHours.toFixed(1)} hrs total`;
+
+  grid.addEventListener('mouseover', (e) => {
+    const cell = e.target.closest('.heatmap-cell');
+    if (cell) info.textContent = cell.dataset.info;
+  });
+  grid.addEventListener('mouseleave', () => {
+    info.textContent = 'Hover any day to inspect hours studied · Last 16 weeks';
+  });
+}
+
+function renderAppTimeGraph() {
+  const wrap = document.getElementById('appTimeGraph');
+  if (!wrap) return;
+
+  const extraMins = Math.floor(state.sessionSeconds / 60);
+  const thisWeek = [42, 68, 35, 92, 54, 78, 65 + extraMins];
+  const lastWeek = [38, 52, 48, 64, 40, 62, 55];
+  const labels = ['Thu', 'Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed'];
+
+  const w = 520;
+  const h = 165;
+  const padL = 28;
+  const padR = 14;
+  const padT = 14;
+  const padB = 26;
+  const maxVal = 120;
+
+  const toXY = (arr) =>
+    arr.map((v, i) => {
+      const x = padL + (i / (arr.length - 1)) * (w - padL - padR);
+      const y = padT + (1 - Math.min(v, maxVal) / maxVal) * (h - padT - padB);
+      return [x, y];
+    });
+
+  const pts1 = toXY(thisWeek);
+  const pts2 = toXY(lastWeek);
+  const line1 = pts1.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const line2 = pts2.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const area1 = `${line1} L${pts1[pts1.length - 1][0].toFixed(1)},${h - padB} L${pts1[0][0].toFixed(1)},${h - padB} Z`;
+
+  wrap.innerHTML = `
+    <svg class="time-graph-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="appTimeGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+        </linearGradient>
+      </defs>
+      <line x1="${padL}" y1="${padT}" x2="${w - padR}" y2="${padT}" stroke="#1F2024" stroke-dasharray="3 3"/>
+      <line x1="${padL}" y1="${padT + (h - padT - padB) / 2}" x2="${w - padR}" y2="${padT + (h - padT - padB) / 2}" stroke="#1F2024" stroke-dasharray="3 3"/>
+      <line x1="${padL}" y1="${h - padB}" x2="${w - padR}" y2="${h - padB}" stroke="#1F2024"/>
+      <text x="0" y="${padT + 4}" fill="#5C6068" font-size="10" font-family="JetBrains Mono">120m</text>
+      <text x="4" y="${padT + (h - padT - padB) / 2 + 4}" fill="#5C6068" font-size="10" font-family="JetBrains Mono">60m</text>
+      <text x="12" y="${h - padB + 4}" fill="#5C6068" font-size="10" font-family="JetBrains Mono">0m</text>
+      <path d="${line2}" fill="none" stroke="#3F424A" stroke-width="1.5"/>
+      <path d="${area1}" fill="url(#appTimeGrad)"/>
+      <path d="${line1}" fill="none" stroke="#3B82F6" stroke-width="2"/>
+      ${pts1.map((p, i) => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#3B82F6"/><text x="${p[0].toFixed(1)}" y="${h - 6}" text-anchor="middle" fill="#5C6068" font-size="10" font-family="Inter">${labels[i]}</text>`).join('')}
+    </svg>
+  `;
 }
 
 function renderBenchmark() {
@@ -1114,6 +1204,19 @@ function init() {
   renderTasks();
   renderProgress();
   renderBenchmark();
+
+  // Live in-app time tracker (updates every second)
+  setInterval(() => {
+    state.sessionSeconds += 1;
+    localStorage.setItem('bhaios_session_secs', String(state.sessionSeconds));
+    const timerEl = document.getElementById('liveSessionTimer');
+    if (timerEl) {
+      const m = Math.floor(state.sessionSeconds / 60);
+      const s = String(state.sessionSeconds % 60).padStart(2, '0');
+      timerEl.textContent = `Live · ${m}m ${s}s`;
+    }
+    if (state.sessionSeconds % 60 === 0) renderAppTimeGraph();
+  }, 1000);
 }
 
 init();

@@ -469,22 +469,69 @@
             </div>
           </div>
 
+          <!-- GitHub-Style Study Activity Heatmap (Days & Hours) -->
+          <div class="light-card heatmap-card">
+            <div class="heatmap-header">
+              <div>
+                <div class="serif" style="font-size: 20px;">Study activity</div>
+                <div style="font-size: 12px; color: var(--text-secondary);" id="heatmapHoverInfo">
+                  Hover any day to inspect hours studied · Last 16 weeks
+                </div>
+              </div>
+              <span class="mono" style="font-size: 12px; color: var(--text-secondary);" id="heatmapTotalHours">118.5 hrs total</span>
+            </div>
+
+            <div class="heatmap-wrap">
+              <div class="heatmap-days">
+                <span>Mon</span><span>Wed</span><span>Fri</span>
+              </div>
+              <div class="heatmap-grid" id="studyHeatmap"></div>
+            </div>
+
+            <div class="heatmap-footer">
+              <span class="mono" style="font-size: 11px; color: var(--text-muted);">112 days tracked locally</span>
+              <div class="heatmap-legend">
+                <span>Less</span>
+                <span class="heatmap-cell level-0"></span>
+                <span class="heatmap-cell level-1"></span>
+                <span class="heatmap-cell level-2"></span>
+                <span class="heatmap-cell level-3"></span>
+                <span class="heatmap-cell level-4"></span>
+                <span>More</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live App Time Spent Area Graph + Focus Breakdown -->
           <div class="progress-charts-grid">
             <div class="light-card">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
                 <div>
-                  <div class="serif" style="font-size: 22px;">Your study rhythm</div>
-                  <div style="font-size: 12px; color: var(--text-secondary);">Last 7 days · minutes studied</div>
+                  <div class="serif" style="font-size: 20px;">Time spent in app</div>
+                  <div style="font-size: 12px; color: var(--text-secondary);">Daily minutes active · This week vs last week</div>
                 </div>
-                <span style="font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 6px;"><i class="bx bxs-circle" style="font-size: 8px; color: var(--teal-500);"></i> Study time</span>
+                <span class="mono" id="liveSessionTimer" style="font-size: 11.5px; color: var(--teal-400); padding: 3px 9px; border-radius: 999px; background: var(--teal-900);">
+                  Live · 0m 00s
+                </span>
               </div>
-              <div class="rhythm-bars" id="rhythmBars"></div>
+              <div id="appTimeGraph"></div>
             </div>
 
             <div class="light-card">
-              <div class="serif" style="font-size: 22px;">Where your focus went</div>
+              <div class="serif" style="font-size: 20px;">Where your focus went</div>
               <div class="focus-bars" id="focusBars"></div>
             </div>
+          </div>
+
+          <div class="light-card" style="margin-bottom: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <div class="serif" style="font-size: 20px;">Your study rhythm</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">Last 7 days · minutes studied</div>
+              </div>
+              <span style="font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 6px;"><i class="bx bxs-circle" style="font-size: 8px; color: var(--teal-500);"></i> Study time</span>
+            </div>
+            <div class="rhythm-bars" id="rhythmBars"></div>
           </div>
 
           <div class="momentum-banner">
