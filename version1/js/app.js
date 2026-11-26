@@ -15,6 +15,7 @@ import {
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
+  uploadPipeline: 'VLM',
   chatStarted: false,
   messages: [...INITIAL_MESSAGES],
   documents: [...DOCUMENTS_DATA],
@@ -278,23 +279,34 @@ function renderDocuments() {
     .join('');
 }
 
-function addSimulatedDocument(filename) {
+function addSimulatedDocument(fileOrName, attachToChat = false) {
+  const filename = typeof fileOrName === 'string' ? fileOrName : fileOrName.name;
+  const sizeStr =
+    typeof fileOrName === 'object' && fileOrName.size
+      ? `${Math.max(0.1, fileOrName.size / (1024 * 1024)).toFixed(1)} MB`
+      : '1.9 MB';
+
   state.documents.unshift({
     id: `d-${Date.now()}`,
     topic: 'Uploaded note',
     formula: filename.replace(/\.[^/.]+$/, ''),
     title: filename,
     pages: 8,
-    size: '1.9 MB',
+    size: sizeStr,
     subject: 'Physics',
-    mode: 'VLM',
+    mode: state.uploadPipeline,
     status: 'processing',
     progress: 40,
     eta: '1 min left',
     isBangla: false,
   });
   renderDocuments();
-  showToast(`Indexing "${filename}" locally with Qwen2.5-VL...`);
+  showToast(`Indexing "${filename}" locally via ${state.uploadPipeline}...`);
+
+  if (attachToChat) {
+    document.getElementById('uploadModal').classList.remove('open');
+    sendChatMessage(`Uploaded "${filename}" (${state.uploadPipeline}). Help me study this.`);
+  }
 
   setTimeout(() => {
     state.documents[0].status = 'indexed';
@@ -433,7 +445,41 @@ function init() {
   document.getElementById('welcomeInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
   });
-  document.getElementById('btnWelcomeScan').addEventListener('click', () => switchScreen('documents'));
+  const uploadModal = document.getElementById('uploadModal');
+  document.getElementById('btnWelcomeScan').addEventListener('click', () => uploadModal.classList.add('open'));
+  document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));
+  document.getElementById('btnCloseUploadX').addEventListener('click', () => uploadModal.classList.remove('open'));
+  document.getElementById('btnChatVoice').addEventListener('click', () => {
+    showToast('Whisper offline voice input is planned in Phase 2');
+  });
+
+  // Pipeline toggles (Documents & Upload Modal)
+  document.querySelectorAll('.doc-pipe-btn, .modal-pipe-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.uploadPipeline = btn.dataset.pipe;
+      document.querySelectorAll('.doc-pipe-btn, .modal-pipe-btn').forEach((b) => {
+        b.setAttribute('data-state', b.dataset.pipe === state.uploadPipeline ? 'active' : 'inactive');
+      });
+    });
+  });
+
+  // Modal upload handlers
+  const modalFileInput = document.getElementById('modalFileInput');
+  document.getElementById('btnModalBrowse').addEventListener('click', () => modalFileInput.click());
+  modalFileInput.addEventListener('change', (e) => {
+    Array.from(e.target.files).forEach((f) => addSimulatedDocument(f, true));
+  });
+  const modalDrop = document.getElementById('modalDropzone');
+  modalDrop.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    modalDrop.classList.add('dragover');
+  });
+  modalDrop.addEventListener('dragleave', () => modalDrop.classList.remove('dragover'));
+  modalDrop.addEventListener('drop', (e) => {
+    e.preventDefault();
+    modalDrop.classList.remove('dragover');
+    Array.from(e.dataTransfer.files).forEach((f) => addSimulatedDocument(f, true));
+  });
   document.querySelectorAll('.suggestion-pill').forEach((pill) => {
     pill.addEventListener('click', () => sendChatMessage(pill.dataset.prompt));
   });
@@ -452,11 +498,6 @@ function init() {
   document.getElementById('btnSend').addEventListener('click', () => sendChatMessage());
   document.getElementById('chatInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') sendChatMessage();
-  });
-
-  document.getElementById('btnChatAttach').addEventListener('click', () => switchScreen('documents'));
-  document.getElementById('btnChatVoice').addEventListener('click', () => {
-    showToast('Whisper offline voice input is planned in Phase 2');
   });
 
   // Context Panel Collapse & Search
@@ -497,7 +538,7 @@ function init() {
   const fileInput = document.getElementById('fileUploadInput');
   document.getElementById('btnBrowseFiles').addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (e) => {
-    if (e.target.files[0]) addSimulatedDocument(e.target.files[0].name);
+    Array.from(e.target.files).forEach((f) => addSimulatedDocument(f, false));
   });
 
   const dropzone = document.getElementById('dropzone');
@@ -509,7 +550,7 @@ function init() {
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropzone.classList.remove('dragover');
-    if (e.dataTransfer.files[0]) addSimulatedDocument(e.dataTransfer.files[0].name);
+    Array.from(e.dataTransfer.files).forEach((f) => addSimulatedDocument(f, false));
   });
 
   document.getElementById('docSearchInput').addEventListener('input', (e) => {

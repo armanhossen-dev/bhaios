@@ -251,19 +251,29 @@
         <div class="screen-scroll">
           <div class="screen-subtitle" style="margin-bottom: 18px;">Your knowledge, kept close.</div>
 
-          <div class="dropzone" id="dropzone">
-            <div class="dropzone-left">
-              <div class="dropzone-icon">
-                <i class="bx bx-upload" style="font-size: 26px;"></i>
+          <div class="dropzone-centered" id="dropzone">
+            <div class="dropzone-inner">
+              <div class="dropzone-cloud-icon">
+                <i class="bx bx-cloud-upload"></i>
               </div>
-              <div>
-                <div class="dropzone-title">Drop your notes. Keep them yours.</div>
-                <div class="dropzone-sub">PDF, JPG or PNG · up to 50 MB · Bangla &amp; English</div>
-                <div class="dropzone-privacy"><i class="bx bx-check"></i> OCR and indexing run entirely on your device</div>
+              <div class="dropzone-title">Drop your notes. Keep them yours.</div>
+              <div class="dropzone-sub">PDF, JPG or PNG · up to 50 MB · Bangla &amp; English</div>
+              <div class="dropzone-actions">
+                <input type="file" id="fileUploadInput" hidden multiple accept=".pdf,.png,.jpg,.jpeg" />
+                <button data-slot="button" data-variant="secondary" class="pill-btn" id="btnBrowseFiles" type="button">
+                  <i class="bx bx-folder-open"></i> Browse files
+                </button>
+                <div data-slot="tabs-list" class="pipeline-toggle">
+                  <button data-slot="tabs-trigger" data-state="active" class="doc-pipe-btn" data-pipe="VLM" type="button">VLM</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="doc-pipe-btn" data-pipe="OCR" type="button">OCR</button>
+                </div>
               </div>
+              <div class="dropzone-privacy"><i class="bx bx-check-shield"></i> OCR &amp; VLM indexing run 100% on your device</div>
             </div>
-            <input type="file" id="fileUploadInput" hidden accept=".pdf,.png,.jpg,.jpeg" />
-            <button class="btn-primary" id="btnBrowseFiles" type="button"><i class="bx bx-plus"></i> Browse files</button>
+            <div class="dropzone-file-badge" aria-hidden="true">
+              <i class="bx bxs-file-pdf"></i>
+              <span>PDF</span>
+            </div>
           </div>
 
           <div class="library-toolbar">
@@ -565,6 +575,43 @@
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:6px;">
         <button data-slot="button" data-variant="outline" id="btnCancelTask" type="button">Cancel</button>
         <button data-slot="button" data-variant="default" id="btnSaveTask" type="button">Save task</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Study Material Dialog (shadcn/ui Dialog + Centered Dropzone) -->
+  <div data-slot="dialog-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="dialogUploadTitle">
+    <div data-slot="dialog-content" style="max-width: 500px;">
+      <button data-slot="dialog-close" id="btnCloseUploadX" type="button" aria-label="Close"><i class="bx bx-x" style="font-size: 18px;"></i></button>
+      <div>
+        <h3 class="serif" id="dialogUploadTitle" style="font-size: 22px; font-weight: 600;">Upload study material</h3>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Processed locally via Qwen2.5-VL or Tesseract OCR. Nothing leaves your laptop.</p>
+      </div>
+
+      <div class="dropzone-centered compact" id="modalDropzone">
+        <div class="dropzone-inner">
+          <div class="dropzone-cloud-icon">
+            <i class="bx bx-cloud-upload"></i>
+          </div>
+          <div class="dropzone-title" style="font-size: 17px;">Drag &amp; drop PDF, scan, or handwritten note</div>
+          <div class="dropzone-sub">Bangla &amp; English · JPG, PNG, PDF</div>
+          <input type="file" id="modalFileInput" hidden multiple accept=".pdf,.png,.jpg,.jpeg" />
+          <button data-slot="button" data-variant="secondary" class="pill-btn" id="btnModalBrowse" type="button" style="margin-top: 10px;">
+            <i class="bx bx-upload"></i> Choose file
+          </button>
+        </div>
+        <div class="dropzone-file-badge" aria-hidden="true">
+          <i class="bx bxs-file-pdf"></i>
+          <span>PDF</span>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size: 12px; color: var(--text-secondary);">Pipeline:</span>
+        <div data-slot="tabs-list">
+          <button data-slot="tabs-trigger" data-state="active" class="modal-pipe-btn" data-pipe="VLM" type="button">VLM (Handwriting)</button>
+          <button data-slot="tabs-trigger" data-state="inactive" class="modal-pipe-btn" data-pipe="OCR" type="button">OCR (Printed)</button>
+        </div>
       </div>
     </div>
   </div>
