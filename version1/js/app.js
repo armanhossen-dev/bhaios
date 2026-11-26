@@ -738,33 +738,35 @@ function renderCalendar() {
   if (!grid) return;
 
   const anchor = state.calendarAnchor;
+  const year = anchor.getFullYear();
+  const month = anchor.getMonth();
   monthLabel.textContent = anchor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-  // Get Monday of anchor's week
-  const day = anchor.getDay();
-  const diffToMon = (day === 0 ? -6 : 1 - day);
-  const monday = new Date(anchor);
-  monday.setDate(anchor.getDate() + diffToMon);
+  const firstOfMonth = new Date(year, month, 1);
+  const startOffset = firstOfMonth.getDay() === 0 ? 6 : firstOfMonth.getDay() - 1; // Mon=0..Sun=6
+  const startDate = new Date(year, month, 1 - startOffset);
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const selectedKey = state.selectedDateKey || todayKey;
 
   const dows = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
   const cells = dows.map((d) => `<span class="cal-dow">${d}</span>`);
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
     const key = d.toISOString().slice(0, 10);
-    const isSelected = (state.selectedDateKey || anchor.toISOString().slice(0, 10)) === key;
-    const hasDot = i >= 1 && i <= 4;
+    const isOtherMonth = d.getMonth() !== month;
+    const isSelected = selectedKey === key;
+    const isToday = todayKey === key;
     cells.push(`
-      <button class="cal-day-btn ${isSelected ? 'selected' : ''}" data-cal-date="${key}" type="button">
+      <button class="cal-day-btn ${isOtherMonth ? 'muted' : ''} ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" data-cal-date="${key}" type="button">
         <span>${d.getDate()}</span>
-        ${hasDot ? '<span class="cal-dot"></span>' : ''}
       </button>
     `);
   }
 
   grid.innerHTML = cells.join('');
-  const activeDate = state.selectedDateKey ? new Date(state.selectedDateKey + 'T12:00:00') : anchor;
+  const activeDate = state.selectedDateKey ? new Date(state.selectedDateKey + 'T12:00:00') : new Date();
   selectedLabel.innerHTML = `<span>${activeDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}</span>`;
 }
 
@@ -1538,13 +1540,13 @@ function init() {
     }
   });
 
-  // Calendar Navigation & Date Selection
+  // Calendar Navigation & Date Selection (Full Month)
   document.getElementById('btnCalPrev').addEventListener('click', () => {
-    state.calendarAnchor.setDate(state.calendarAnchor.getDate() - 7);
+    state.calendarAnchor.setMonth(state.calendarAnchor.getMonth() - 1);
     renderCalendar();
   });
   document.getElementById('btnCalNext').addEventListener('click', () => {
-    state.calendarAnchor.setDate(state.calendarAnchor.getDate() + 7);
+    state.calendarAnchor.setMonth(state.calendarAnchor.getMonth() + 1);
     renderCalendar();
   });
   document.getElementById('calendarGrid').addEventListener('click', (e) => {

@@ -2600,10 +2600,20 @@ i.bx {
   color: var(--text-primary);
 }
 
+.cal-day-btn.muted {
+  color: var(--text-muted);
+  opacity: 0.45;
+}
+
+.cal-day-btn.today {
+  border: 1px solid var(--teal-500);
+}
+
 .cal-day-btn.selected {
   background: var(--teal-500);
   color: #ffffff;
   font-weight: 600;
+  opacity: 1;
 }
 
 html[data-font-size="small"] {
