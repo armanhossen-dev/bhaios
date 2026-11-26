@@ -47,6 +47,8 @@ const state = {
   notifications: [],
   isGenerating: false,
   abortController: null,
+  currentChatId: null,
+  savedChats: JSON.parse(localStorage.getItem('bhaios_chats') || '[]'),
 };
 
 const SCREEN_TITLES = {
@@ -351,6 +353,7 @@ function renderChat() {
         <div class="msg-actions">
           <button class="msg-action-btn copy-msg-btn" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
           <button class="msg-action-btn edit-msg-btn" type="button" title="Edit"><i class="bx bx-pencil"></i></button>
+          ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
         </div>
       `;
       container.appendChild(group);
@@ -370,6 +373,7 @@ function renderChat() {
             <button class="msg-action-btn regen-msg-btn" type="button" title="Regenerate"><i class="bx bx-refresh"></i></button>
             <button class="msg-action-btn" type="button" title="More"><i class="bx bx-dots-horizontal-rounded"></i></button>
           </div>
+          ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
           ${msg.hintChip ? `<span class="hint-chip">${msg.hintChip}</span>` : ''}
           ${msg.sourceId ? `<button class="link-source" data-source="${msg.sourceId}" type="button">Show source <i class="bx bx-link-external"></i></button>` : ''}
         </div>
@@ -452,6 +456,125 @@ function setChatMode(mode) {
   if (effortLabel) effortLabel.textContent = mode === 'guide' ? 'Guide Mode' : 'Answer Mode';
 }
 
+function detectChatSubject(messages) {
+  const combined = messages.map((m) => `${m.bangla || ''} ${m.english || ''}`).join(' ').toLowerCase();
+  if (/newton|নিউটন|force|বল|velocity|বেগ|acceleration|toron|ত্বরণ|gravity|physics|পদার্থ|motion|গতি|ohm|wave|তরঙ্গ|optics/.test(combined)) {
+    return 'Physics';
+  }
+  if (/chem|রসায়ন|mole|মোল|acid|অম্ল|reaction|বিক্রিয়া|organic|জৈব|atom|পরমাণু|periodic|bond/.test(combined)) {
+    return 'Chemistry';
+  }
+  if (/math|গণিত|calculus|integral|derivative|matrix|ম্যাট্রিক্স|trigonometry|ত্রিকোণমিতি|equation|সমীকরণ|algebra|geometry/.test(combined)) {
+    return 'Math';
+  }
+  if (/biology|জীববিজ্ঞান|cell|কোষ|dna|rna|genetics|photosynthesis|সালোকসংশ্লেষণ|enzyme/.test(combined)) {
+    return 'Biology';
+  }
+  if (/বাংলা|bangla|ব্যাকরণ|সন্ধি|সমাস|কবিতা|গদ্য/.test(combined)) {
+    return 'Bangla';
+  }
+  if (/english|grammar|essay|tense|paragraph|ইংরেজি|vocabulary/.test(combined)) {
+    return 'English';
+  }
+  if (/ict|python|javascript|html|css|binary|বাইনারি|database|sql|algorithm|code|কোড/.test(combined)) {
+    return 'ICT';
+  }
+  return 'General';
+}
+
+function formatChatTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return timeStr;
+  return `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })} · ${timeStr}`;
+}
+
+function persistSavedChats() {
+  localStorage.setItem('bhaios_chats', JSON.stringify(state.savedChats));
+}
+
+function saveCurrentChat() {
+  if (!state.chatStarted || !state.messages.length) return;
+  const firstUser = state.messages.find((m) => m.role === 'student');
+  const rawTitle = (firstUser?.bangla || firstUser?.english || 'Study session').trim();
+  const title = rawTitle.length > 34 ? `${rawTitle.slice(0, 34)}…` : rawTitle;
+  const subject = detectChatSubject(state.messages);
+  const nowIso = new Date().toISOString();
+
+  if (!state.currentChatId) {
+    state.currentChatId = `chat-${Date.now()}`;
+  }
+
+  const entry = {
+    id: state.currentChatId,
+    title,
+    subject,
+    updatedAt: nowIso,
+    messages: state.messages.filter((m) => !String(m.id).startsWith('a-pending-')),
+  };
+
+  const existingIdx = state.savedChats.findIndex((c) => c.id === state.currentChatId);
+  if (existingIdx !== -1) {
+    state.savedChats.splice(existingIdx, 1);
+  }
+  state.savedChats.unshift(entry);
+  if (state.savedChats.length > 40) state.savedChats.pop();
+  persistSavedChats();
+  renderSavedChats();
+}
+
+function loadSavedChat(chatId) {
+  const chat = state.savedChats.find((c) => c.id === chatId);
+  if (!chat) return;
+  state.currentChatId = chat.id;
+  state.chatStarted = true;
+  state.messages = chat.messages.map((m) => ({ ...m }));
+  switchScreen('chat');
+  renderChat();
+  renderSavedChats();
+}
+
+function deleteSavedChat(chatId) {
+  state.savedChats = state.savedChats.filter((c) => c.id !== chatId);
+  persistSavedChats();
+  if (state.currentChatId === chatId) {
+    state.currentChatId = null;
+    state.chatStarted = false;
+    state.messages = [];
+    renderChat();
+  }
+  renderSavedChats();
+  showToast('Chat deleted');
+}
+
+function renderSavedChats() {
+  const list = document.getElementById('savedChatsList');
+  if (!list) return;
+  if (!state.savedChats.length) {
+    list.innerHTML = `<div class="saved-chat-empty">No saved chats yet.</div>`;
+    return;
+  }
+  list.innerHTML = state.savedChats
+    .map(
+      (c) => `
+      <div class="saved-chat-item ${state.currentChatId === c.id ? 'active' : ''}" data-chat-id="${c.id}">
+        <div class="saved-chat-info">
+          <div class="saved-chat-title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</div>
+          <div class="saved-chat-meta">
+            <span class="saved-chat-subject">${escapeHtml(c.subject || 'General')}</span>
+            <span class="saved-chat-time">${formatChatTime(c.updatedAt)}</span>
+          </div>
+        </div>
+        <button class="saved-chat-del" data-del-chat="${c.id}" type="button" title="Delete chat" aria-label="Delete chat">
+          <i class="bx bx-trash"></i>
+        </button>
+      </div>`
+    )
+    .join('');
+}
+
 function stopChatGeneration() {
   if (state.abortController) {
     state.abortController.abort();
@@ -468,14 +591,17 @@ async function sendChatMessage(customText) {
   if (!state.chatStarted) {
     state.chatStarted = true;
     state.messages = [];
+    state.currentChatId = `chat-${Date.now()}`;
   }
 
+  const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const hasBangla = /[\u0980-\u09FF]/.test(text);
   state.messages.push({
     id: `m-${Date.now()}`,
     role: 'student',
     bangla: hasBangla ? text : '',
     english: hasBangla ? '' : text,
+    time: nowTime,
   });
 
   const pendingId = `a-pending-${Date.now()}`;
@@ -529,6 +655,7 @@ async function sendChatMessage(customText) {
         role: 'assistant',
         mode: state.chatMode,
         english: data.reply || 'No response received.',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         hintChip: data.used_vision
           ? `VLM · ${data.model_used} · ${data.latency_s}s`
           : `${data.model_used} · ${data.latency_s}s`,
@@ -581,6 +708,7 @@ async function sendChatMessage(customText) {
     state.abortController = null;
     syncSendButtons();
   }
+  saveCurrentChat();
   renderChat();
 }
 
@@ -1440,11 +1568,39 @@ function init() {
   });
 
   document.getElementById('btnNewChat').addEventListener('click', () => {
+    state.currentChatId = null;
     state.chatStarted = false;
+    state.messages = [];
     switchScreen('chat');
     renderChat();
+    renderSavedChats();
     document.getElementById('welcomeInput').focus();
     showToast('Started a fresh study session');
+  });
+
+  document.getElementById('savedChatsList')?.addEventListener('click', (e) => {
+    const delBtn = e.target.closest('.saved-chat-del');
+    if (delBtn) {
+      e.stopPropagation();
+      deleteSavedChat(delBtn.dataset.delChat);
+      return;
+    }
+    const item = e.target.closest('.saved-chat-item');
+    if (item) {
+      loadSavedChat(item.dataset.chatId);
+    }
+  });
+
+  document.getElementById('btnClearSavedChats')?.addEventListener('click', () => {
+    if (!state.savedChats.length) return;
+    state.savedChats = [];
+    state.currentChatId = null;
+    state.chatStarted = false;
+    state.messages = [];
+    persistSavedChats();
+    renderSavedChats();
+    renderChat();
+    showToast('Cleared all saved chats');
   });
 
   document.getElementById('btnWelcomeAvro')?.addEventListener('click', toggleAvroMode);
@@ -1743,6 +1899,7 @@ function init() {
   updateRightClock();
   renderNotifications();
   renderRightUploadedFiles();
+  renderSavedChats();
   renderChat();
   renderSnippets();
   renderDocuments();
