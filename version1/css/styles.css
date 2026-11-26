@@ -1428,32 +1428,40 @@ i.bx {
   align-items: center;
 }
 
-.context-panel.collapsed .context-title-wrap {
-  display: none;
-}
-
+.context-panel.collapsed .right-time-card,
 .context-panel.collapsed .context-body {
   display: none;
 }
 
 .context-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  width: 100%;
-}
-
-.context-title-wrap {
-  display: flex;
-  align-items: center;
   gap: 8px;
+  width: 100%;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-hairline);
 }
 
-.context-title {
-  font-size: 14px;
+.right-time-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.right-clock-time {
+  font-family: var(--font-mono);
+  font-size: 22px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
   color: var(--text-primary);
+  line-height: 1.15;
+}
+
+.right-clock-date {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .context-collapse-btn {
@@ -1478,6 +1486,169 @@ i.bx {
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  gap: 16px;
+  padding-top: 14px;
+}
+
+.right-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 8px;
+}
+
+.right-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.right-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.right-section-title i {
+  color: var(--teal-400);
+  font-size: 15px;
+}
+
+.right-count-badge {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+
+.right-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 3px 7px;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.right-clear-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.right-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.right-empty {
+  padding: 16px 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  border: 1px dashed var(--border-card);
+  border-radius: 10px;
+}
+
+.right-notif-item {
+  padding: 9px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.right-notif-text {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.right-notif-time {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.right-file-item {
+  padding: 9px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.right-file-item:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+
+.right-file-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.right-file-left i {
+  font-size: 17px;
+  color: var(--teal-400);
+  flex-shrink: 0;
+}
+
+.right-file-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.right-file-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right-file-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.right-file-ask {
+  font-size: 11px;
+  color: var(--teal-400);
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--teal-900);
+  flex-shrink: 0;
+}
+
+.right-file-ask:hover {
+  color: #ffffff;
+  background: var(--teal-500);
 }
 
 .context-sub {

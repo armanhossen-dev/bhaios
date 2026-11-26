@@ -44,6 +44,7 @@ const state = {
   docQuery: '',
   snippetQuery: '',
   highlightedSnippet: null,
+  notifications: [],
 };
 
 const SCREEN_TITLES = {
@@ -60,9 +61,15 @@ const SCREEN_TITLES = {
    ========================================================================== */
 function showToast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2400);
+  if (el) {
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2400);
+  }
+  const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  state.notifications.unshift({ id: `n-${Date.now()}`, text: msg, time: timeStr });
+  if (state.notifications.length > 25) state.notifications.pop();
+  renderNotifications();
 }
 
 const I18N = {
@@ -128,7 +135,6 @@ function applyLanguage(lang) {
   document.getElementById('chatInput').placeholder = t.askPlaceholder;
   document.getElementById('sidebarModeLabel').textContent = state.chatMode === 'guide' ? t.guideMode : t.answerMode;
   document.querySelector('.composer-disclaimer').textContent = t.disclaimer;
-  document.querySelector('.context-title').textContent = t.contextTitle;
   document.querySelector('.dropzone-title').textContent = t.dropTitle;
   const searchSpan = document.querySelector('.topbar-search-btn span');
   if (searchSpan) searchSpan.textContent = t.searchPlaceholder;
@@ -376,41 +382,63 @@ function renderChat() {
   container.scrollTop = container.scrollHeight;
 }
 
-function renderSnippets() {
-  const list = document.getElementById('snippetsList');
-  const q = state.snippetQuery.trim().toLowerCase();
-  const filtered = state.snippets.filter(
-    (s) =>
-      !q ||
-      s.title.toLowerCase().includes(q) ||
-      s.body.toLowerCase().includes(q) ||
-      s.index.toLowerCase().includes(q)
-  );
+function updateRightClock() {
+  const timeEl = document.getElementById('rightClockTime');
+  const dateEl = document.getElementById('rightClockDate');
+  if (!timeEl || !dateEl) return;
+  const now = new Date();
+  timeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  dateEl.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+}
 
-  document.getElementById('snippetCountLabel').textContent = `${filtered.length} snippet${filtered.length === 1 ? '' : 's'} from your documents`;
-  if (!filtered.length) {
-    list.innerHTML = `<div style="padding: 18px 8px; font-size: 12.5px; color: var(--text-muted); text-align: center;">Upload a PDF or image to see retrieved context here.</div>`;
+function renderNotifications() {
+  const feed = document.getElementById('notificationsFeed');
+  const badge = document.getElementById('notifCountBadge');
+  if (badge) badge.textContent = String(state.notifications.length);
+  if (!feed) return;
+  if (!state.notifications.length) {
+    feed.innerHTML = `<div class="right-empty">No notifications yet.</div>`;
     return;
   }
-
-  list.innerHTML = filtered
+  feed.innerHTML = state.notifications
     .map(
-      (s) => `
-      <div class="snippet-card ${state.highlightedSnippet === s.id ? 'highlighted' : ''}" id="snippet-${s.id}">
-        <div class="snippet-top">
-          <span class="snippet-index">${s.index}</span>
-          <span class="snippet-badge ${s.isBangla ? 'note' : 'pdf'}">${s.isBangla ? 'VLM' : 'PDF'}</span>
-        </div>
-        <div class="snippet-title ${s.isBangla ? 'bangla' : ''}">${s.title}</div>
-        <div class="snippet-body ${s.isBangla ? 'bangla' : ''}">${s.body}</div>
-        <div class="snippet-footer">
-          <span class="snippet-source"><i class="bx ${s.isBangla ? 'bx-image' : 'bx-file'}"></i> ${s.source}</span>
-          <button class="snippet-ask-btn" data-ask="Explain ${s.title} from ${s.source}" type="button">Ask <i class="bx bx-right-arrow-alt"></i></button>
-        </div>
-      </div>
-    `
+      (n) => `
+      <div class="right-notif-item">
+        <div class="right-notif-text">${escapeHtml(n.text)}</div>
+        <div class="right-notif-time">${n.time}</div>
+      </div>`
     )
     .join('');
+}
+
+function renderRightUploadedFiles() {
+  const list = document.getElementById('rightUploadedFiles');
+  const badge = document.getElementById('rightFilesCount');
+  if (badge) badge.textContent = String(state.documents.length);
+  if (!list) return;
+  if (!state.documents.length) {
+    list.innerHTML = `<div class="right-empty">No files uploaded yet.</div>`;
+    return;
+  }
+  list.innerHTML = state.documents
+    .map(
+      (d) => `
+      <div class="right-file-item">
+        <div class="right-file-left">
+          <i class="bx ${d.isBangla || d.mode === 'VLM' ? 'bx-image' : 'bx-file'}"></i>
+          <div class="right-file-meta">
+            <span class="right-file-name" title="${escapeHtml(d.title)}">${escapeHtml(d.title)}</span>
+            <span class="right-file-sub">${d.pages}p · ${d.size}</span>
+          </div>
+        </div>
+        <button class="right-file-ask" data-ask="Summarize ${escapeHtml(d.title)}" type="button">Ask</button>
+      </div>`
+    )
+    .join('');
+}
+
+function renderSnippets() {
+  renderRightUploadedFiles();
 }
 
 function setChatMode(mode) {
@@ -548,6 +576,7 @@ function renderDocuments() {
   document.getElementById('navDocCount').textContent = String(state.documents.length);
   document.getElementById('libraryCountLabel').textContent = `${state.documents.length} document${state.documents.length === 1 ? '' : 's'}`;
   document.getElementById('docsShowingLabel').textContent = `Showing ${list.length} of ${state.documents.length} documents`;
+  renderRightUploadedFiles();
 
   if (!list.length) {
     grid.innerHTML = `<div style="grid-column: 1 / -1; padding: 32px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border-card); border-radius: 12px;">No documents uploaded yet. Drop a PDF, JPG, or PNG above.</div>`;
@@ -1480,7 +1509,7 @@ function init() {
     if (e.key === 'Enter') sendChatMessage();
   });
 
-  // Context Panel Collapse & Search
+  // Right Panel Collapse, Notifications & Uploaded Files
   document.getElementById('btnToggleContext').addEventListener('click', () => {
     const panel = document.getElementById('contextPanel');
     panel.classList.toggle('collapsed');
@@ -1489,24 +1518,21 @@ function init() {
       : '<i class="bx bx-chevron-right"></i>';
   });
 
-  document.getElementById('snippetSearch').addEventListener('input', (e) => {
-    state.snippetQuery = e.target.value;
-    renderSnippets();
+  document.getElementById('btnClearNotifications').addEventListener('click', () => {
+    state.notifications = [];
+    renderNotifications();
   });
 
-  document.getElementById('snippetsList').addEventListener('click', (e) => {
-    const askBtn = e.target.closest('.snippet-ask-btn');
+  document.getElementById('btnRightUpload').addEventListener('click', () => {
+    document.getElementById('uploadModal').classList.add('open');
+  });
+
+  document.getElementById('rightUploadedFiles').addEventListener('click', (e) => {
+    const askBtn = e.target.closest('.right-file-ask');
     if (askBtn) sendChatMessage(askBtn.dataset.ask);
   });
 
   document.getElementById('chatMessages').addEventListener('click', (e) => {
-    const srcBtn = e.target.closest('.link-source');
-    if (srcBtn) {
-      state.highlightedSnippet = srcBtn.dataset.source;
-      renderSnippets();
-      showToast('Highlighted local source in context panel');
-      return;
-    }
     const copyBtn = e.target.closest('.copy-msg-btn');
     if (copyBtn && navigator.clipboard) {
       navigator.clipboard.writeText(copyBtn.dataset.text || '');
@@ -1666,6 +1692,9 @@ function init() {
   loadModels();
   refreshSystemHealth();
   setInterval(refreshSystemHealth, 4000);
+  updateRightClock();
+  renderNotifications();
+  renderRightUploadedFiles();
   renderChat();
   renderSnippets();
   renderDocuments();
@@ -1674,8 +1703,9 @@ function init() {
   renderProgress();
   renderBenchmark();
 
-  // Live in-app time tracker (updates every second)
+  // Live in-app time tracker & clock (updates every second)
   setInterval(() => {
+    updateRightClock();
     state.sessionSeconds += 1;
     localStorage.setItem('bhaios_session_secs', String(state.sessionSeconds));
     const timerEl = document.getElementById('liveSessionTimer');

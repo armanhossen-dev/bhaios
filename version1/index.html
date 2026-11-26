@@ -283,24 +283,38 @@
 
           <aside class="context-panel" id="contextPanel">
             <div class="context-header">
-              <div class="context-title-wrap">
-                <i class="bx bx-book-bookmark" style="color: var(--teal-400); font-size: 16px;"></i>
-                <span class="context-title">Retrieved context</span>
+              <div class="right-time-card">
+                <div class="right-clock-time" id="rightClockTime">--:--:--</div>
+                <div class="right-clock-date" id="rightClockDate">Loading date…</div>
               </div>
-              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel" aria-label="Toggle context panel">
+              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel" aria-label="Toggle right panel">
                 <i class="bx bx-chevron-right"></i>
               </button>
             </div>
+
             <div class="context-body">
-              <div class="context-sub" id="snippetCountLabel">0 snippets from your documents</div>
-              <div class="context-search-wrap">
-                <i class="bx bx-search"></i>
-                <input type="text" class="context-search" id="snippetSearch" value="" placeholder="Filter local notes…" />
+              <div class="right-section">
+                <div class="right-section-head">
+                  <span class="right-section-title">
+                    <i class="bx bx-bell"></i> Notifications
+                    <span class="right-count-badge" id="notifCountBadge">0</span>
+                  </span>
+                  <button class="right-clear-btn" id="btnClearNotifications" type="button">Clear</button>
+                </div>
+                <div class="right-list" id="notificationsFeed"></div>
               </div>
-              <div class="snippets-list" id="snippetsList"></div>
-              <div class="context-footer">
-                <i class="bx bx-check-shield"></i>
-                <span>On-device ChromaDB · Private</span>
+
+              <div class="right-section">
+                <div class="right-section-head">
+                  <span class="right-section-title">
+                    <i class="bx bx-folder"></i> Uploaded files
+                    <span class="right-count-badge" id="rightFilesCount">0</span>
+                  </span>
+                  <button class="right-clear-btn" id="btnRightUpload" type="button" title="Upload file">
+                    <i class="bx bx-plus"></i> Add
+                  </button>
+                </div>
+                <div class="right-list" id="rightUploadedFiles"></div>
               </div>
             </div>
           </aside>
