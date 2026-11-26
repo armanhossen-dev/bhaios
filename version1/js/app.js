@@ -243,8 +243,8 @@ function renderDocuments() {
           <span>${d.pages} pages · ${d.size}</span>
           <span>${d.subject}</span>
         </div>
-        <div class="doc-progress-track">
-          <div class="doc-progress-fill ${d.status === 'processing' ? 'processing' : ''}" style="width: ${d.progress}%"></div>
+        <div data-slot="progress">
+          <div data-slot="progress-indicator" class="${d.status === 'processing' ? 'processing' : ''}" style="transform: translateX(-${100 - d.progress}%)"></div>
         </div>
         <div class="doc-footer">
           ${
@@ -497,8 +497,12 @@ function init() {
 
   document.querySelectorAll('.filter-pill').forEach((pill) => {
     pill.addEventListener('click', () => {
-      document.querySelectorAll('.filter-pill').forEach((p) => p.classList.remove('active'));
+      document.querySelectorAll('.filter-pill').forEach((p) => {
+        p.classList.remove('active');
+        p.setAttribute('data-state', 'inactive');
+      });
       pill.classList.add('active');
+      pill.setAttribute('data-state', 'active');
       state.taskFilter = pill.dataset.filter;
       renderTasks();
     });
@@ -507,6 +511,14 @@ function init() {
   const modal = document.getElementById('taskModal');
   document.getElementById('btnOpenTaskModal').addEventListener('click', () => modal.classList.add('open'));
   document.getElementById('btnCancelTask').addEventListener('click', () => modal.classList.remove('open'));
+  document.getElementById('btnCloseTaskX').addEventListener('click', () => modal.classList.remove('open'));
+  document.getElementById('switchOfflineMode').addEventListener('click', (e) => {
+    const btn = e.currentTarget;
+    const isChecked = btn.getAttribute('data-state') === 'checked';
+    btn.setAttribute('data-state', isChecked ? 'unchecked' : 'checked');
+    btn.setAttribute('aria-checked', String(!isChecked));
+    showToast(!isChecked ? 'Strict Offline Mode enabled' : 'Optional external APIs allowed');
+  });
   document.getElementById('btnSaveTask').addEventListener('click', () => {
     const title = document.getElementById('newTaskTitle').value.trim();
     if (!title) return;

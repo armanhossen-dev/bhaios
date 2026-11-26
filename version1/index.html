@@ -14,6 +14,7 @@
   />
 
   <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/shadcn.css" />
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
 <body>
@@ -27,7 +28,7 @@
         <div class="brand-subtitle">YOUR OFFLINE STUDY SPACE</div>
       </div>
 
-      <button class="btn-new-chat" id="btnNewChat" type="button">
+      <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button">
         <span>+</span>
         <span>New conversation</span>
       </button>
@@ -210,8 +211,8 @@
               <span class="library-count" id="libraryCountLabel">12 documents · 324 pages</span>
             </div>
             <div class="library-controls">
-              <input type="text" class="control-input" id="docSearchInput" placeholder="Search documents…" />
-              <select class="control-select" id="docSubjectFilter">
+              <input type="text" class="control-input" data-slot="input" id="docSearchInput" placeholder="Search documents…" />
+              <select class="control-select" data-slot="input" id="docSubjectFilter">
                 <option value="All">All subjects</option>
                 <option value="Physics">Physics</option>
                 <option value="Chemistry">Chemistry</option>
@@ -244,10 +245,10 @@
           <div class="tasks-layout">
             <div>
               <div class="tasks-filter-bar">
-                <div class="filter-pills">
-                  <button class="filter-pill active" data-filter="all" type="button">All tasks &nbsp;<span id="pillAllCount">5</span></button>
-                  <button class="filter-pill" data-filter="today" type="button">Today &nbsp;1</button>
-                  <button class="filter-pill" data-filter="completed" type="button">Completed</button>
+                <div data-slot="tabs-list" role="tablist">
+                  <button data-slot="tabs-trigger" data-state="active" class="filter-pill active" data-filter="all" type="button">All tasks &nbsp;<span id="pillAllCount">5</span></button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="today" type="button">Today &nbsp;1</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="completed" type="button">Completed</button>
                 </div>
                 <span class="mono" style="font-size: 12px; color: var(--text-muted);">Due date ↓</span>
               </div>
@@ -435,7 +436,7 @@
                 50 pages · 25 Bangla / 25 English · 10 warm-up runs · CPU only · 8 GB RAM
               </div>
             </div>
-            <button class="btn-outline-full" id="btnExportCsv" style="width: auto; padding: 0 16px; margin: 0;" type="button">↓ &nbsp;Export CSV</button>
+            <button data-slot="button" data-variant="outline" id="btnExportCsv" type="button">↓ &nbsp;Export CSV</button>
           </div>
         </div>
       </section>
@@ -467,7 +468,9 @@
                 <div style="font-weight: 500;">Strict Offline Mode</div>
                 <div style="font-size: 12px; color: var(--text-secondary);">Block all outbound network calls</div>
               </div>
-              <span style="color: var(--success); font-size: 12.5px;">✓ Enabled</span>
+              <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" id="switchOfflineMode" type="button">
+                <span data-slot="switch-thumb"></span>
+              </button>
             </div>
           </div>
         </div>
@@ -475,28 +478,32 @@
     </div>
   </div>
 
-  <!-- Add Task Modal -->
-  <div class="modal-backdrop" id="taskModal">
-    <div class="modal-card">
-      <h3 class="serif" style="font-size: 24px; font-weight: 400;">New study task</h3>
-      <input type="text" class="control-input" id="newTaskTitle" placeholder="Task title (e.g. Revise Thermodynamics)" style="width:100%; height:40px;" />
+  <!-- Add Task Dialog (shadcn/ui Dialog pattern) -->
+  <div data-slot="dialog-overlay" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="dialogTaskTitle">
+    <div data-slot="dialog-content">
+      <button data-slot="dialog-close" id="btnCloseTaskX" type="button" aria-label="Close">✕</button>
+      <div>
+        <h3 class="serif" id="dialogTaskTitle" style="font-size: 24px; font-weight: 400;">New study task</h3>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Saved locally in SQLite for offline deadline reminders.</p>
+      </div>
+      <input type="text" data-slot="input" id="newTaskTitle" placeholder="Task title (e.g. Revise Thermodynamics)" style="width:100%; height:40px;" />
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <select class="control-select" id="newTaskSubject" style="height:38px;">
+        <select data-slot="input" id="newTaskSubject" style="height:38px;">
           <option value="Physics">Physics</option>
           <option value="Chemistry">Chemistry</option>
           <option value="Math">Math</option>
           <option value="Bangla">Bangla</option>
           <option value="English">English</option>
         </select>
-        <select class="control-select" id="newTaskPriority" style="height:38px;">
+        <select data-slot="input" id="newTaskPriority" style="height:38px;">
           <option value="High">High priority</option>
           <option value="Medium" selected>Medium priority</option>
           <option value="Low">Low priority</option>
         </select>
       </div>
       <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:6px;">
-        <button class="control-input" id="btnCancelTask" type="button">Cancel</button>
-        <button class="btn-primary" id="btnSaveTask" type="button">Save task</button>
+        <button data-slot="button" data-variant="outline" id="btnCancelTask" type="button">Cancel</button>
+        <button data-slot="button" data-variant="default" id="btnSaveTask" type="button">Save task</button>
       </div>
     </div>
   </div>
