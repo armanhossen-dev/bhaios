@@ -340,6 +340,16 @@ async def chat(req: ChatRequest) -> dict[str, Any]:
 app.mount("/", StaticFiles(directory=str(BASE_DIR), html=True), name="static")
 
 if __name__ == "__main__":
+    import socket
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    def pick_port(candidates=(8080, 8000, 8001, 8002)) -> int:
+        for p in candidates:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                if s.connect_ex(("127.0.0.1", p)) != 0:
+                    return p
+        return 8000
+
+    port = int(os.environ.get("PORT", pick_port()))
+    print(f"\n  BhaiOS running at: http://127.0.0.1:{port}\n")
+    uvicorn.run(app, host="127.0.0.1", port=port)
