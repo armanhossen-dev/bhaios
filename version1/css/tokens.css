@@ -17,61 +17,61 @@
   --radius-lg: 14px;
   --radius-pill: 999px;
 
-  /* Shared Accents (Blue · Violet · Amber · Lime Green) */
-  --teal-500: #2086F7;
-  --teal-400: #4DA3FF;
-  --teal-900: #132238;
-  --teal-border: #1E3A5F;
+  /* Shared Accents — Clean Semantic Palette (blocks.so) */
+  --teal-500: #3B82F6;
+  --teal-400: #60A5FA;
+  --teal-900: rgba(59, 130, 246, 0.12);
+  --teal-border: rgba(59, 130, 246, 0.3);
 
-  --violet-500: #B957FF;
-  --violet-400: #C97BFF;
-  --violet-900: #261636;
+  --violet-500: #A855F7;
+  --violet-400: #C084FC;
+  --violet-900: rgba(168, 85, 247, 0.12);
 
-  --amber-500: #F5A623;
-  --amber-400: #F7B749;
-  --amber-900: #281C08;
-  --amber-border: #4D360C;
+  --amber-500: #F59E0B;
+  --amber-400: #FBBF24;
+  --amber-900: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.3);
 
   --orange-light: #FF5C16;
   --orange-light-hover: #E64E0E;
 
-  --success: #84CC16;
-  --error: #F05252;
+  --success: #22C55E;
+  --error: #EF4444;
 }
 
 /* --------------------------------------------------------------------------
-   Dark Theme (Obsidian Slate + Blue, Violet, Amber, Lime Green Accents)
+   Dark Theme (Clean Neutral Obsidian — blocks.so / shadcn/ui)
    -------------------------------------------------------------------------- */
 [data-theme="dark"] {
-  --bg-root: #121316;
-  --bg-sidebar: #16171B;
-  --bg-main: #121316;
-  --bg-card: #191B20;
-  --bg-card-elevated: #202229;
-  --bg-card-hover: #262932;
-  --bg-input: #16171B;
-  --bg-nav-active: #162235;
-  --bg-user-bubble: #132238;
-  --bg-hint-chip: #231633;
-  --bg-dropzone: #141A24;
-  --bg-code-bar: #161C28;
+  --bg-root: #0A0A0B;
+  --bg-sidebar: #0D0E10;
+  --bg-main: #0A0A0B;
+  --bg-card: #111214;
+  --bg-card-elevated: #17181C;
+  --bg-card-hover: #1D1E23;
+  --bg-input: #111214;
+  --bg-nav-active: #181A20;
+  --bg-user-bubble: #1C1E24;
+  --bg-hint-chip: rgba(168, 85, 247, 0.12);
+  --bg-dropzone: #111214;
+  --bg-code-bar: #15171C;
 
-  --border-hairline: #23252D;
-  --border-card: #2B2E38;
-  --border-strong: #393D4A;
-  --border-user-bubble: #1E3A5F;
+  --border-hairline: #1F2024;
+  --border-card: #22242A;
+  --border-strong: #2E3038;
+  --border-user-bubble: #272930;
 
-  --text-primary: #F2F3F5;
-  --text-secondary: #9498A3;
-  --text-muted: #5F6470;
-  --text-bangla: #F0F1F4;
+  --text-primary: #FAFAFA;
+  --text-secondary: #8E9299;
+  --text-muted: #5C6068;
+  --text-bangla: #F4F4F5;
 
-  --pill-guide-bg: #281C08;
-  --pill-guide-border: #4D360C;
-  --pill-guide-text: #F5A623;
-  --cta-bg: #F5A623;
-  --cta-text: #121316;
-  --cta-hover: #F7B749;
+  --pill-guide-bg: rgba(245, 158, 11, 0.12);
+  --pill-guide-border: rgba(245, 158, 11, 0.28);
+  --pill-guide-text: #FBBF24;
+  --cta-bg: #FAFAFA;
+  --cta-text: #0A0A0B;
+  --cta-hover: #E4E4E7;
 }
 
 /* --------------------------------------------------------------------------

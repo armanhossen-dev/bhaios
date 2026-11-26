@@ -43,12 +43,14 @@ button {
 
 .mono {
   font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .serif {
   font-family: var(--font-display);
   font-weight: 600;
   letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ==========================================================================
@@ -1716,28 +1718,40 @@ i.bx {
 }
 
 /* ==========================================================================
-   SCREEN 5 — BENCHMARK / DEV (Dark)
+   SCREEN 5 — BENCHMARK / DEV (blocks.so Clean Bento Grid + Hairline Table)
    ========================================================================== */
+.bento-shell {
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  background: var(--bg-card);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
 .pipeline-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 22px;
+  gap: 0;
+  border-bottom: 1px solid var(--border-hairline);
 }
 
 .pipeline-card {
-  padding: 22px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  background: transparent;
+  border: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.pipeline-card + .pipeline-card {
+  border-left: 1px solid var(--border-hairline);
 }
 
 .pipeline-flow {
-  padding: 10px 14px;
+  padding: 9px 12px;
   background: var(--bg-code-bar);
+  border: 1px solid var(--border-hairline);
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 12px;
@@ -1745,10 +1759,10 @@ i.bx {
 }
 
 .bench-table-card {
-  padding: 22px 24px;
+  padding: 20px 24px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   margin-bottom: 18px;
 }
 
@@ -1756,33 +1770,54 @@ i.bx {
   width: 100%;
   border-collapse: collapse;
   margin-top: 14px;
+  font-variant-numeric: tabular-nums;
 }
 
 .bench-table th {
   text-align: left;
   padding: 10px 0;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border-hairline);
 }
 
 .bench-table td {
-  padding: 14px 0;
+  padding: 13px 0;
   border-bottom: 1px solid var(--border-hairline);
   font-size: 13.5px;
+}
+
+.bench-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .bench-table tr:last-child td {
   border-bottom: none;
 }
 
+.status-dot-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+}
+
+.status-dot-inline::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-dot-inline.blue::before { background: var(--teal-500); }
+.status-dot-inline.green::before { background: var(--success); }
+
 .test-setup-bar {
-  padding: 16px 22px;
-  background: var(--bg-code-bar);
-  border: 1px solid var(--teal-border);
-  border-radius: var(--radius-lg);
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;

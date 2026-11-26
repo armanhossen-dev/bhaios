@@ -459,29 +459,31 @@
             <span>Demo results · 50 mixed-language pages · 16 Jul 2025</span>
           </div>
 
-          <div class="pipeline-grid">
-            <div class="pipeline-card">
-              <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">01 / LOCAL PIPELINE</div>
-              <div class="serif" style="font-size: 26px;">Vision-language model</div>
-              <div class="mono" style="font-size: 12px; color: var(--text-secondary);">Qwen2.5-VL · 3B · Q4</div>
-              <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> VLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
-              <div style="font-size: 13px; color: var(--text-secondary);">
-                Reads layout, diagrams and text together. Best for handwritten pages and visual context.
+          <div class="bento-shell">
+            <div class="pipeline-grid">
+              <div class="pipeline-card">
+                <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">01 / LOCAL PIPELINE</div>
+                <div class="serif" style="font-size: 22px;">Vision-language model</div>
+                <div class="mono" style="font-size: 12px; color: var(--text-secondary);">Qwen2.5-VL · 3B · Q4</div>
+                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> VLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                  Reads layout, diagrams and text together. Best for handwritten pages and visual context.
+                </div>
+                <div class="mono" style="font-size: 12.5px;">8.2s / page &nbsp;·&nbsp; 3.8 GB peak RAM</div>
+                <div style="font-size: 12px; color: var(--teal-400); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Better layout understanding</div>
               </div>
-              <div class="mono" style="font-size: 12.5px;">8.2s / page &nbsp;·&nbsp; 3.8 GB peak RAM</div>
-              <div style="font-size: 12px; color: var(--teal-400); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Better layout understanding</div>
-            </div>
 
-            <div class="pipeline-card">
-              <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">02 / LOCAL PIPELINE</div>
-              <div class="serif" style="font-size: 26px;">OCR + language model</div>
-              <div class="mono" style="font-size: 12px; color: var(--text-secondary);">PaddleOCR + Qwen2.5 · 3B · Q4</div>
-              <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> OCR <i class="bx bx-right-arrow-alt"></i> LLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
-              <div style="font-size: 13px; color: var(--text-secondary);">
-                Extracts text first, then reasons over it. Best for clean scans and lower-memory devices.
+              <div class="pipeline-card">
+                <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">02 / LOCAL PIPELINE</div>
+                <div class="serif" style="font-size: 22px;">OCR + language model</div>
+                <div class="mono" style="font-size: 12px; color: var(--text-secondary);">PaddleOCR + Qwen2.5 · 3B · Q4</div>
+                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> OCR <i class="bx bx-right-arrow-alt"></i> LLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
+                <div style="font-size: 13px; color: var(--text-secondary);">
+                  Extracts text first, then reasons over it. Best for clean scans and lower-memory devices.
+                </div>
+                <div class="mono" style="font-size: 12.5px;">5.6s / page &nbsp;·&nbsp; 2.9 GB peak RAM</div>
+                <div style="font-size: 12px; color: var(--success); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Faster on printed pages</div>
               </div>
-              <div class="mono" style="font-size: 12.5px;">5.6s / page &nbsp;·&nbsp; 2.9 GB peak RAM</div>
-              <div style="font-size: 12px; color: var(--success); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Faster on printed pages</div>
             </div>
           </div>
 

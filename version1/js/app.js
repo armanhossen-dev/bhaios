@@ -415,8 +415,8 @@ function renderBenchmark() {
         <td style="color: var(--text-secondary);">${m.metric}</td>
         <td class="mono">${m.vlm}</td>
         <td class="mono">${m.ocr}</td>
-        <td style="color: ${m.preferredType === 'vlm' ? 'var(--teal-400)' : 'var(--success)'};">
-          <i class="bx bx-check"></i> &nbsp;${m.preferred}
+        <td>
+          <span class="status-dot-inline ${m.preferredType === 'vlm' ? 'blue' : 'green'}">${m.preferred}</span>
         </td>
       </tr>
     `
