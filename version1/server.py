@@ -137,6 +137,31 @@ class PullModelRequest(BaseModel):
     name: str
 
 
+class SuggestRequest(BaseModel):
+    prefix: str
+    lang: str = "bn"
+    model: str = "qwen2.5:0.5b"
+
+
+@app.post("/api/suggest")
+async def ai_suggest(req: SuggestRequest) -> dict[str, Any]:
+    prompt = (
+        f"Complete or suggest 3 short study questions in {'Bangla' if req.lang == 'bn' else 'English'} "
+        f"starting from: '{req.prefix}'. Return ONLY 3 lines, no numbering or quotes."
+    )
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            r = await client.post(
+                f"{OLLAMA_URL}/api/generate",
+                json={"model": req.model, "prompt": prompt, "stream": False, "options": {"num_predict": 60}},
+            )
+            r.raise_for_status()
+            lines = [ln.strip("- •0123456789. ") for ln in (r.json().get("response") or "").splitlines() if ln.strip()]
+            return {"suggestions": lines[:3]}
+    except Exception:
+        return {"suggestions": []}
+
+
 @app.get("/api/health")
 async def health() -> dict[str, Any]:
     ollama_ok = False

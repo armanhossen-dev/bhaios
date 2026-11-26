@@ -11,11 +11,13 @@ import {
   SUBJECT_FOCUS,
   BENCHMARK_METRICS,
 } from './data.js';
+import { phoneticToBangla, getAvroSuggestions, AI_STUDY_PROMPTS_BN } from './avro.js';
 
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
   uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
+  avroEnabled: false,
   fontSize: localStorage.getItem('bhaios_font_size') || 'medium', // 'small' | 'medium' | 'large'
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
@@ -137,6 +139,120 @@ function applyLanguage(lang) {
     document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = 'Voice: Bangla';
     document.getElementById('btnChatVoiceLang').querySelector('span').textContent = 'Bangla';
   }
+}
+
+function toggleAvroMode() {
+  state.avroEnabled = !state.avroEnabled;
+  document.querySelectorAll('.avro-toggle-btn').forEach((b) => b.classList.toggle('active', state.avroEnabled));
+  const wBar = document.getElementById('welcomeAvroBar');
+  const cBar = document.getElementById('chatAvroBar');
+  if (!state.avroEnabled) {
+    if (wBar) wBar.style.display = 'none';
+    if (cBar) cBar.style.display = 'none';
+  } else {
+    updateAvroBar(document.getElementById('welcomeInput'), wBar);
+    updateAvroBar(document.getElementById('chatInput'), cBar);
+  }
+  showToast(state.avroEnabled ? 'অ Avro Phonetic Bangla ON (type English → Bangla)' : 'Avro OFF');
+}
+
+function getLastWord(text) {
+  const m = text.match(/([a-zA-Z]+)$/);
+  return m ? m[1] : '';
+}
+
+function replaceLastWord(input, replacement) {
+  const val = input.value;
+  input.value = val.replace(/([a-zA-Z]+)$/, replacement + ' ');
+  syncSendButtons();
+  input.focus();
+}
+
+let aiSuggestTimer = null;
+
+function updateAvroBar(input, barEl) {
+  if (!barEl || !input) return;
+  if (!state.avroEnabled) {
+    barEl.style.display = 'none';
+    return;
+  }
+
+  const val = input.value;
+  const word = getLastWord(val);
+  const phoneticChips = getAvroSuggestions(word);
+
+  barEl.style.display = 'flex';
+  if (phoneticChips.length) {
+    barEl.innerHTML = phoneticChips
+      .map(
+        (w, i) =>
+          `<button class="avro-chip ${i === 0 ? 'primary' : ''}" data-avro-word="${w}" type="button">${w}</button>`
+      )
+      .join('') + `<span class="mono" style="font-size:10.5px;color:var(--text-muted);margin-left:4px;">Space/Tab</span>`;
+  } else {
+    barEl.innerHTML = AI_STUDY_PROMPTS_BN.slice(0, 3)
+      .map(
+        (p) =>
+          `<button class="avro-chip ai" data-ai-prompt="${p}" type="button"><i class="bx bx-sparkles"></i> ${p}</button>`
+      )
+      .join('');
+  }
+
+  // Fetch live AI suggestions when user has typed >= 4 chars and pauses
+  clearTimeout(aiSuggestTimer);
+  if (val.trim().length >= 4 && !word) {
+    aiSuggestTimer = setTimeout(async () => {
+      try {
+        const res = await fetch('/api/suggest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prefix: val.trim(), lang: state.avroEnabled || state.uiLang === 'bn' ? 'bn' : 'en' }),
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.suggestions?.length && state.avroEnabled) {
+          barEl.innerHTML = data.suggestions
+            .map(
+              (s) =>
+                `<button class="avro-chip ai" data-ai-prompt="${s.replace(/"/g, '&quot;')}" type="button"><i class="bx bx-sparkles"></i> ${s}</button>`
+            )
+            .join('');
+        }
+      } catch {}
+    }, 550);
+  }
+}
+
+function attachAvroHandlers(inputId, barId) {
+  const input = document.getElementById(inputId);
+  const bar = document.getElementById(barId);
+  if (!input || !bar) return;
+
+  input.addEventListener('input', () => updateAvroBar(input, bar));
+  input.addEventListener('keydown', (e) => {
+    if (!state.avroEnabled) return;
+    const word = getLastWord(input.value);
+    if ((e.key === ' ' || e.key === 'Tab') && word) {
+      e.preventDefault();
+      replaceLastWord(input, phoneticToBangla(word));
+      updateAvroBar(input, bar);
+    }
+  });
+
+  bar.addEventListener('click', (e) => {
+    const wBtn = e.target.closest('[data-avro-word]');
+    if (wBtn) {
+      replaceLastWord(input, wBtn.dataset.avroWord);
+      updateAvroBar(input, bar);
+      return;
+    }
+    const aiBtn = e.target.closest('[data-ai-prompt]');
+    if (aiBtn) {
+      input.value = aiBtn.dataset.aiPrompt;
+      syncSendButtons();
+      input.focus();
+    }
+  });
 }
 
 function applyFontSize(size) {
@@ -1186,6 +1302,11 @@ function init() {
     document.getElementById('welcomeInput').focus();
     showToast('Started a fresh study session');
   });
+
+  document.getElementById('btnWelcomeAvro')?.addEventListener('click', toggleAvroMode);
+  document.getElementById('btnChatAvro')?.addEventListener('click', toggleAvroMode);
+  attachAvroHandlers('welcomeInput', 'welcomeAvroBar');
+  attachAvroHandlers('chatInput', 'chatAvroBar');
 
   // Welcome screen interactions
   document.getElementById('btnWelcomeSend').addEventListener('click', () => sendChatMessage());
