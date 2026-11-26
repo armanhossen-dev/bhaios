@@ -42,9 +42,11 @@ Typography:
     Smaller Inter in #8A8A8A for the supporting body text below it.
     The font + size + color contrast does the hierarchy — no decorative elements needed.
 
-Style references: Framer dashboard (dark, dense, hairline borders), Linear (sidebar + list rows), 
-  Vercel analytics (monospace metrics on dark), Claude.ai (chat bubble layout).
-  The ONLY color that pops is teal or amber — everything else is neutral gray on charcoal.
+Style references: **blocks.so** (`shadcn/ui` clean modular application UI blocks — AI chat, file upload, 
+  dialogs, stat cards, tables), Framer dashboard (dark, dense, hairline borders), Linear (sidebar + list rows), 
+  Vercel analytics (monospace metrics on dark), Claude.ai (chat bubble layout), Unicorn Studio (Instrument Serif 
+  editorial headlines). For light mode, use Flowstate's pure white `#FFFFFF` + near-black `#0A0A0A` + acid lime `#BEFF00` pills.
+  The ONLY color that pops is teal or amber (dark mode) / lime (light mode) — everything else is neutral.
 ```
 
 ---
@@ -226,7 +228,8 @@ Very similar to Linear or Vercel's icon aesthetic — precise and minimal.
 
 | Concern | Decision |
 |---|---|
-| **Theme** | **Dark-first** (Framer/Linear/Vercel aesthetic). `#0C0C0C` root → `#111111` sidebar → `#161616` main → `#1C1C1C` cards |
+| **Theme** | **Dark-first** (Framer/Linear/Vercel aesthetic: `#0C0C0C` → `#111111` → `#161616` → `#1C1C1C`). Light mode follows **Flowstate** (`#FFFFFF` + `#0A0A0A` + `#BEFF00` lime pills) |
+| **Component blocks** | **blocks.so** (`https://blocks.so/`) — use its clean `shadcn/ui`-style application UI block patterns (chat, file upload, dialogs, stats, tables) |
 | **Bangla rendering** | Use `Noto Sans Bengali`, line-height 1.8 minimum. Never use a bitmap font for Bangla |
 | **RTL/LTR mixing** | Bangla is LTR — no RTL layout needed; mixed content handled with Unicode bidi |
 | **Color contrast** | `#F0F0F0` on `#161616` = 9.6:1 ✅. `#8A8A8A` on `#161616` = 4.6:1 ✅ WCAG AA |

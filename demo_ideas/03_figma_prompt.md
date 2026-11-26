@@ -63,16 +63,63 @@ than giving direct answers.
 | `color.status.success` | `#3DBE82` | Completed, indexed |
 | `color.status.success.bg` | `#0D1E16` | Success background tint |
 
-### ☀️ Light Theme Color Palette (SECONDARY — for reference only)
+### ☀️ Light Theme Color Palette (Flowstate-Inspired — Pure White + Acid Green)
+
+> Inspired by: Flowstate.io — pure white background, near-black text (not pure black), **acid/lime green** (`#BEFF00`) as the single pop accent. Pill-shaped buttons. Clean label uppercase text. The same editorial serif headline works beautifully here too: large Instrument Serif near-black on white.
 
 | Token | Hex | Usage |
 |---|---|---|
-| `color.bg.base` | `#FAF7F2` | App root (warm off-white) |
-| `color.bg.sidebar` | `#0F3D47` | Left sidebar (deep teal) |
-| `color.bg.card` | `#FFFFFF` | Cards |
-| `color.text.primary` | `#1A1A2E` | Main text |
-| `color.text.secondary` | `#5E6473` | Secondary text |
-| `color.border.default` | `#E2DED8` | Borders |
+| `light.bg.base` | `#FFFFFF` | App root (pure white — same as Flowstate) |
+| `light.bg.sidebar` | `#F5F5F5` | Left sidebar (barely-off-white, 1px darker than main) |
+| `light.bg.card` | `#FFFFFF` | Card surfaces |
+| `light.bg.card.hover` | `#F8F8F8` | Card hover, row hover |
+| `light.bg.input` | `#FFFFFF` | Input fields |
+| `light.bg.selected` | `#F0FDE0` | Selected state tint (lime green tinted) |
+| `light.border.subtle` | `#F0F0F0` | Hairline borders between panels |
+| `light.border.default` | `#E4E4E4` | Card borders, dividers |
+| `light.border.strong` | `#CCCCCC` | Input borders, focused input |
+| `light.border.focus` | `#2A8FA8` | Focus ring (keep teal for accessibility) |
+| `light.text.primary` | `#0A0A0A` | Main headings, body text (near-black, NOT pure #000) |
+| `light.text.secondary` | `#6B6B6B` | Subtitles, descriptions, body copy |
+| `light.text.tertiary` | `#AAAAAA` | Placeholders, disabled, timestamps |
+| `light.text.label` | `#888888` | Small uppercase category labels ("GUIDE MODE", "DOCUMENTS") |
+| `light.text.bangla` | `#1A1A1A` | Bangla body text |
+| `light.accent.lime` | `#BEFF00` | **Primary CTA** — "Guide Mode" pill, primary button, active badge |
+| `light.accent.lime.hover` | `#AAEE00` | Lime button hover |
+| `light.accent.lime.text` | `#0A0A0A` | Text ON lime green (always near-black, not white) |
+| `light.accent.lime.bg` | `#F5FFD6` | Very light lime tint for selected rows, active bg |
+| `light.accent.teal` | `#2A8FA8` | Secondary accent — links, source indicators, focus |
+| `light.status.error` | `#DC2626` | Overdue tasks, error states |
+| `light.status.error.bg` | `#FEF2F2` | Error background tint |
+| `light.status.warning` | `#D97706` | Due-soon, caution |
+| `light.status.warning.bg` | `#FFFBEB` | Warning background tint |
+| `light.status.success` | `#16A34A` | Completed, indexed |
+| `light.status.success.bg` | `#F0FDF4` | Success background tint |
+
+**Light Theme Button System (Flowstate-Style Pill Buttons):**
+
+| Button | Background | Text | Border | Border Radius |
+|---|---|---|---|---|
+| Primary CTA | `#BEFF00` (lime) | `#0A0A0A` | none | `999px` (full pill) |
+| Secondary | `#FFFFFF` | `#0A0A0A` | `1.5px solid #0A0A0A` | `999px` (full pill) |
+| Tertiary / Ghost | transparent | `#6B6B6B` | `1px solid #E4E4E4` | `999px` |
+| Danger | `#FEF2F2` | `#DC2626` | `1px solid #FCA5A5` | `8px` |
+| Nav CTA ("Sign up") | `#0A0A0A` | `#FFFFFF` | none | `999px` |
+
+**Category Label Style (Flowstate "WORKFLOW AUTOMATION, REIMAGINED"):**
+```
+font: Inter 11px 600
+letter-spacing: 0.1em
+text-transform: uppercase
+color: #AAAAAA
+```
+
+**Light Theme Sidebar:**
+- Background: `#F5F5F5`, right border: `1px solid #F0F0F0`
+- Active nav item: `2px solid #0A0A0A` left border + background `#F0FDE0` (lime tint)
+- Hover: background `#F0F0F0`
+- Text: `#0A0A0A` active, `#6B6B6B` inactive
+- Guide Mode pill: `#BEFF00` background, `#0A0A0A` text, full pill radius
 
 ---
 
@@ -429,6 +476,9 @@ Create these as reusable Figma components with variants:
 | Feel | Reference |
 |---|---|
 | **Overall dark theme & density** | **Framer dashboard** — deep charcoal surfaces, hairline borders, Inter font, compact nav |
+| **UI components & block patterns** | **[blocks.so](https://blocks.so/)** — clean, modern `shadcn/ui`-style application blocks (AI chat, file upload, dialogs, stats, data tables) |
+| **Light theme palette** | **Flowstate** — pure white `#FFFFFF`, near-black `#0A0A0A`, acid lime `#BEFF00` CTA pills |
+| **Display typography** | **Unicorn Studio** — `Instrument Serif` large headlines paired with muted `Inter` body |
 | Navigation & shell | **Linear app** — clean, dense, keyboard-driven, icon+label sidebar |
 | Chat UI | **Claude.ai** — calm, readable, assistant-forward message layout |
 | Dark surface layering | **Vercel dashboard** — `#0A0A0A` → `#111` → `#1A1A1A` elevation system |
