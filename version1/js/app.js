@@ -1146,11 +1146,28 @@ function init() {
     cmdModal.classList.remove('open');
     if (found) found.action();
   });
+  const focusChatInput = () => {
+    switchScreen('chat');
+    const target = state.chatStarted
+      ? document.getElementById('chatInput')
+      : document.getElementById('welcomeInput');
+    setTimeout(() => target?.focus(), 20);
+  };
+
   document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement?.tagName;
+    const isTyping = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       if (cmdModal.classList.contains('open')) cmdModal.classList.remove('open');
       else openCommandModal();
+    } else if ((e.metaKey || e.ctrlKey) && (e.key === '/' || e.key.toLowerCase() === 'j')) {
+      e.preventDefault();
+      focusChatInput();
+    } else if (e.key === '/' && !isTyping && !cmdModal.classList.contains('open')) {
+      e.preventDefault();
+      focusChatInput();
     } else if (e.key === 'Escape') {
       cmdModal.classList.remove('open');
       settingsPopover.classList.remove('open');
