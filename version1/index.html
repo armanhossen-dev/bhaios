@@ -214,13 +214,13 @@
                 <input type="text" class="composer-input" id="welcomeInput" placeholder="Ask anything" />
                 <div class="welcome-composer-footer">
                   <div class="composer-tools-left">
-                    <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline">
+                    <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline (Click to select model)">
                       <i class="bx bx-chip"></i>
                     </button>
                     <div class="model-dropdown-wrap" id="welcomeModelWrap">
                       <button class="model-select-pill" id="btnWelcomeModel" type="button" aria-haspopup="true"
-                        aria-expanded="false">
-                        <span>Qwen2.5 · 3B</span>
+                        aria-expanded="false" title="Select Ollama model">
+                        <span id="welcomeModelLabel">Qwen2.5 · 3B</span>
                         <span class="badge-local">LOCAL</span>
                         <i class="bx bx-chevron-down"></i>
                       </button>
@@ -282,6 +282,15 @@
                   </button>
                   <input type="text" class="composer-input" id="chatInput" placeholder="Ask anything" />
                   <div class="pill-composer-right">
+                    <div class="model-dropdown-wrap" id="chatModelWrap">
+                      <button class="model-select-pill" id="btnChatModel" type="button" aria-haspopup="true" aria-expanded="false" title="Select Ollama model">
+                        <i class="bx bx-chip"></i>
+                        <span id="chatModelLabel">Qwen2.5 · 3B</span>
+                        <span class="badge-local">LOCAL</span>
+                        <i class="bx bx-chevron-down"></i>
+                      </button>
+                      <div class="model-dropdown-menu" id="chatModelMenu" role="menu"></div>
+                    </div>
                     <div class="mode-dropdown-wrap" id="chatModeWrap">
                       <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
                         <i class="bx bx-compass mode-icon"></i>

@@ -23,8 +23,8 @@ const state = {
   questionsCount: Number(localStorage.getItem('bhaios_questions') || 0),
   sessionTokens: JSON.parse(localStorage.getItem('bhaios_tokens') || '{"prompt":0,"completion":0,"total":0}'),
   uploadPipeline: 'VLM',
-  activeModel: 'qwen2.5:3b',
-  activeVisionModel: 'llava-phi3:latest',
+  activeModel: localStorage.getItem('bhaios_active_model') || 'qwen2.5:3b',
+  activeVisionModel: localStorage.getItem('bhaios_active_vision_model') || 'llava-phi3:latest',
   installedModels: [],
   attachedImageBase64: null,
   attachedFilename: null,
@@ -1137,17 +1137,124 @@ function renderCommandResults(query = '') {
    ========================================================================== */
 function formatModelName(name) {
   if (!name) return '';
-  return name.charAt(0).toUpperCase() + name.slice(1);
+  const cap = name.charAt(0).toUpperCase() + name.slice(1);
+  if (cap.includes(':')) {
+    const [base, tag] = cap.split(':');
+    let displayBase = base;
+    if (/^llava/i.test(base)) {
+      displayBase = base.replace(/^llava/i, 'LLaVA').replace(/-phi/i, '-Phi');
+    } else if (/^deepseek/i.test(base)) {
+      displayBase = base.replace(/^deepseek/i, 'DeepSeek');
+    }
+    const displayTag = tag ? (tag.toLowerCase() === 'latest' ? 'Latest' : tag.toUpperCase()) : '';
+    return `${displayBase} · ${displayTag}`;
+  }
+  return cap;
 }
 
 function updateActiveModelLabels() {
-  document.getElementById('activeTextModelLabel').textContent = formatModelName(state.activeModel);
-  document.getElementById('activeVisionModelLabel').textContent = formatModelName(state.activeVisionModel);
-  document.getElementById('sidebarActiveModel').textContent = formatModelName(state.activeModel);
-  const welcomeModelBtn = document.getElementById('btnWelcomeModel');
-  if (welcomeModelBtn) {
-    welcomeModelBtn.querySelector('span').textContent = formatModelName(state.activeModel);
+  const formatted = formatModelName(state.activeModel);
+  const textLabel = document.getElementById('activeTextModelLabel');
+  if (textLabel) textLabel.textContent = formatted;
+  const visLabel = document.getElementById('activeVisionModelLabel');
+  if (visLabel) visLabel.textContent = formatModelName(state.activeVisionModel);
+  const sideModel = document.getElementById('sidebarActiveModel');
+  if (sideModel) sideModel.textContent = formatted;
+
+  const welcomeLabel = document.getElementById('welcomeModelLabel');
+  if (welcomeLabel) {
+    welcomeLabel.textContent = formatted;
+  } else {
+    const welcomeModelBtn = document.getElementById('btnWelcomeModel');
+    if (welcomeModelBtn) {
+      const span = welcomeModelBtn.querySelector('span');
+      if (span) span.textContent = formatted;
+    }
   }
+
+  const chatLabel = document.getElementById('chatModelLabel');
+  if (chatLabel) chatLabel.textContent = formatted;
+
+  renderModelMenus();
+}
+
+function renderModelMenus() {
+  const menus = [
+    document.getElementById('welcomeModelMenu'),
+    document.getElementById('chatModelMenu')
+  ].filter(Boolean);
+  if (!menus.length) return;
+
+  const models = state.installedModels.length
+    ? state.installedModels
+    : [
+        { name: 'llava-phi3:latest', size: '2.7 GB', is_vision: true },
+        { name: 'qwen2.5:3b', size: '1.8 GB', is_vision: false },
+        { name: 'llama3.2:1b', size: '1.2 GB', is_vision: false },
+        { name: 'qwen2.5:0.5b', size: '379 MB', is_vision: false }
+      ];
+
+  const html = `
+    <div class="model-dropdown-header">
+      <span>Local Ollama Models</span>
+      <button type="button" class="btn-dropdown-refresh" title="Refresh live models from Ollama" data-action="refresh-models">
+        <i class="bx bx-refresh"></i>
+      </button>
+    </div>
+    <div class="model-dropdown-list">
+      ${models.map((m) => {
+        const isActive = m.name === state.activeModel;
+        return `
+          <button class="model-dropdown-item ${isActive ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
+            <div class="model-dropdown-item-left">
+              <i class="bx ${isActive ? 'bx-check-circle' : 'bx-chip'}"></i>
+              <div class="model-dropdown-names">
+                <span class="model-name-title">${escapeHtml(formatModelName(m.name))}</span>
+                <span class="model-name-id">${escapeHtml(m.name)}</span>
+              </div>
+            </div>
+            <div class="model-dropdown-item-right">
+              <span class="model-tag-badge ${m.is_vision ? 'vision' : 'text'}">${m.is_vision ? 'Vision' : 'Text'}</span>
+              <span class="model-dropdown-meta">${escapeHtml(m.size || '')}</span>
+            </div>
+          </button>
+        `;
+      }).join('')}
+    </div>
+    <div class="model-dropdown-footer">
+      <button type="button" class="btn-dropdown-footer-action" data-action="refresh-models">
+        <i class="bx bx-refresh"></i>
+        <span>Refresh</span>
+      </button>
+      <button type="button" class="btn-dropdown-footer-action" data-action="manage-models">
+        <i class="bx bx-cog"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+  `;
+
+  menus.forEach(menu => {
+    menu.innerHTML = html;
+  });
+}
+
+function selectActiveModel(modelName) {
+  if (!modelName) return;
+  state.activeModel = modelName;
+  localStorage.setItem('bhaios_active_model', modelName);
+
+  const found = state.installedModels.find((m) => m.name === modelName);
+  if (found && found.is_vision) {
+    state.activeVisionModel = modelName;
+    localStorage.setItem('bhaios_active_vision_model', modelName);
+  }
+
+  updateActiveModelLabels();
+  showToast(`Active model: ${formatModelName(modelName)}`);
+}
+
+function renderWelcomeModelMenu() {
+  renderModelMenus();
 }
 
 async function refreshSystemHealth() {
@@ -1180,105 +1287,99 @@ async function refreshSystemHealth() {
   }
 }
 
-function renderWelcomeModelMenu() {
-  const menu = document.getElementById('welcomeModelMenu');
-  if (!menu) return;
-  const models = state.installedModels.length
-    ? state.installedModels
-    : [{ name: state.activeModel, size: 'Local', is_vision: false }];
-  menu.innerHTML = models
-    .map(
-      (m) => `
-      <button class="model-dropdown-item ${m.name === state.activeModel ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
-        <span style="display:inline-flex;align-items:center;gap:6px;">
-          <i class="bx ${m.name === state.activeModel ? 'bx-check' : 'bx-chip'}"></i>
-          <span>${escapeHtml(formatModelName(m.name))}</span>
-        </span>
-        <span class="model-dropdown-meta">${escapeHtml(m.size || '')}</span>
-      </button>`
-    )
-    .join('');
-}
-
-async function loadModels() {
-  const tbody = document.getElementById('installedModelsTbody');
-  const grid = document.getElementById('suggestedModelsGrid');
-  if (!tbody || !grid) return;
-
+async function loadModels(showFeedback = false) {
   try {
     const res = await fetch('/api/models');
     if (!res.ok) throw new Error('Backend offline');
     const data = await res.json();
     state.installedModels = data.installed || [];
-    renderWelcomeModelMenu();
+    renderModelMenus();
 
-    document.getElementById('sidebarRuntimeStatus').textContent = 'Ollama Live';
+    const statusEl = document.getElementById('sidebarRuntimeStatus');
+    if (statusEl) statusEl.textContent = 'Ollama Live';
     if (data.whisper) {
-      document.getElementById('whisperStatusLabel').textContent = data.whisper.installed
-        ? `${data.whisper.name} (${data.whisper.size} · Ready)`
-        : `${data.whisper.name} (Not downloaded)`;
+      const wEl = document.getElementById('whisperStatusLabel');
+      if (wEl) {
+        wEl.textContent = data.whisper.installed
+          ? `${data.whisper.name} (${data.whisper.size} · Ready)`
+          : `${data.whisper.name} (Not downloaded)`;
+      }
     }
 
-    tbody.innerHTML = data.installed
-      .map((m) => {
-        const isActiveText = m.name === state.activeModel;
-        const isActiveVision = m.name === state.activeVisionModel;
-        return `
-          <tr>
-            <td style="font-weight: 500;">${escapeHtml(formatModelName(m.name))}</td>
-            <td>
-              <span class="status-dot-inline ${m.is_vision ? 'blue' : 'green'}">${m.is_vision ? 'Vision + Text' : 'Text'}</span>
-            </td>
-            <td class="mono">${m.size}</td>
-            <td style="display:flex; gap:8px; align-items:center;">
-              <button data-slot="button" data-size="sm" data-variant="${isActiveText ? 'default' : 'outline'}" class="btn-set-text-model" data-model="${m.name}" type="button">
-                ${isActiveText ? 'Active Text' : 'Use Text'}
-              </button>
-              ${
-                m.is_vision
-                  ? `<button data-slot="button" data-size="sm" data-variant="${isActiveVision ? 'default' : 'outline'}" class="btn-set-vision-model" data-model="${m.name}" type="button">
-                      ${isActiveVision ? 'Active Vision' : 'Use Vision'}
-                    </button>`
-                  : ''
-              }
-              <button data-slot="button" data-size="sm" data-variant="ghost" class="btn-delete-model" data-model="${m.name}" type="button" title="Remove model">
-                <i class="bx bx-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      })
-      .join('');
+    const tbody = document.getElementById('installedModelsTbody');
+    if (tbody && data.installed) {
+      tbody.innerHTML = data.installed
+        .map((m) => {
+          const isActiveText = m.name === state.activeModel;
+          const isActiveVision = m.name === state.activeVisionModel;
+          return `
+            <tr>
+              <td style="font-weight: 500;">${escapeHtml(formatModelName(m.name))}</td>
+              <td>
+                <span class="status-dot-inline ${m.is_vision ? 'blue' : 'green'}">${m.is_vision ? 'Vision + Text' : 'Text'}</span>
+              </td>
+              <td class="mono">${m.size}</td>
+              <td style="display:flex; gap:8px; align-items:center;">
+                <button data-slot="button" data-size="sm" data-variant="${isActiveText ? 'default' : 'outline'}" class="btn-set-text-model" data-model="${m.name}" type="button">
+                  ${isActiveText ? 'Active Text' : 'Use Text'}
+                </button>
+                ${
+                  m.is_vision
+                    ? `<button data-slot="button" data-size="sm" data-variant="${isActiveVision ? 'default' : 'outline'}" class="btn-set-vision-model" data-model="${m.name}" type="button">
+                        ${isActiveVision ? 'Active Vision' : 'Use Vision'}
+                      </button>`
+                    : ''
+                }
+                <button data-slot="button" data-size="sm" data-variant="ghost" class="btn-delete-model" data-model="${m.name}" type="button" title="Remove model">
+                  <i class="bx bx-trash"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
 
-    grid.innerHTML = data.suggestions
-      .map(
-        (s) => `
-        <div class="model-suggest-card">
-          <div class="model-suggest-head">
-            <div>
-              <div style="font-weight: 600; font-size: 14px;">${s.title}</div>
-              <div class="mono" style="font-size: 11.5px; color: var(--text-muted);">${s.name} · ${s.size} · ${s.ram}</div>
+    const grid = document.getElementById('suggestedModelsGrid');
+    if (grid && data.suggestions) {
+      grid.innerHTML = data.suggestions
+        .map(
+          (s) => `
+          <div class="model-suggest-card">
+            <div class="model-suggest-head">
+              <div>
+                <div style="font-weight: 600; font-size: 14px;">${s.title}</div>
+                <div class="mono" style="font-size: 11.5px; color: var(--text-muted);">${s.name} · ${s.size} · ${s.ram}</div>
+              </div>
+              ${
+                s.installed
+                  ? `<span data-slot="badge" data-variant="secondary"><i class="bx bx-check"></i> Installed</span>`
+                  : `<button data-slot="button" data-size="sm" data-variant="default" class="btn-pull-model" data-model="${s.name}" type="button">
+                      <i class="bx bx-download"></i> Download
+                    </button>`
+              }
             </div>
-            ${
-              s.installed
-                ? `<span data-slot="badge" data-variant="secondary"><i class="bx bx-check"></i> Installed</span>`
-                : `<button data-slot="button" data-size="sm" data-variant="default" class="btn-pull-model" data-model="${s.name}" type="button">
-                    <i class="bx bx-download"></i> Download
-                  </button>`
-            }
+            <div style="font-size: 12.5px; color: var(--text-secondary);">${s.description}</div>
+            <div class="model-tags-row">
+              ${s.tags.map((t) => `<span class="model-tag">${t}</span>`).join('')}
+            </div>
+            <div class="mono pull-status" id="pull-status-${s.name.replace(/[^a-zA-Z0-9]/g, '_')}" style="font-size: 11px; color: var(--teal-400); display:none;"></div>
           </div>
-          <div style="font-size: 12.5px; color: var(--text-secondary);">${s.description}</div>
-          <div class="model-tags-row">
-            ${s.tags.map((t) => `<span class="model-tag">${t}</span>`).join('')}
-          </div>
-          <div class="mono pull-status" id="pull-status-${s.name.replace(/[^a-zA-Z0-9]/g, '_')}" style="font-size: 11px; color: var(--teal-400); display:none;"></div>
-        </div>
-      `
-      )
-      .join('');
-  } catch {
-    document.getElementById('sidebarRuntimeStatus').textContent = 'Demo Mode';
-    tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted);">Start local server (<code>python3 version1/server.py</code>) to manage Ollama models.</td></tr>`;
+        `
+        )
+        .join('');
+    }
+
+    if (showFeedback) {
+      showToast(`Loaded ${state.installedModels.length} Ollama models`);
+    }
+  } catch (err) {
+    const statusEl = document.getElementById('sidebarRuntimeStatus');
+    if (statusEl) statusEl.textContent = 'Demo Mode';
+    const tbody = document.getElementById('installedModelsTbody');
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted);">Start local server (<code>python3 version1/server.py</code>) to manage Ollama models.</td></tr>`;
+    }
   }
 }
 
@@ -1621,36 +1722,75 @@ function init() {
   document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));
   document.getElementById('btnCloseUploadX').addEventListener('click', () => uploadModal.classList.remove('open'));
   document.getElementById('btnChatVoice').addEventListener('click', toggleVoiceRecording);
+  // Setup Model Dropdowns (Welcome Screen & Active Chat)
+  const setupModelDropdown = (btnEl, menuEl, wrapEl) => {
+    if (!btnEl || !menuEl) return;
+    btnEl.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      document.querySelectorAll('.model-dropdown-menu.open').forEach((m) => {
+        if (m !== menuEl) m.classList.remove('open');
+      });
+      document.querySelectorAll('.mode-dropdown-menu.open').forEach((m) => m.classList.remove('open'));
+      const isOpen = menuEl.classList.toggle('open');
+      btnEl.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) {
+        await loadModels(false);
+      }
+    });
+
+    menuEl.addEventListener('click', (e) => {
+      const refreshBtn = e.target.closest('[data-action="refresh-models"]');
+      if (refreshBtn) {
+        e.stopPropagation();
+        loadModels(true);
+        showToast('Refreshing Ollama models…');
+        return;
+      }
+      const manageBtn = e.target.closest('[data-action="manage-models"]');
+      if (manageBtn) {
+        e.stopPropagation();
+        menuEl.classList.remove('open');
+        btnEl.setAttribute('aria-expanded', 'false');
+        switchScreen('settings');
+        return;
+      }
+      const item = e.target.closest('[data-select-model]');
+      if (!item) return;
+      selectActiveModel(item.dataset.selectModel);
+      menuEl.classList.remove('open');
+      btnEl.setAttribute('aria-expanded', 'false');
+    });
+  };
+
   const welcomeModelBtn = document.getElementById('btnWelcomeModel');
   const welcomeModelMenu = document.getElementById('welcomeModelMenu');
   const welcomeModelWrap = document.getElementById('welcomeModelWrap');
-  renderWelcomeModelMenu();
+  setupModelDropdown(welcomeModelBtn, welcomeModelMenu, welcomeModelWrap);
 
-  welcomeModelBtn.addEventListener('click', (e) => {
+  const chatModelBtn = document.getElementById('btnChatModel');
+  const chatModelMenu = document.getElementById('chatModelMenu');
+  const chatModelWrap = document.getElementById('chatModelWrap');
+  setupModelDropdown(chatModelBtn, chatModelMenu, chatModelWrap);
+
+  document.getElementById('btnWelcomeLocal')?.addEventListener('click', (e) => {
     e.stopPropagation();
-    const isOpen = welcomeModelMenu.classList.toggle('open');
-    welcomeModelBtn.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen && !state.installedModels.length) loadModels();
+    if (welcomeModelBtn) welcomeModelBtn.click();
   });
 
-  welcomeModelMenu.addEventListener('click', (e) => {
-    const item = e.target.closest('[data-select-model]');
-    if (!item) return;
-    state.activeModel = item.dataset.selectModel;
-    updateActiveModelLabels();
-    renderWelcomeModelMenu();
-    welcomeModelMenu.classList.remove('open');
-    welcomeModelBtn.setAttribute('aria-expanded', 'false');
-    showToast(`Active model: ${state.activeModel}`);
-  });
+  renderModelMenus();
 
   document.addEventListener('click', (e) => {
     if (welcomeModelWrap && !welcomeModelWrap.contains(e.target)) {
-      welcomeModelMenu.classList.remove('open');
-      welcomeModelBtn.setAttribute('aria-expanded', 'false');
+      welcomeModelMenu?.classList.remove('open');
+      welcomeModelBtn?.setAttribute('aria-expanded', 'false');
+    }
+    if (chatModelWrap && !chatModelWrap.contains(e.target)) {
+      chatModelMenu?.classList.remove('open');
+      chatModelBtn?.setAttribute('aria-expanded', 'false');
     }
   });
-  document.getElementById('btnRefreshModels').addEventListener('click', loadModels);
+
+  document.getElementById('btnRefreshModels')?.addEventListener('click', () => loadModels(true));
 
   document.getElementById('installedModelsTbody').addEventListener('click', async (e) => {
     const txtBtn = e.target.closest('.btn-set-text-model');
