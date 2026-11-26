@@ -15,6 +15,7 @@ import {
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
+  themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
@@ -51,14 +52,33 @@ function showToast(msg) {
   setTimeout(() => el.classList.remove('show'), 2400);
 }
 
+function applyThemePreference(pref) {
+  state.themePref = pref;
+  let resolved = pref;
+  if (pref === 'system') {
+    resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', resolved);
+
+  document.querySelectorAll('.theme-icon-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.themePref === pref);
+  });
+
+  const popLabel = document.getElementById('popThemeLabel');
+  if (popLabel) {
+    popLabel.textContent = pref === 'system' ? 'Device' : pref === 'light' ? 'Light' : 'Dark';
+  }
+}
+
 function switchScreen(screenName) {
   state.screen = screenName;
 
-  // Progress screen uses Flowstate-inspired Light Theme (#FF5C16); others Dark Theme
-  document.documentElement.setAttribute(
-    'data-theme',
-    screenName === 'progress' ? 'light' : 'dark'
-  );
+  if (state.themePref === 'system') {
+    const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', screenName === 'progress' ? 'light' : sysDark ? 'dark' : 'light');
+  } else {
+    document.documentElement.setAttribute('data-theme', state.themePref);
+  }
 
   // Update active nav button
   document.querySelectorAll('.nav-item[data-screen]').forEach((btn) => {
@@ -755,11 +775,23 @@ function init() {
     }
   });
 
+  // 3-Way Theme Switcher (Device / Light / Dark)
+  document.querySelectorAll('.theme-icon-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyThemePreference(btn.dataset.themePref);
+      const label = btn.dataset.themePref === 'system' ? 'Device' : btn.dataset.themePref;
+      showToast(`Theme: ${label}`);
+    });
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (state.themePref === 'system') applyThemePreference('system');
+  });
+
   document.getElementById('popAppearance').addEventListener('click', () => {
-    const curr = document.documentElement.getAttribute('data-theme');
-    const next = curr === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    document.getElementById('popThemeLabel').textContent = next === 'dark' ? 'Dark' : 'Light';
+    const order = ['dark', 'light', 'system'];
+    const next = order[(order.indexOf(state.themePref) + 1) % order.length];
+    applyThemePreference(next);
   });
 
   document.getElementById('popAllSettings').addEventListener('click', () => {

@@ -88,6 +88,19 @@
 
         <div class="sidebar-divider"></div>
 
+        <!-- 3-Way Theme Switcher (Device / Light / Dark — icons only, text on hover) -->
+        <div class="theme-switcher-rail" role="group" aria-label="Theme">
+          <button class="theme-icon-btn" data-theme-pref="system" data-tooltip="Device" type="button" aria-label="Device theme">
+            <i class="bx bx-desktop"></i>
+          </button>
+          <button class="theme-icon-btn" data-theme-pref="light" data-tooltip="Light" type="button" aria-label="Light theme">
+            <i class="bx bx-sun"></i>
+          </button>
+          <button class="theme-icon-btn active" data-theme-pref="dark" data-tooltip="Dark" type="button" aria-label="Dark theme">
+            <i class="bx bx-moon"></i>
+          </button>
+        </div>
+
         <!-- Bottom Settings & Help Icons + Popover Anchor (Screenshots 1 & 2) -->
         <div class="sidebar-bottom-actions">
           <button class="sidebar-icon-btn" id="btnSettingsPopover" type="button" data-tooltip="Settings" aria-haspopup="true" aria-expanded="false">

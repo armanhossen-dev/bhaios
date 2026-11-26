@@ -109,7 +109,67 @@ button {
   margin-right: 0;
 }
 
-.sidebar.collapsed .sidebar-bottom-actions {
+.sidebar.collapsed /* 3-Way Theme Switcher (Device / Light / Dark — icons only, label on hover) */
+.theme-switcher-rail {
+  margin: 0 4px;
+  padding: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.sidebar.collapsed .theme-switcher-rail {
+  margin: 0;
+  width: 40px;
+  grid-template-columns: 1fr;
+}
+
+.theme-icon-btn {
+  position: relative;
+  height: 32px;
+  border-radius: 7px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.theme-icon-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.theme-icon-btn.active {
+  background: var(--bg-card-elevated);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Show text label ONLY while hovering */
+.sidebar:not(.collapsed) .theme-icon-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 9px;
+  background: #F4F4F5;
+  color: #111111;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.sidebar-bottom-actions {
   flex-direction: column;
   gap: 6px;
 }
@@ -196,6 +256,66 @@ button {
 .workspace-chevron {
   color: var(--text-muted);
   font-size: 16px;
+}
+
+/* 3-Way Theme Switcher (Device / Light / Dark — icons only, label on hover) */
+.theme-switcher-rail {
+  margin: 0 4px;
+  padding: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}
+
+.sidebar.collapsed .theme-switcher-rail {
+  margin: 0;
+  width: 40px;
+  grid-template-columns: 1fr;
+}
+
+.theme-icon-btn {
+  position: relative;
+  height: 32px;
+  border-radius: 7px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.theme-icon-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.theme-icon-btn.active {
+  background: var(--bg-card-elevated);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Show text label ONLY while hovering */
+.sidebar:not(.collapsed) .theme-icon-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 9px;
+  background: #F4F4F5;
+  color: #111111;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 100;
+  pointer-events: none;
 }
 
 .sidebar-bottom-actions {
