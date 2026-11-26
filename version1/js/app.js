@@ -1909,7 +1909,7 @@ function init() {
       : '<i class="bx bx-chevron-right"></i>';
   });
 
-  document.getElementById('btnClearNotifications').addEventListener('click', () => {
+  document.getElementById('btnClearNotifications')?.addEventListener('click', () => {
     state.notifications = [];
     renderNotifications();
   });
