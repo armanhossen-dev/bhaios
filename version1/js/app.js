@@ -146,10 +146,16 @@ function renderSnippets() {
     .map(
       (s) => `
       <div class="snippet-card ${state.highlightedSnippet === s.id ? 'highlighted' : ''}" id="snippet-${s.id}">
-        <div class="snippet-index">${s.index}</div>
+        <div class="snippet-top">
+          <span class="snippet-index">${s.index}</span>
+          <span class="snippet-badge ${s.isBangla ? 'note' : 'pdf'}">${s.isBangla ? 'VLM Note' : 'PDF'}</span>
+        </div>
         <div class="snippet-title ${s.isBangla ? 'bangla' : ''}">${s.title}</div>
         <div class="snippet-body ${s.isBangla ? 'bangla' : ''}">${s.body}</div>
-        <div class="snippet-source">${s.source}</div>
+        <div class="snippet-footer">
+          <span class="snippet-source"><i class="bx ${s.isBangla ? 'bx-image' : 'bx-file'}"></i> ${s.source}</span>
+          <button class="snippet-ask-btn" data-ask="Explain ${s.title} from ${s.source}" type="button">Ask <i class="bx bx-right-arrow-alt"></i></button>
+        </div>
       </div>
     `
     )
@@ -465,6 +471,11 @@ function init() {
   document.getElementById('snippetSearch').addEventListener('input', (e) => {
     state.snippetQuery = e.target.value;
     renderSnippets();
+  });
+
+  document.getElementById('snippetsList').addEventListener('click', (e) => {
+    const askBtn = e.target.closest('.snippet-ask-btn');
+    if (askBtn) sendChatMessage(askBtn.dataset.ask);
   });
 
   document.getElementById('chatMessages').addEventListener('click', (e) => {

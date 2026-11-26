@@ -220,14 +220,25 @@
 
           <aside class="context-panel" id="contextPanel">
             <div class="context-header">
-              <span class="context-title">Retrieved context</span>
-              <button id="btnToggleContext" type="button" title="Collapse panel" style="color: var(--text-secondary); font-size: 20px;"><i class="bx bx-chevron-right"></i></button>
+              <div class="context-title-wrap">
+                <i class="bx bx-book-bookmark" style="color: var(--teal-400); font-size: 16px;"></i>
+                <span class="context-title">Retrieved context</span>
+              </div>
+              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel" aria-label="Toggle context panel">
+                <i class="bx bx-chevron-right"></i>
+              </button>
             </div>
-            <div class="context-body" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+            <div class="context-body">
               <div class="context-sub" id="snippetCountLabel">3 snippets from your documents</div>
-              <input type="text" class="context-search" id="snippetSearch" value="Newton’s second law" placeholder="Search snippets..." />
+              <div class="context-search-wrap">
+                <i class="bx bx-search"></i>
+                <input type="text" class="context-search" id="snippetSearch" value="Newton’s second law" placeholder="Filter local notes…" />
+              </div>
               <div class="snippets-list" id="snippetsList"></div>
-              <div class="context-footer"><i class="bx bx-check"></i> Sources are searched on-device</div>
+              <div class="context-footer">
+                <i class="bx bx-check-shield"></i>
+                <span>On-device ChromaDB · Private</span>
+              </div>
             </div>
           </aside>
         </div>
