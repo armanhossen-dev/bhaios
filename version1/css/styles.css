@@ -2606,6 +2606,38 @@ i.bx {
   font-weight: 600;
 }
 
+html[data-font-size="small"] {
+  font-size: 12.5px;
+}
+html[data-font-size="medium"] {
+  font-size: 14px;
+}
+html[data-font-size="large"] {
+  font-size: 16.5px;
+}
+
+html[data-font-size="small"] .msg-assistant-prose,
+html[data-font-size="small"] .msg-user-pill,
+html[data-font-size="small"] .composer-input {
+  font-size: 13px;
+}
+
+html[data-font-size="large"] .msg-assistant-prose,
+html[data-font-size="large"] .msg-user-pill,
+html[data-font-size="large"] .composer-input {
+  font-size: 17px;
+}
+
+html[data-font-size="large"] .task-title,
+html[data-font-size="large"] .snippet-body {
+  font-size: 15.5px;
+}
+
+html[data-font-size="small"] .task-title,
+html[data-font-size="small"] .snippet-body {
+  font-size: 12px;
+}
+
 .toast {
   position: fixed;
   bottom: 24px;

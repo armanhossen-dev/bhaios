@@ -16,6 +16,7 @@ const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
   uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
+  fontSize: localStorage.getItem('bhaios_font_size') || 'medium', // 'small' | 'medium' | 'large'
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
@@ -136,6 +137,17 @@ function applyLanguage(lang) {
     document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = 'Voice: Bangla';
     document.getElementById('btnChatVoiceLang').querySelector('span').textContent = 'Bangla';
   }
+}
+
+function applyFontSize(size) {
+  state.fontSize = size;
+  localStorage.setItem('bhaios_font_size', size);
+  document.documentElement.setAttribute('data-font-size', size);
+  document.querySelectorAll('.font-size-btn').forEach((b) => {
+    b.setAttribute('data-state', b.dataset.size === size ? 'active' : 'inactive');
+  });
+  const popLbl = document.getElementById('popFontSizeLabel');
+  if (popLbl) popLbl.textContent = size.charAt(0).toUpperCase() + size.slice(1);
 }
 
 function applyThemePreference(pref) {
@@ -1066,6 +1078,19 @@ function init() {
     applyLanguage(next);
   });
 
+  document.querySelectorAll('.font-size-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      applyFontSize(btn.dataset.size);
+      showToast(`Font size: ${btn.dataset.size}`);
+    });
+  });
+
+  document.getElementById('popFontSize')?.addEventListener('click', () => {
+    const order = ['small', 'medium', 'large'];
+    const next = order[(order.indexOf(state.fontSize) + 1) % order.length];
+    applyFontSize(next);
+  });
+
   // 3-Way Theme Switcher (Device / Light / Dark)
   document.querySelectorAll('.theme-icon-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1424,6 +1449,7 @@ function init() {
   });
 
   // Initial Render
+  applyFontSize(state.fontSize);
   applyLanguage(state.uiLang);
   updateActiveModelLabels();
   loadModels();
