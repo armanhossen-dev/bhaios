@@ -304,10 +304,17 @@ function renderNotifications() {
 function renderRightUploadedFiles() {
   const list = document.getElementById('rightUploadedFiles');
   const badge = document.getElementById('rightFilesCount');
+  const headerAddBtn = document.getElementById('btnRightUpload');
   if (badge) badge.textContent = String(state.documents.length);
+  if (headerAddBtn) headerAddBtn.style.display = state.documents.length ? 'inline-flex' : 'none';
   if (!list) return;
   if (!state.documents.length) {
-    list.innerHTML = `<div class="right-empty">No files uploaded yet.</div>`;
+    list.innerHTML = `
+      <button class="right-empty-upload" type="button" title="Upload PDF or image">
+        <span class="right-empty-plus"><i class="bx bx-plus"></i></span>
+        <span class="right-empty-title">Add files</span>
+        <span class="right-empty-sub">No files uploaded yet.</span>
+      </button>`;
     return;
   }
   list.innerHTML = state.documents
@@ -1615,6 +1622,10 @@ function init() {
   });
 
   document.getElementById('rightUploadedFiles').addEventListener('click', (e) => {
+    if (e.target.closest('.right-empty-upload')) {
+      document.getElementById('uploadModal').classList.add('open');
+      return;
+    }
     const askBtn = e.target.closest('.right-file-ask');
     if (askBtn) sendChatMessage(askBtn.dataset.ask);
   });
