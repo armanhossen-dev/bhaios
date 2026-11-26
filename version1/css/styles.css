@@ -1328,6 +1328,60 @@ i.bx {
   background: #1D4ED8;
 }
 
+.model-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.model-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 245px;
+  padding: 6px;
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 80;
+}
+
+.model-dropdown-menu.open {
+  display: flex;
+}
+
+.model-dropdown-item {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  text-align: left;
+  transition: background 0.14s ease;
+}
+
+.model-dropdown-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.model-dropdown-item.active {
+  background: var(--teal-900);
+  color: var(--teal-400);
+}
+
+.model-dropdown-meta {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
 .btn-send-circle.is-hidden {
   width: 0;
   opacity: 0;

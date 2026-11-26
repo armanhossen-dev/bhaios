@@ -204,11 +204,14 @@
                     <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline">
                       <i class="bx bx-chip"></i>
                     </button>
-                    <button class="model-select-pill" id="btnWelcomeModel" type="button">
-                      <span>Qwen2.5 · 3B</span>
-                      <span class="badge-local">LOCAL</span>
-                      <i class="bx bx-chevron-down"></i>
-                    </button>
+                    <div class="model-dropdown-wrap" id="welcomeModelWrap">
+                      <button class="model-select-pill" id="btnWelcomeModel" type="button" aria-haspopup="true" aria-expanded="false">
+                        <span>Qwen2.5 · 3B</span>
+                        <span class="badge-local">LOCAL</span>
+                        <i class="bx bx-chevron-down"></i>
+                      </button>
+                      <div class="model-dropdown-menu" id="welcomeModelMenu" role="menu"></div>
+                    </div>
                   </div>
                   <div class="composer-tools-right">
                     <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button" title="Whisper voice language">

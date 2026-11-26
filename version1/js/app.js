@@ -25,6 +25,7 @@ const state = {
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
   activeVisionModel: 'llava-phi3:latest',
+  installedModels: [],
   attachedImageBase64: null,
   attachedFilename: null,
   chatStarted: false,
@@ -1115,6 +1116,26 @@ async function refreshSystemHealth() {
   }
 }
 
+function renderWelcomeModelMenu() {
+  const menu = document.getElementById('welcomeModelMenu');
+  if (!menu) return;
+  const models = state.installedModels.length
+    ? state.installedModels
+    : [{ name: state.activeModel, size: 'Local', is_vision: false }];
+  menu.innerHTML = models
+    .map(
+      (m) => `
+      <button class="model-dropdown-item ${m.name === state.activeModel ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
+        <span style="display:inline-flex;align-items:center;gap:6px;">
+          <i class="bx ${m.name === state.activeModel ? 'bx-check' : 'bx-chip'}"></i>
+          <span>${escapeHtml(m.name)}</span>
+        </span>
+        <span class="model-dropdown-meta">${escapeHtml(m.size || '')}</span>
+      </button>`
+    )
+    .join('');
+}
+
 async function loadModels() {
   const tbody = document.getElementById('installedModelsTbody');
   const grid = document.getElementById('suggestedModelsGrid');
@@ -1124,6 +1145,8 @@ async function loadModels() {
     const res = await fetch('/api/models');
     if (!res.ok) throw new Error('Backend offline');
     const data = await res.json();
+    state.installedModels = data.installed || [];
+    renderWelcomeModelMenu();
 
     document.getElementById('sidebarRuntimeStatus').textContent = 'Ollama Live';
     if (data.whisper) {
@@ -1516,9 +1539,34 @@ function init() {
   document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));
   document.getElementById('btnCloseUploadX').addEventListener('click', () => uploadModal.classList.remove('open'));
   document.getElementById('btnChatVoice').addEventListener('click', toggleVoiceRecording);
-  document.getElementById('btnWelcomeModel').addEventListener('click', () => {
-    switchScreen('settings');
-    loadModels();
+  const welcomeModelBtn = document.getElementById('btnWelcomeModel');
+  const welcomeModelMenu = document.getElementById('welcomeModelMenu');
+  const welcomeModelWrap = document.getElementById('welcomeModelWrap');
+  renderWelcomeModelMenu();
+
+  welcomeModelBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = welcomeModelMenu.classList.toggle('open');
+    welcomeModelBtn.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen && !state.installedModels.length) loadModels();
+  });
+
+  welcomeModelMenu.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-select-model]');
+    if (!item) return;
+    state.activeModel = item.dataset.selectModel;
+    updateActiveModelLabels();
+    renderWelcomeModelMenu();
+    welcomeModelMenu.classList.remove('open');
+    welcomeModelBtn.setAttribute('aria-expanded', 'false');
+    showToast(`Active model: ${state.activeModel}`);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (welcomeModelWrap && !welcomeModelWrap.contains(e.target)) {
+      welcomeModelMenu.classList.remove('open');
+      welcomeModelBtn.setAttribute('aria-expanded', 'false');
+    }
   });
   document.getElementById('btnRefreshModels').addEventListener('click', loadModels);
 
