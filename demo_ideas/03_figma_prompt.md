@@ -8,7 +8,7 @@ Design a complete Figma desktop app UI (1440x900) for BhaiOS, a local-first offl
 VISUAL SYSTEM & BLOCKS:
 - Components: blocks.so (shadcn/ui modular blocks: AI chat, dropzone, tables, stat cards, modals).
 - Dark Theme (Primary, Framer-style): Charcoal #0C0C0C root, #111111 sidebar, #161616 main, #1C1C1C cards, #242424 hover. Hairline 1px #2A2A2A panel borders, #333333 cards. Text: #F0F0F0 primary, #8A8A8A secondary, #555555 muted. Accents: Teal #2A8FA8 (active nav #1E2A2D + 2px left border, links, focus) & Amber #E8A020 (Guide pill #2A1E06, CTAs). Status: #3DBE82 ok, #E05252 err.
-- Light Theme (Secondary, Flowstate-style): #FFFFFF base, #F5F5F5 sidebar, #0A0A0A text, #6B6B6B muted, #BEFF00 lime pill CTAs (999px radius) with #0A0A0A text.
+- Light Theme (Secondary, Flowstate-style): #FFFFFF base, #F5F5F5 sidebar, #0A0A0A text, #6B6B6B muted, #FF5C16 bold pill CTAs (999px radius) with #0A0A0A text.
 - Typography (Unicorn Studio style): Instrument Serif (28-36px page titles, hero headers, big stat numbers) + Inter (11-15px UI, nav, body) + Noto Sans Bengali (15px, 1.8 line-height for Bangla) + JetBrains Mono (11-13px metrics/latency).
 
 APP SHELL & 5 SCREENS:

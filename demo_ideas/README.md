@@ -22,7 +22,7 @@ This folder contains detailed design and specification prompts for BhaiOS.
 
 - **UI Component Patterns:** [`blocks.so`](https://blocks.so/) (`shadcn/ui` modular app blocks — AI chat, file upload, stats, dialogs, tables)
 - **Dark Theme (Primary):** Framer-inspired charcoal layering (`#0C0C0C` → `#111111` → `#161616` → `#1C1C1C`) with hairline `#2A2A2A` borders and Teal (`#2A8FA8`) + Amber (`#E8A020`) accents
-- **Light Theme (Secondary):** Flowstate-inspired pure white (`#FFFFFF`), near-black (`#0A0A0A`), and acid lime (`#BEFF00`) pill CTAs
+- **Light Theme (Secondary):** Flowstate-inspired pure white (`#FFFFFF`), near-black (`#0A0A0A`), and vivid orange (`#FF5C16`) pill CTAs
 - **Typography:** `Instrument Serif` (Unicorn Studio-style display headlines) · `Inter` (UI/body) · `Noto Sans Bengali` (Bangla) · `JetBrains Mono` (metrics)
 
 ## Project Reference
