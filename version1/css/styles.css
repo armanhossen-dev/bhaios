@@ -47,6 +47,15 @@ button {
   line-height: 1.75;
 }
 
+.bangla-serif,
+.welcome-greeting.bangla,
+.doc-formula.bangla,
+.snippet-title.bangla,
+.serif.bangla {
+  font-family: var(--font-bangla-serif);
+  line-height: 1.55;
+}
+
 .mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
