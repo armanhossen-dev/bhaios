@@ -394,13 +394,14 @@ button {
 }
 
 .top-floating-bar {
-  position: fixed;
-  top: 14px;
-  right: 20px;
+  width: 100%;
+  padding: 14px 24px 10px;
   z-index: 40;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .token-pill {
@@ -1388,7 +1389,7 @@ i.bx {
 .chat-messages-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 8px 16px;
+  padding: 22px 8px 16px;
   display: flex;
   flex-direction: column;
   gap: 20px;

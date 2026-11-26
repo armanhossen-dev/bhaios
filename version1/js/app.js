@@ -966,7 +966,8 @@ function updateFocusTimerUI() {
 
   if (navText) navText.textContent = formatted;
   if (navPill) {
-    navPill.style.display = state.focusRunning || state.focusRemainingSecs < 45 * 60 ? 'inline-flex' : 'none';
+    navPill.style.display = 'inline-flex';
+    navPill.classList.toggle('running', state.focusRunning);
   }
   if (btnFocus) {
     btnFocus.innerHTML = state.focusRunning
