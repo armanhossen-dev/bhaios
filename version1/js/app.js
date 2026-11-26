@@ -1079,13 +1079,18 @@ function renderCommandResults(query = '') {
 /* ==========================================================================
    Model Manager & Whisper Voice Input
    ========================================================================== */
+function formatModelName(name) {
+  if (!name) return '';
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
 function updateActiveModelLabels() {
-  document.getElementById('activeTextModelLabel').textContent = state.activeModel;
-  document.getElementById('activeVisionModelLabel').textContent = state.activeVisionModel;
-  document.getElementById('sidebarActiveModel').textContent = state.activeModel;
+  document.getElementById('activeTextModelLabel').textContent = formatModelName(state.activeModel);
+  document.getElementById('activeVisionModelLabel').textContent = formatModelName(state.activeVisionModel);
+  document.getElementById('sidebarActiveModel').textContent = formatModelName(state.activeModel);
   const welcomeModelBtn = document.getElementById('btnWelcomeModel');
   if (welcomeModelBtn) {
-    welcomeModelBtn.querySelector('span').textContent = state.activeModel;
+    welcomeModelBtn.querySelector('span').textContent = formatModelName(state.activeModel);
   }
 }
 
@@ -1128,7 +1133,7 @@ function renderWelcomeModelMenu() {
       <button class="model-dropdown-item ${m.name === state.activeModel ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
         <span style="display:inline-flex;align-items:center;gap:6px;">
           <i class="bx ${m.name === state.activeModel ? 'bx-check' : 'bx-chip'}"></i>
-          <span>${escapeHtml(m.name)}</span>
+          <span>${escapeHtml(formatModelName(m.name))}</span>
         </span>
         <span class="model-dropdown-meta">${escapeHtml(m.size || '')}</span>
       </button>`
@@ -1161,7 +1166,7 @@ async function loadModels() {
         const isActiveVision = m.name === state.activeVisionModel;
         return `
           <tr>
-            <td style="font-weight: 500;">${m.name}</td>
+            <td style="font-weight: 500;">${escapeHtml(formatModelName(m.name))}</td>
             <td>
               <span class="status-dot-inline ${m.is_vision ? 'blue' : 'green'}">${m.is_vision ? 'Vision + Text' : 'Text'}</span>
             </td>
