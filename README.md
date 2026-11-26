@@ -1,79 +1,73 @@
-# BhaiOS
+# 🧠 BhaiOS
 
-**A Local Vision-Language Study Assistant with Guide-First Assistance for Bangla-Speaking Students**
+**A local, private study assistant that sees your notes and teaches you to solve, not just copy.**
 
-BhaiOS is a local-first study assistant for Bangla-speaking students that combines a large language model with a vision-language model. It can see and understand the student's study material—including scanned pages, handwritten notes, slides, diagrams, and screenshots—in Bangla and English. Instead of giving final answers, it works in **guide-first mode**: it provides hints, asks guiding questions, reminds students of deadlines, and reviews weekly progress so the student completes the work themselves.
+Built for Bangla-speaking students. Runs offline on a standard laptop.
 
-> **Status:** 🛡️ Published for Title Defense (Team: **Swift Lions** · ID: `PRJ-fall-2026-12485` · Daffodil International University)
+![Status](https://img.shields.io/badge/status-title%20defense-blue)
+![Runs](https://img.shields.io/badge/runs-100%25%20local-green)
+![Languages](https://img.shields.io/badge/language-বাংলা%20%7C%20English-orange)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
----
-
-## Research Questions
-
-1. **Vision vs. OCR Pipeline:** How well do local vision-language models understand Bangla and English study material compared with an OCR + LLM pipeline?
-2. **Guide-First vs. Direct Answer:** Does a guide-first (hint-based) local assistant improve task completion and learning engagement for Bangla-speaking students compared with a direct-answer assistant?
+> Research project · Team **Swift Lions** · Daffodil International University
 
 ---
 
 ## Why BhaiOS?
 
-- **Vision-Language Understanding:** Comprehends handwritten notes, scanned pages, textbook diagrams, and screenshots directly.
-- **Guide, Don't Solve:** Prompts with hints, breakdowns, and next steps instead of spoon-feeding final answers.
-- **Bangla & English Aware:** Native understanding across mixed Bangla and English course materials.
-- **Local-First & Private:** Core features run completely offline on a standard laptop (target: 16 GB RAM, no dedicated GPU, 4-bit quantized models)—private study materials never leave your device.
-- **Accountability & Tracking:** Tracks tasks and deadlines, schedules reminders, and generates weekly progress reviews.
-- **Study Resource Recommender:** Suggests topic-specific video explanations (e.g., YouTube) and provides an opt-in agent mode with confirmation for simple automations (stretch goals).
+Most AI tools hand students the final answer. BhaiOS doesn't.
+
+| | |
+|---|---|
+| 👁️ **Sees your material** | Handwritten notes, scans, slides, diagrams, screenshots, in Bangla and English |
+| 🧭 **Guide-first** | Hints, guiding questions, and next steps instead of final answers |
+| 🔒 **Local & private** | Offline, 4-bit quantized models, target 16 GB RAM, no GPU. Your notes never leave your device |
+| ⏰ **Accountable** | Tracks tasks and deadlines, sends reminders, writes weekly progress reviews |
 
 ---
 
-## Planned Features
+## Research Questions
 
-- [ ] Local Vision-Language Model inference (target: 16 GB RAM, 4-bit quantized via Ollama / llama.cpp)
-- [ ] Handwritten notes, scanned documents, slides, and diagram comprehension in Bangla & English
-- [ ] VLM vs. OCR + LLM comparative evaluation (CER/WER, answer accuracy, latency per page)
-- [ ] Local vector retrieval (ChromaDB) over course documents
-- [ ] Guide mode (Socratic hints) vs. Direct Answer mode (evaluated via task completion, on-time rate, quiz gain)
-- [ ] Task, deadline, and reminder tracker with weekly progress reviews
-- [ ] Study-resource recommender (topic-based video search - stretch goal)
-- [ ] Opt-in Agent mode with confirmation for simple automations (stretch goal)
-- [ ] Bangla study-material benchmark (~100 questions over ~40 pages of real student course material)
-- [ ] User study & evaluation (10–15 students over 2–3 weeks with anonymized local logs)
-- [ ] Future: Voice input (Whisper) & local AI IDE integration
+1. **VLM vs. OCR + LLM:** How well do local vision-language models understand Bangla and English study material compared with an OCR + LLM pipeline?
+2. **Guide-first vs. direct answer:** Does a hint-based assistant improve task completion and learning engagement compared with a direct-answer one?
 
 ---
 
-## Tech Stack
-
-Python · LLM · Ollama · llama.cpp · Vision-Language Models · Whisper · Tesseract OCR · OpenCV · ChromaDB · SQLite · FastAPI · PyQt · YouTube Data API · Hugging Face Transformers
-
----
-
-## Architecture (planned)
+## How It Works
 
 ```
-Study Material (Scans, Handwriting, Diagrams, PDFs)
-                          ↓
-      Local VLM / OCR + Chunking → Local Vector Store (ChromaDB)
-                                              ↓
-Student Query (Text/Voice) → Guide-First Policy → Local LLM/VLM → Hints & Next Steps
-                                              ↓
-             Task Memory + Reminders + Resource Finder + Weekly Review
+Scans / Handwriting / Diagrams / PDFs
+              ↓
+   Local VLM or OCR → Chunking → ChromaDB
+                                    ↓
+Student Query → Guide-First Policy → Local LLM/VLM → Hints & Next Steps
+                                    ↓
+        Tasks · Reminders · Resource Finder · Weekly Review
 ```
+
+**Stack:** Python · Ollama · llama.cpp · Hugging Face Transformers · Tesseract · OpenCV · ChromaDB · SQLite · FastAPI · PyQt · Whisper
 
 ---
 
 ## Roadmap
 
-| Weeks | Milestone |
-|-------|-----------|
-| **1–2** | Local VLM & LLM setup + testing Bangla handwriting/scans + Chat UI |
-| **3–4** | Document ingestion, diagram analysis, and local retrieval |
-| **5–6** | Task memory, reminders, resource recommender, guide-mode policy |
-| **7–8** | Benchmark dataset creation, user study (10–15 students), evaluation |
+- [ ] **Wk 1–2:** Local VLM/LLM setup, Bangla handwriting and scan tests, chat UI
+- [ ] **Wk 3–4:** Document ingestion, diagram analysis, local retrieval
+- [ ] **Wk 5–6:** Task memory, reminders, guide-mode policy
+- [ ] **Wk 7–8:** Bangla benchmark (~100 questions, ~40 pages), user study (10–15 students), evaluation
+
+**Stretch goals:** video resource recommender · opt-in agent mode · Whisper voice input
 
 ---
 
-## Getting Started
+## Evaluation
+
+- **VLM vs. OCR + LLM:** CER/WER, answer accuracy, latency per page
+- **Guide vs. direct mode:** task completion, on-time rate, quiz gain
+
+---
+
+## Quick Start
 
 ```bash
 git clone https://github.com/armanhossen-dev/bhaios.git
@@ -81,18 +75,102 @@ cd bhaios
 pip install -r requirements.txt
 ```
 
-*Setup instructions and model weights guide will be added as the project develops.*
+Model setup guide coming as the project develops.
 
 ---
 
 ## Author
 
-**Arman Hossen** · Department of Computer Science & Engineering, Daffodil International University   
-Portfolio: [armanhossen.is-a.dev](https://armanhossen.is-a.dev)    
-Project Site: [armanhossen.is-a.dev/bhaios](https://www.armanhossen.is-a.dev/bhaios)   
-GitHub: [@armanhossen-dev](https://github.com/armanhossen-dev)    
+**Arman Hossen** · CSE, Daffodil International University
+[Portfolio](https://armanhossen.is-a.dev) · [Project site](https://www.armanhossen.is-a.dev/bhaios) · [@armanhossen-dev](https://github.com/armanhossen-dev)
+
+## License
+
+MIT (to be confirmed)# 🧠 BhaiOS
+
+**A local, private study assistant that sees your notes and teaches you to solve, not just copy.**
+
+Built for Bangla-speaking students. Runs offline on a standard laptop.
+
+![Status](https://img.shields.io/badge/status-title%20defense-blue)
+![Runs](https://img.shields.io/badge/runs-100%25%20local-green)
+![Languages](https://img.shields.io/badge/language-বাংলা%20%7C%20English-orange)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
+> Research project · Team **Swift Lions** · Daffodil International University
 
 ---
+
+## Why BhaiOS?
+
+Most AI tools hand students the final answer. BhaiOS doesn't.
+
+| | |
+|---|---|
+| 👁️ **Sees your material** | Handwritten notes, scans, slides, diagrams, screenshots, in Bangla and English |
+| 🧭 **Guide-first** | Hints, guiding questions, and next steps instead of final answers |
+| 🔒 **Local & private** | Offline, 4-bit quantized models, target 16 GB RAM, no GPU. Your notes never leave your device |
+| ⏰ **Accountable** | Tracks tasks and deadlines, sends reminders, writes weekly progress reviews |
+
+---
+
+## Research Questions
+
+1. **VLM vs. OCR + LLM:** How well do local vision-language models understand Bangla and English study material compared with an OCR + LLM pipeline?
+2. **Guide-first vs. direct answer:** Does a hint-based assistant improve task completion and learning engagement compared with a direct-answer one?
+
+---
+
+## How It Works
+
+```
+Scans / Handwriting / Diagrams / PDFs
+              ↓
+   Local VLM or OCR → Chunking → ChromaDB
+                                    ↓
+Student Query → Guide-First Policy → Local LLM/VLM → Hints & Next Steps
+                                    ↓
+        Tasks · Reminders · Resource Finder · Weekly Review
+```
+
+**Stack:** Python · Ollama · llama.cpp · Hugging Face Transformers · Tesseract · OpenCV · ChromaDB · SQLite · FastAPI · PyQt · Whisper
+
+---
+
+## Roadmap
+
+- [ ] **Wk 1–2:** Local VLM/LLM setup, Bangla handwriting and scan tests, chat UI
+- [ ] **Wk 3–4:** Document ingestion, diagram analysis, local retrieval
+- [ ] **Wk 5–6:** Task memory, reminders, guide-mode policy
+- [ ] **Wk 7–8:** Bangla benchmark (~100 questions, ~40 pages), user study (10–15 students), evaluation
+
+**Stretch goals:** video resource recommender · opt-in agent mode · Whisper voice input
+
+---
+
+## Evaluation
+
+- **VLM vs. OCR + LLM:** CER/WER, answer accuracy, latency per page
+- **Guide vs. direct mode:** task completion, on-time rate, quiz gain
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/armanhossen-dev/bhaios.git
+cd bhaios
+pip install -r requirements.txt
+```
+
+Model setup guide coming as the project develops.
+
+---
+
+## Author
+
+**Arman Hossen** · CSE, Daffodil International University
+[Portfolio](https://armanhossen.is-a.dev) · [Project site](https://www.armanhossen.is-a.dev/bhaios) · [@armanhossen-dev](https://github.com/armanhossen-dev)
 
 ## License
 
