@@ -21,7 +21,7 @@ const state = {
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
   questionsCount: Number(localStorage.getItem('bhaios_questions') || 0),
-  sessionTokens: { prompt: 0, completion: 0, total: 0 },
+  sessionTokens: JSON.parse(localStorage.getItem('bhaios_tokens') || '{"prompt":0,"completion":0,"total":0}'),
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
   activeVisionModel: 'llava-phi3:latest',
@@ -240,7 +240,7 @@ function renderChat() {
         <div class="msg-user-pill ${msg.bangla ? 'bangla' : ''}">${text}</div>
         <div class="msg-actions">
           <button class="msg-action-btn copy-msg-btn" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
-          <button class="msg-action-btn edit-msg-btn" type="button" title="Edit"><i class="bx bx-pencil"></i></button>
+          <button class="msg-action-btn edit-msg-btn" data-msg-id="${msg.id}" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Edit"><i class="bx bx-pencil"></i></button>
           ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
         </div>
       `;
@@ -258,7 +258,7 @@ function renderChat() {
         <div class="msg-assistant-meta">
           <div class="msg-actions" style="padding: 0;">
             <button class="msg-action-btn copy-msg-btn" data-text="${copyText}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
-            <button class="msg-action-btn regen-msg-btn" type="button" title="Regenerate"><i class="bx bx-refresh"></i></button>
+            <button class="msg-action-btn regen-msg-btn" data-msg-id="${msg.id}" type="button" title="Repeat prompt"><i class="bx bx-refresh"></i></button>
             <button class="msg-action-btn" type="button" title="More"><i class="bx bx-dots-horizontal-rounded"></i></button>
           </div>
           ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
@@ -476,7 +476,7 @@ function stopChatGeneration() {
   }
 }
 
-async function sendChatMessage(customText) {
+async function sendChatMessage(customText, options = {}) {
   if (state.isGenerating) return;
   const input = document.getElementById('chatInput');
   const welcomeInput = document.getElementById('welcomeInput');
@@ -489,15 +489,17 @@ async function sendChatMessage(customText) {
     state.currentChatId = `chat-${Date.now()}`;
   }
 
-  const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  const hasBangla = /[\u0980-\u09FF]/.test(text);
-  state.messages.push({
-    id: `m-${Date.now()}`,
-    role: 'student',
-    bangla: hasBangla ? text : '',
-    english: hasBangla ? '' : text,
-    time: nowTime,
-  });
+  if (!options.skipUserPush) {
+    const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const hasBangla = /[\u0980-\u09FF]/.test(text);
+    state.messages.push({
+      id: `m-${Date.now()}`,
+      role: 'student',
+      bangla: hasBangla ? text : '',
+      english: hasBangla ? '' : text,
+      time: nowTime,
+    });
+  }
 
   const pendingId = `a-pending-${Date.now()}`;
   state.messages.push({
@@ -563,6 +565,7 @@ async function sendChatMessage(customText) {
     state.sessionTokens.prompt += data.prompt_tokens || 0;
     state.sessionTokens.completion += data.completion_tokens || 0;
     state.sessionTokens.total += data.total_tokens || 0;
+    localStorage.setItem('bhaios_tokens', JSON.stringify(state.sessionTokens));
     const tokEl = document.getElementById('tokenUsageText');
     if (tokEl) tokEl.textContent = `${state.sessionTokens.total.toLocaleString()} tok`;
 
@@ -1113,6 +1116,9 @@ async function refreshSystemHealth() {
         barEl.style.width = `${data.ram.percent}%`;
         barEl.classList.toggle('high', data.ram.percent >= 85);
       }
+    } else if (ramEl) {
+      ramEl.textContent = 'RAM (restart server)';
+      ramEl.title = 'Restart version1/server.py to enable live RAM metrics';
     }
   } catch {
     if (statusEl) statusEl.textContent = 'Offline';
@@ -1688,6 +1694,36 @@ function init() {
     if (copyBtn && navigator.clipboard) {
       navigator.clipboard.writeText(copyBtn.dataset.text || '');
       showToast('Copied to clipboard');
+      return;
+    }
+    const editBtn = e.target.closest('.edit-msg-btn');
+    if (editBtn) {
+      const input = document.getElementById('chatInput');
+      if (input) {
+        input.value = editBtn.dataset.text || '';
+        syncSendButtons();
+        input.focus();
+      }
+      return;
+    }
+    const regenBtn = e.target.closest('.regen-msg-btn');
+    if (regenBtn && !state.isGenerating) {
+      const msgId = regenBtn.dataset.msgId;
+      const idx = state.messages.findIndex((m) => m.id === msgId);
+      if (idx === -1) return;
+      let userIdx = -1;
+      for (let i = idx - 1; i >= 0; i -= 1) {
+        if (state.messages[i].role === 'student') {
+          userIdx = i;
+          break;
+        }
+      }
+      if (userIdx === -1) return;
+      const userMsg = state.messages[userIdx];
+      const promptText = (userMsg.bangla || userMsg.english || '').trim();
+      if (!promptText) return;
+      state.messages = state.messages.slice(0, userIdx + 1);
+      sendChatMessage(promptText, { skipUserPush: true });
     }
   });
 
@@ -1840,6 +1876,8 @@ function init() {
   applyFontSize(state.fontSize);
   applyLanguage(state.uiLang);
   updateActiveModelLabels();
+  const tokEl = document.getElementById('tokenUsageText');
+  if (tokEl) tokEl.textContent = `${(state.sessionTokens.total || 0).toLocaleString()} tok`;
   loadModels();
   refreshSystemHealth();
   setInterval(refreshSystemHealth, 4000);

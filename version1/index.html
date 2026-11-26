@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,14 +11,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+    rel="stylesheet" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="./css/tokens.css" />
   <link rel="stylesheet" href="./css/shadcn.css" />
   <link rel="stylesheet" href="./css/styles.css" />
 </head>
+
 <body>
   <div class="app-shell">
     <!-- =====================================================================
@@ -26,7 +27,8 @@
     <aside class="sidebar" id="leftSidebar">
       <!-- App Icon = Sidebar Open/Close Toggle + Workspace Label -->
       <div class="sidebar-top-row">
-        <button class="workspace-switcher" id="btnToggleSidebar" type="button" data-tooltip="Toggle sidebar" title="Click to collapse/expand sidebar" aria-label="Toggle sidebar">
+        <button class="workspace-switcher" id="btnToggleSidebar" type="button" data-tooltip="Toggle sidebar"
+          title="Click to collapse/expand sidebar" aria-label="Toggle sidebar">
           <span class="workspace-avatar">B</span>
           <span class="workspace-switcher-text">
             <span class="workspace-switcher-name">BhaiOS</span>
@@ -34,7 +36,8 @@
         </button>
       </div>
 
-      <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button" data-tooltip="New chat">
+      <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button"
+        data-tooltip="New chat">
         <i class="bx bx-plus"></i>
         <span class="nav-label">New conversation</span>
       </button>
@@ -84,7 +87,8 @@
       <div class="sidebar-chats-section" id="savedChatsSection">
         <div class="sidebar-chats-head">
           <span class="sidebar-section-label" style="margin: 0; padding: 0;">SAVED CHATS</span>
-          <button class="sidebar-chats-clear" id="btnClearSavedChats" type="button" title="Delete all saved chats">Clear</button>
+          <button class="sidebar-chats-clear" id="btnClearSavedChats" type="button"
+            title="Delete all saved chats">Clear</button>
         </div>
         <div class="sidebar-chats-list" id="savedChatsList"></div>
       </div>
@@ -99,20 +103,24 @@
 
         <!-- 3-Way Theme Switcher (Device / Light / Dark — icons only, text on hover) -->
         <div class="theme-switcher-rail" role="group" aria-label="Theme">
-          <button class="theme-icon-btn" data-theme-pref="system" data-tooltip="Device" type="button" aria-label="Device theme">
+          <button class="theme-icon-btn" data-theme-pref="system" data-tooltip="Device" type="button"
+            aria-label="Device theme">
             <i class="bx bx-desktop"></i>
           </button>
-          <button class="theme-icon-btn" data-theme-pref="light" data-tooltip="Light" type="button" aria-label="Light theme">
+          <button class="theme-icon-btn" data-theme-pref="light" data-tooltip="Light" type="button"
+            aria-label="Light theme">
             <i class="bx bx-sun"></i>
           </button>
-          <button class="theme-icon-btn active" data-theme-pref="dark" data-tooltip="Dark" type="button" aria-label="Dark theme">
+          <button class="theme-icon-btn active" data-theme-pref="dark" data-tooltip="Dark" type="button"
+            aria-label="Dark theme">
             <i class="bx bx-moon"></i>
           </button>
         </div>
 
         <!-- Bottom Settings & Help Icons + Popover Anchor (Screenshots 1 & 2) -->
         <div class="sidebar-bottom-actions">
-          <button class="sidebar-icon-btn" id="btnSettingsPopover" type="button" data-tooltip="Settings" aria-haspopup="true" aria-expanded="false">
+          <button class="sidebar-icon-btn" id="btnSettingsPopover" type="button" data-tooltip="Settings"
+            aria-haspopup="true" aria-expanded="false">
             <i class="bx bx-cog"></i>
             <span class="nav-label">Settings</span>
           </button>
@@ -132,7 +140,8 @@
             </button>
           </div>
           <div class="ram-line">
-            <span class="runtime-badge"><i class="bx bxs-circle dot-ready" id="sidebarRuntimeDot"></i> <span id="sidebarRuntimeStatus">Ready</span></span>
+            <span class="runtime-badge"><i class="bx bxs-circle dot-ready" id="sidebarRuntimeDot"></i> <span
+                id="sidebarRuntimeStatus">Ready</span></span>
             <span class="ram-readout" id="sidebarRamUsage" title="Live device RAM usage">RAM -- / -- GB</span>
           </div>
           <div class="ram-bar" aria-hidden="true">
@@ -176,7 +185,8 @@
          ===================================================================== -->
     <div class="main-column">
       <div class="top-floating-bar">
-        <button class="navbar-timer-pill" id="navbarFocusTimer" type="button" title="Click to start/pause reverse focus timer">
+        <button class="navbar-timer-pill" id="navbarFocusTimer" type="button"
+          title="Click to start/pause reverse focus timer">
           <i class="bx bx-time-five"></i>
           <span id="navbarTimerText">45:00</span>
         </button>
@@ -193,19 +203,15 @@
               <h2 class="welcome-greeting" id="welcomeGreeting">Hi Arman, How can I help you today?</h2>
 
               <div class="welcome-composer">
-                <input
-                  type="text"
-                  class="composer-input"
-                  id="welcomeInput"
-                  placeholder="Ask anything"
-                />
+                <input type="text" class="composer-input" id="welcomeInput" placeholder="Ask anything" />
                 <div class="welcome-composer-footer">
                   <div class="composer-tools-left">
                     <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline">
                       <i class="bx bx-chip"></i>
                     </button>
                     <div class="model-dropdown-wrap" id="welcomeModelWrap">
-                      <button class="model-select-pill" id="btnWelcomeModel" type="button" aria-haspopup="true" aria-expanded="false">
+                      <button class="model-select-pill" id="btnWelcomeModel" type="button" aria-haspopup="true"
+                        aria-expanded="false">
                         <span>Qwen2.5 · 3B</span>
                         <span class="badge-local">LOCAL</span>
                         <i class="bx bx-chevron-down"></i>
@@ -214,16 +220,19 @@
                     </div>
                   </div>
                   <div class="composer-tools-right">
-                    <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button" title="Whisper voice language">
+                    <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button"
+                      title="Whisper voice language">
                       <span>Voice: Auto</span>
                     </button>
                     <button class="icon-circle-btn" id="btnWelcomeScan" type="button" title="Scan handwritten notes">
                       <i class="bx bx-scan"></i>
                     </button>
-                    <button class="icon-circle-btn mic-trigger" id="btnWelcomeVoice" type="button" title="Voice input (Whisper)">
+                    <button class="icon-circle-btn mic-trigger" id="btnWelcomeVoice" type="button"
+                      title="Voice input (Whisper)">
                       <i class="bx bx-microphone"></i>
                     </button>
-                    <button class="btn-send-circle is-hidden" id="btnWelcomeSend" type="button" aria-label="Send message">
+                    <button class="btn-send-circle is-hidden" id="btnWelcomeSend" type="button"
+                      aria-label="Send message">
                       <i class="bx bx-up-arrow-alt"></i>
                     </button>
                   </div>
@@ -240,21 +249,18 @@
                   <button class="pill-composer-attach" id="btnChatAttach" type="button" title="Attach document">
                     <i class="bx bx-plus"></i>
                   </button>
-                  <input
-                    type="text"
-                    class="composer-input"
-                    id="chatInput"
-                    placeholder="Ask anything"
-                  />
+                  <input type="text" class="composer-input" id="chatInput" placeholder="Ask anything" />
                   <div class="pill-composer-right">
                     <button class="effort-pill" id="btnEffortMode" type="button">
                       <span id="effortLabel">Guide Mode</span>
                       <i class="bx bx-chevron-down"></i>
                     </button>
-                    <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button" title="Whisper voice language">
+                    <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button"
+                      title="Whisper voice language">
                       <span>Auto</span>
                     </button>
-                    <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button" title="Voice input (Whisper)">
+                    <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button"
+                      title="Voice input (Whisper)">
                       <i class="bx bx-microphone"></i>
                     </button>
                     <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
@@ -272,10 +278,17 @@
           <aside class="context-panel" id="contextPanel">
             <div class="context-header">
               <div class="right-time-card">
-                <div class="right-clock-time" id="rightClockTime">--:--:--</div>
+                <div class="right-clock-row">
+                  <div class="right-clock-time" id="rightClockTime">--:--:--</div>
+                  <button class="right-countdown-btn" id="navbarFocusTimer" type="button"
+                    title="Click to start/pause reverse focus timer">
+                    <span id="navbarTimerText">45:00</span>
+                  </button>
+                </div>
                 <div class="right-clock-date" id="rightClockDate">Loading date…</div>
               </div>
-              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel" aria-label="Toggle right panel">
+              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Collapse panel"
+                aria-label="Toggle right panel">
                 <i class="bx bx-chevron-right"></i>
               </button>
             </div>
@@ -329,11 +342,14 @@
                   <i class="bx bx-folder-open"></i> Browse files
                 </button>
                 <div data-slot="tabs-list" class="pipeline-toggle">
-                  <button data-slot="tabs-trigger" data-state="active" class="doc-pipe-btn" data-pipe="VLM" type="button">VLM</button>
-                  <button data-slot="tabs-trigger" data-state="inactive" class="doc-pipe-btn" data-pipe="OCR" type="button">OCR</button>
+                  <button data-slot="tabs-trigger" data-state="active" class="doc-pipe-btn" data-pipe="VLM"
+                    type="button">VLM</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="doc-pipe-btn" data-pipe="OCR"
+                    type="button">OCR</button>
                 </div>
               </div>
-              <div class="dropzone-privacy"><i class="bx bx-check-shield"></i> OCR &amp; VLM indexing run 100% on your device</div>
+              <div class="dropzone-privacy"><i class="bx bx-check-shield"></i> OCR &amp; VLM indexing run 100% on your
+                device</div>
             </div>
             <div class="dropzone-file-badge" aria-hidden="true">
               <i class="bx bxs-file-pdf"></i>
@@ -347,7 +363,8 @@
               <span class="library-count" id="libraryCountLabel">0 documents</span>
             </div>
             <div class="library-controls">
-              <input type="text" class="control-input" data-slot="input" id="docSearchInput" placeholder="Search documents…" />
+              <input type="text" class="control-input" data-slot="input" id="docSearchInput"
+                placeholder="Search documents…" />
               <select class="control-select" data-slot="input" id="docSubjectFilter">
                 <option value="All">All subjects</option>
                 <option value="Physics">Physics</option>
@@ -363,7 +380,9 @@
 
           <div class="pagination-row">
             <span id="docsShowingLabel">Showing 6 of 12 documents</span>
-            <span class="mono" style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 8px;">1 &nbsp; 2 &nbsp; Next <i class="bx bx-right-arrow-alt"></i></span>
+            <span class="mono"
+              style="color: var(--text-secondary); display: inline-flex; align-items: center; gap: 8px;">1 &nbsp; 2
+              &nbsp; Next <i class="bx bx-right-arrow-alt"></i></span>
           </div>
         </div>
       </section>
@@ -382,11 +401,16 @@
             <div>
               <div class="tasks-filter-bar">
                 <div data-slot="tabs-list" role="tablist">
-                  <button data-slot="tabs-trigger" data-state="active" class="filter-pill active" data-filter="all" type="button">All tasks &nbsp;<span id="pillAllCount">0</span></button>
-                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="today" type="button">Today</button>
-                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="completed" type="button">Completed</button>
+                  <button data-slot="tabs-trigger" data-state="active" class="filter-pill active" data-filter="all"
+                    type="button">All tasks &nbsp;<span id="pillAllCount">0</span></button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="today"
+                    type="button">Today</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="filter-pill" data-filter="completed"
+                    type="button">Completed</button>
                 </div>
-                <span class="mono" style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">Due date <i class="bx bx-down-arrow-alt"></i></span>
+                <span class="mono"
+                  style="font-size: 12px; color: var(--text-muted); display: inline-flex; align-items: center; gap: 4px;">Due
+                  date <i class="bx bx-down-arrow-alt"></i></span>
               </div>
 
               <div id="tasksContainer"></div>
@@ -397,30 +421,38 @@
                 <div class="calendar-head">
                   <span class="serif" id="calendarMonthLabel" style="font-size: 20px;">July 2025</span>
                   <span style="display: inline-flex; gap: 4px;">
-                    <button class="context-collapse-btn" id="btnCalPrev" type="button" aria-label="Previous week"><i class="bx bx-chevron-left"></i></button>
-                    <button class="context-collapse-btn" id="btnCalNext" type="button" aria-label="Next week"><i class="bx bx-chevron-right"></i></button>
+                    <button class="context-collapse-btn" id="btnCalPrev" type="button" aria-label="Previous week"><i
+                        class="bx bx-chevron-left"></i></button>
+                    <button class="context-collapse-btn" id="btnCalNext" type="button" aria-label="Next week"><i
+                        class="bx bx-chevron-right"></i></button>
                   </span>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
-                <div id="calendarSelectedLabel" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+                <div id="calendarSelectedLabel"
+                  style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
                   <span>Wednesday, 16 July</span>
                 </div>
               </div>
 
               <div class="nudge-card">
-                <div class="nudge-title" style="display:flex; align-items:center; gap:6px;"><i class="bx bx-time-five"></i> A gentle nudge</div>
+                <div class="nudge-title" style="display:flex; align-items:center; gap:6px;"><i
+                    class="bx bx-time-five"></i> A gentle nudge</div>
                 <div class="nudge-body">
                   Your physics session starts at 6 PM. Reminders work even when you're offline.
                 </div>
-                <button class="nudge-link" id="btnManageReminders" type="button" style="display:inline-flex; align-items:center; gap:4px;">Manage reminders <i class="bx bx-right-arrow-alt"></i></button>
+                <button class="nudge-link" id="btnManageReminders" type="button"
+                  style="display:inline-flex; align-items:center; gap:4px;">Manage reminders <i
+                    class="bx bx-right-arrow-alt"></i></button>
               </div>
 
               <div class="aside-card">
                 <div class="serif" style="font-size: 20px; margin-bottom: 10px;">Focus timer</div>
-                <div class="mono" style="font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.08em;">SESSION</div>
+                <div class="mono" style="font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.08em;">SESSION
+                </div>
                 <div class="focus-card-big">45 min</div>
                 <div style="font-size: 12px; color: var(--text-secondary);" id="focusTasksMeta">0 active tasks</div>
-                <button class="btn-outline-full" id="btnStartFocus" type="button"><i class="bx bx-play"></i> Start focus session</button>
+                <button class="btn-outline-full" id="btnStartFocus" type="button"><i class="bx bx-play"></i> Start focus
+                  session</button>
               </div>
             </aside>
           </div>
@@ -434,7 +466,8 @@
         <div class="screen-scroll">
           <div class="screen-header-row">
             <span class="screen-subtitle">Small steps. Real progress.</span>
-            <div class="latency-chip" style="border-radius: 999px; gap: 10px;"><i class="bx bx-chevron-left"></i> 14 – 20 July 2025 <i class="bx bx-chevron-right"></i></div>
+            <div class="latency-chip" style="border-radius: 999px; gap: 10px;"><i class="bx bx-chevron-left"></i> 14 –
+              20 July 2025 <i class="bx bx-chevron-right"></i></div>
           </div>
 
           <div class="progress-hero-card">
@@ -445,7 +478,8 @@
                   You're building a habit, one good question at a time.
                 </div>
               </div>
-              <span class="btn-primary pill" style="height: 32px; font-size: 12px;" id="progressStreakBadge"><i class="bx bxs-flame"></i> 0-day streak</span>
+              <span class="btn-primary pill" style="height: 32px; font-size: 12px;" id="progressStreakBadge"><i
+                  class="bx bxs-flame"></i> 0-day streak</span>
             </div>
 
             <div class="progress-kpi-grid">
@@ -481,7 +515,8 @@
                   Hover any day to inspect hours studied · Last 16 weeks
                 </div>
               </div>
-              <span class="mono" style="font-size: 12px; color: var(--text-secondary);" id="heatmapTotalHours">118.5 hrs total</span>
+              <span class="mono" style="font-size: 12px; color: var(--text-secondary);" id="heatmapTotalHours">118.5 hrs
+                total</span>
             </div>
 
             <div class="heatmap-wrap">
@@ -511,9 +546,11 @@
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
                 <div>
                   <div class="serif" style="font-size: 20px;">Time spent in app</div>
-                  <div style="font-size: 12px; color: var(--text-secondary);">Daily minutes active · This week vs last week</div>
+                  <div style="font-size: 12px; color: var(--text-secondary);">Daily minutes active · This week vs last
+                    week</div>
                 </div>
-                <span class="mono" id="liveSessionTimer" style="font-size: 11.5px; color: var(--teal-400); padding: 3px 9px; border-radius: 999px; background: var(--teal-900);">
+                <span class="mono" id="liveSessionTimer"
+                  style="font-size: 11.5px; color: var(--teal-400); padding: 3px 9px; border-radius: 999px; background: var(--teal-900);">
                   Live · 0m 00s
                 </span>
               </div>
@@ -532,7 +569,9 @@
                 <div class="serif" style="font-size: 20px;">Your study rhythm</div>
                 <div style="font-size: 12px; color: var(--text-secondary);">Last 7 days · minutes studied</div>
               </div>
-              <span style="font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 6px;"><i class="bx bxs-circle" style="font-size: 8px; color: var(--teal-500);"></i> Study time</span>
+              <span
+                style="font-size: 12px; color: var(--text-secondary); display: inline-flex; align-items: center; gap: 6px;"><i
+                  class="bx bxs-circle" style="font-size: 8px; color: var(--teal-500);"></i> Study time</span>
             </div>
             <div class="rhythm-bars" id="rhythmBars"></div>
           </div>
@@ -544,7 +583,8 @@
                 A 15-minute physics recap is a great place to start.
               </div>
             </div>
-            <button class="btn-primary pill" id="btnQuickReview" type="button">Start a quick review <i class="bx bx-right-arrow-alt"></i></button>
+            <button class="btn-primary pill" id="btnQuickReview" type="button">Start a quick review <i
+                class="bx bx-right-arrow-alt"></i></button>
           </div>
         </div>
       </section>
@@ -556,10 +596,12 @@
         <div class="screen-scroll">
           <div class="screen-header-row">
             <span class="screen-subtitle">Test locally. Learn what works.</span>
-            <button class="btn-primary" id="btnRunBenchmark" type="button"><i class="bx bx-play"></i> Run benchmark</button>
+            <button class="btn-primary" id="btnRunBenchmark" type="button"><i class="bx bx-play"></i> Run
+              benchmark</button>
           </div>
 
-          <div style="display:flex; justify-content:space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+          <div
+            style="display:flex; justify-content:space-between; margin-bottom: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
             <span>PIPELINE COMPARISON</span>
             <span>Demo results · 50 mixed-language pages · 16 Jul 2025</span>
           </div>
@@ -570,24 +612,29 @@
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">01 / LOCAL PIPELINE</div>
                 <div class="serif" style="font-size: 22px;">Vision-language model</div>
                 <div class="mono" style="font-size: 12px; color: var(--text-secondary);">Qwen2.5-VL · 3B · Q4</div>
-                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> VLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
+                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> VLM <i
+                    class="bx bx-right-arrow-alt"></i> Structured notes</div>
                 <div style="font-size: 13px; color: var(--text-secondary);">
                   Reads layout, diagrams and text together. Best for handwritten pages and visual context.
                 </div>
                 <div class="mono" style="font-size: 12.5px;">8.2s / page &nbsp;·&nbsp; 3.8 GB peak RAM</div>
-                <div style="font-size: 12px; color: var(--teal-400); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Better layout understanding</div>
+                <div style="font-size: 12px; color: var(--teal-400); display:flex; align-items:center; gap:5px;"><i
+                    class="bx bx-check"></i> Better layout understanding</div>
               </div>
 
               <div class="pipeline-card">
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">02 / LOCAL PIPELINE</div>
                 <div class="serif" style="font-size: 22px;">OCR + language model</div>
-                <div class="mono" style="font-size: 12px; color: var(--text-secondary);">PaddleOCR + Qwen2.5 · 3B · Q4</div>
-                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> OCR <i class="bx bx-right-arrow-alt"></i> LLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
+                <div class="mono" style="font-size: 12px; color: var(--text-secondary);">PaddleOCR + Qwen2.5 · 3B · Q4
+                </div>
+                <div class="pipeline-flow">Image <i class="bx bx-right-arrow-alt"></i> OCR <i
+                    class="bx bx-right-arrow-alt"></i> LLM <i class="bx bx-right-arrow-alt"></i> Structured notes</div>
                 <div style="font-size: 13px; color: var(--text-secondary);">
                   Extracts text first, then reasons over it. Best for clean scans and lower-memory devices.
                 </div>
                 <div class="mono" style="font-size: 12.5px;">5.6s / page &nbsp;·&nbsp; 2.9 GB peak RAM</div>
-                <div style="font-size: 12px; color: var(--success); display:flex; align-items:center; gap:5px;"><i class="bx bx-check"></i> Faster on printed pages</div>
+                <div style="font-size: 12px; color: var(--success); display:flex; align-items:center; gap:5px;"><i
+                    class="bx bx-check"></i> Faster on printed pages</div>
               </div>
             </div>
           </div>
@@ -595,12 +642,17 @@
           <div class="bench-table-card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <h2 class="serif" style="font-size: 22px; font-weight: 400;">Quality &amp; performance</h2>
-              <span style="font-size: 12px; color: var(--text-muted); display:inline-flex; align-items:center; gap:4px;">Lower is better <i class="bx bx-down-arrow-alt"></i></span>
+              <span
+                style="font-size: 12px; color: var(--text-muted); display:inline-flex; align-items:center; gap:4px;">Lower
+                is better <i class="bx bx-down-arrow-alt"></i></span>
             </div>
             <table class="bench-table">
               <thead>
                 <tr>
-                  <th>METRIC</th><th>VLM</th><th>OCR + LLM</th><th>PREFERRED</th>
+                  <th>METRIC</th>
+                  <th>VLM</th>
+                  <th>OCR + LLM</th>
+                  <th>PREFERRED</th>
                 </tr>
               </thead>
               <tbody id="benchmarkTbody"></tbody>
@@ -614,7 +666,8 @@
                 50 pages · 25 Bangla / 25 English · 10 warm-up runs · CPU only · 8 GB RAM
               </div>
             </div>
-            <button data-slot="button" data-variant="outline" id="btnExportCsv" type="button"><i class="bx bx-download"></i> Export CSV</button>
+            <button data-slot="button" data-variant="outline" id="btnExportCsv" type="button"><i
+                class="bx bx-download"></i> Export CSV</button>
           </div>
         </div>
       </section>
@@ -636,28 +689,36 @@
               <div class="pipeline-card">
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">ACTIVE TEXT LLM</div>
                 <div class="serif" style="font-size: 20px;" id="activeTextModelLabel">qwen2.5:3b</div>
-                <div style="font-size: 12.5px; color: var(--text-secondary);">Used for Guide Mode hints, Bangla/English Q&amp;A, and summaries.</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary);">Used for Guide Mode hints, Bangla/English
+                  Q&amp;A, and summaries.</div>
               </div>
               <div class="pipeline-card">
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted);">ACTIVE VISION MODEL (VLM)</div>
                 <div class="serif" style="font-size: 20px;" id="activeVisionModelLabel">llava-phi3:latest</div>
-                <div style="font-size: 12.5px; color: var(--text-secondary);">Used automatically when you upload handwritten notes or diagrams.</div>
+                <div style="font-size: 12.5px; color: var(--text-secondary);">Used automatically when you upload
+                  handwritten notes or diagrams.</div>
               </div>
             </div>
-            <div style="padding: 14px 24px; display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
+            <div
+              style="padding: 14px 24px; display:flex; flex-wrap:wrap; gap:16px; justify-content:space-between; align-items:center;">
               <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
-                <span style="font-size: 13px; font-weight: 500;">Voice Input: <span class="mono" style="color: var(--success);" id="whisperStatusLabel">whisper-base (139 MB · Ready)</span></span>
+                <span style="font-size: 13px; font-weight: 500;">Voice Input: <span class="mono"
+                    style="color: var(--success);" id="whisperStatusLabel">whisper-base (139 MB · Ready)</span></span>
                 <span style="font-size: 13px; font-weight: 500;">Strict Offline Mode</span>
-                <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" id="switchOfflineMode" type="button">
+                <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" id="switchOfflineMode"
+                  type="button">
                   <span data-slot="switch-thumb"></span>
                 </button>
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
                 <span style="font-size: 13px; font-weight: 500;"><i class="bx bx-font-size"></i> Font size</span>
                 <div data-slot="tabs-list" role="group" aria-label="Font size">
-                  <button data-slot="tabs-trigger" data-state="inactive" class="font-size-btn" data-size="small" type="button">Small</button>
-                  <button data-slot="tabs-trigger" data-state="active" class="font-size-btn" data-size="medium" type="button">Medium</button>
-                  <button data-slot="tabs-trigger" data-state="inactive" class="font-size-btn" data-size="large" type="button">Large</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="font-size-btn" data-size="small"
+                    type="button">Small</button>
+                  <button data-slot="tabs-trigger" data-state="active" class="font-size-btn" data-size="medium"
+                    type="button">Medium</button>
+                  <button data-slot="tabs-trigger" data-state="inactive" class="font-size-btn" data-size="large"
+                    type="button">Large</button>
                 </div>
               </div>
             </div>
@@ -667,13 +728,17 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
               <div>
                 <h2 class="serif" style="font-size: 20px;">Installed Local Models</h2>
-                <p style="font-size: 12px; color: var(--text-secondary);">Stored locally via Ollama. Excluded from Git via <code>.gitignore</code>.</p>
+                <p style="font-size: 12px; color: var(--text-secondary);">Stored locally via Ollama. Excluded from Git
+                  via <code>.gitignore</code>.</p>
               </div>
             </div>
             <table class="bench-table">
               <thead>
                 <tr>
-                  <th>MODEL</th><th>TYPE</th><th>SIZE</th><th>ACTIONS</th>
+                  <th>MODEL</th>
+                  <th>TYPE</th>
+                  <th>SIZE</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody id="installedModelsTbody"></tbody>
@@ -684,7 +749,8 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
               <div>
                 <h2 class="serif" style="font-size: 20px;">Recommended Models to Download</h2>
-                <p style="font-size: 12px; color: var(--text-secondary);">Curated for 16 GB RAM Apple Silicon &amp; standard laptops.</p>
+                <p style="font-size: 12px; color: var(--text-secondary);">Curated for 16 GB RAM Apple Silicon &amp;
+                  standard laptops.</p>
               </div>
             </div>
             <div class="model-suggestions-grid" id="suggestedModelsGrid"></div>
@@ -697,12 +763,15 @@
   <!-- Add Task Dialog (shadcn/ui Dialog pattern) -->
   <div data-slot="dialog-overlay" id="taskModal" role="dialog" aria-modal="true" aria-labelledby="dialogTaskTitle">
     <div data-slot="dialog-content">
-      <button data-slot="dialog-close" id="btnCloseTaskX" type="button" aria-label="Close"><i class="bx bx-x" style="font-size: 18px;"></i></button>
+      <button data-slot="dialog-close" id="btnCloseTaskX" type="button" aria-label="Close"><i class="bx bx-x"
+          style="font-size: 18px;"></i></button>
       <div>
         <h3 class="serif" id="dialogTaskTitle" style="font-size: 24px; font-weight: 400;">New study task</h3>
-        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Saved locally in SQLite for offline deadline reminders.</p>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Saved locally in SQLite for offline
+          deadline reminders.</p>
       </div>
-      <input type="text" data-slot="input" id="newTaskTitle" placeholder="Task title (e.g. Revise Thermodynamics)" style="width:100%; height:40px;" />
+      <input type="text" data-slot="input" id="newTaskTitle" placeholder="Task title (e.g. Revise Thermodynamics)"
+        style="width:100%; height:40px;" />
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
         <select data-slot="input" id="newTaskSubject" style="height:38px;">
           <option value="Physics">Physics</option>
@@ -727,10 +796,12 @@
   <!-- Upload Study Material Dialog (shadcn/ui Dialog + Centered Dropzone) -->
   <div data-slot="dialog-overlay" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="dialogUploadTitle">
     <div data-slot="dialog-content" style="max-width: 500px;">
-      <button data-slot="dialog-close" id="btnCloseUploadX" type="button" aria-label="Close"><i class="bx bx-x" style="font-size: 18px;"></i></button>
+      <button data-slot="dialog-close" id="btnCloseUploadX" type="button" aria-label="Close"><i class="bx bx-x"
+          style="font-size: 18px;"></i></button>
       <div>
         <h3 class="serif" id="dialogUploadTitle" style="font-size: 22px; font-weight: 600;">Upload study material</h3>
-        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Processed locally via Qwen2.5-VL or Tesseract OCR. Nothing leaves your laptop.</p>
+        <p style="font-size: 12.5px; color: var(--text-secondary); margin-top: 4px;">Processed locally via Qwen2.5-VL or
+          Tesseract OCR. Nothing leaves your laptop.</p>
       </div>
 
       <div class="dropzone-centered compact" id="modalDropzone">
@@ -741,7 +812,8 @@
           <div class="dropzone-title" style="font-size: 17px;">Drag &amp; drop PDF, scan, or handwritten note</div>
           <div class="dropzone-sub">Bangla &amp; English · JPG, PNG, PDF</div>
           <input type="file" id="modalFileInput" hidden multiple accept=".pdf,.png,.jpg,.jpeg" />
-          <button data-slot="button" data-variant="secondary" class="pill-btn" id="btnModalBrowse" type="button" style="margin-top: 10px;">
+          <button data-slot="button" data-variant="secondary" class="pill-btn" id="btnModalBrowse" type="button"
+            style="margin-top: 10px;">
             <i class="bx bx-upload"></i> Choose file
           </button>
         </div>
@@ -754,8 +826,10 @@
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size: 12px; color: var(--text-secondary);">Pipeline:</span>
         <div data-slot="tabs-list">
-          <button data-slot="tabs-trigger" data-state="active" class="modal-pipe-btn" data-pipe="VLM" type="button">VLM (Handwriting)</button>
-          <button data-slot="tabs-trigger" data-state="inactive" class="modal-pipe-btn" data-pipe="OCR" type="button">OCR (Printed)</button>
+          <button data-slot="tabs-trigger" data-state="active" class="modal-pipe-btn" data-pipe="VLM" type="button">VLM
+            (Handwriting)</button>
+          <button data-slot="tabs-trigger" data-state="inactive" class="modal-pipe-btn" data-pipe="OCR"
+            type="button">OCR (Printed)</button>
         </div>
       </div>
     </div>
@@ -767,7 +841,8 @@
       <div class="command-input-row">
         <i class="bx bx-search" style="color: var(--text-muted); font-size: 17px;"></i>
         <input type="text" class="command-input" id="commandSearchInput" placeholder="Search…" autocomplete="off" />
-        <button class="command-close-btn" id="btnCloseCommand" type="button" aria-label="Close search"><i class="bx bx-x"></i></button>
+        <button class="command-close-btn" id="btnCloseCommand" type="button" aria-label="Close search"><i
+            class="bx bx-x"></i></button>
       </div>
       <div class="command-results" id="commandResults"></div>
     </div>
@@ -777,4 +852,5 @@
 
   <script type="module" src="./js/app.js"></script>
 </body>
+
 </html>
