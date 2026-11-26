@@ -114,7 +114,8 @@ function applyLanguage(lang) {
     if (lbl && t.nav[key]) lbl.textContent = t.nav[key];
   });
 
-  document.getElementById('topBarTitle').textContent = t.titles[state.screen] || 'BhaiOS';
+  const topTitle = document.getElementById('topBarTitle');
+  if (topTitle) topTitle.textContent = t.titles[state.screen] || 'BhaiOS';
   document.getElementById('welcomeGreeting').textContent = t.greeting;
   document.getElementById('welcomeGreeting').classList.toggle('bangla', lang === 'bn');
   document.getElementById('welcomeInput').placeholder = t.askPlaceholder;
@@ -123,7 +124,8 @@ function applyLanguage(lang) {
   document.querySelector('.composer-disclaimer').textContent = t.disclaimer;
   document.querySelector('.context-title').textContent = t.contextTitle;
   document.querySelector('.dropzone-title').textContent = t.dropTitle;
-  document.querySelector('.topbar-search-btn span').textContent = t.searchPlaceholder;
+  const searchSpan = document.querySelector('.topbar-search-btn span');
+  if (searchSpan) searchSpan.textContent = t.searchPlaceholder;
   const popLang = document.getElementById('popLangLabel');
   if (popLang) popLang.textContent = lang === 'bn' ? 'বাংলা' : 'English';
 
@@ -173,12 +175,15 @@ function switchScreen(screenName) {
     sec.classList.toggle('active', sec.id === `screen-${screenName}`);
   });
 
-  // Update Top Bar
+  // Update Top Bar (if present)
   const t = I18N[state.uiLang] || I18N.en;
-  document.getElementById('topBarTitle').textContent = t.titles[screenName] || SCREEN_TITLES[screenName] || 'BhaiOS';
+  const topTitle = document.getElementById('topBarTitle');
+  if (topTitle) topTitle.textContent = t.titles[screenName] || SCREEN_TITLES[screenName] || 'BhaiOS';
   const showChatControls = screenName === 'chat';
-  document.getElementById('chatModeSwitch').style.display = showChatControls ? 'inline-flex' : 'none';
-  document.getElementById('latencyChip').style.display = showChatControls ? 'inline-flex' : 'none';
+  const modeSw = document.getElementById('chatModeSwitch');
+  if (modeSw) modeSw.style.display = showChatControls ? 'inline-flex' : 'none';
+  const latChip = document.getElementById('latencyChip');
+  if (latChip) latChip.style.display = showChatControls ? 'inline-flex' : 'none';
 }
 
 /* ==========================================================================
@@ -276,8 +281,8 @@ function setChatMode(mode) {
   state.chatMode = mode;
   const gBtn = document.getElementById('btnModeGuide');
   const aBtn = document.getElementById('btnModeAnswer');
-  gBtn.className = `mode-btn ${mode === 'guide' ? 'active-guide' : ''}`;
-  aBtn.className = `mode-btn ${mode === 'answer' ? 'active-answer' : ''}`;
+  if (gBtn) gBtn.className = `mode-btn ${mode === 'guide' ? 'active-guide' : ''}`;
+  if (aBtn) aBtn.className = `mode-btn ${mode === 'answer' ? 'active-answer' : ''}`;
   document.getElementById('sidebarModeLabel').textContent =
     mode === 'guide' ? 'Guide Mode is on' : 'Answer Mode is on';
   const effortLabel = document.getElementById('effortLabel');
@@ -357,7 +362,8 @@ async function sendChatMessage(customText) {
         sourceId: 's2',
       };
     }
-    document.getElementById('latencyChip').textContent = `${data.latency_s}s / resp`;
+    const latChip = document.getElementById('latencyChip');
+    if (latChip) latChip.textContent = `${data.latency_s}s / resp`;
     state.attachedImageBase64 = null;
     state.attachedFilename = null;
   } catch (err) {
@@ -1096,7 +1102,7 @@ function init() {
     cmdModal.classList.add('open');
     setTimeout(() => cmdInput.focus(), 30);
   };
-  document.getElementById('btnOpenCommandSearch').addEventListener('click', openCommandModal);
+  document.getElementById('btnOpenCommandSearch')?.addEventListener('click', openCommandModal);
   document.getElementById('btnSidebarHelp').addEventListener('click', openCommandModal);
   document.getElementById('btnCloseCommand').addEventListener('click', () => cmdModal.classList.remove('open'));
   cmdInput.addEventListener('input', (e) => renderCommandResults(e.target.value));
@@ -1215,8 +1221,8 @@ function init() {
   });
 
   // Chat Mode Switch
-  document.getElementById('btnModeGuide').addEventListener('click', () => setChatMode('guide'));
-  document.getElementById('btnModeAnswer').addEventListener('click', () => setChatMode('answer'));
+  document.getElementById('btnModeGuide')?.addEventListener('click', () => setChatMode('guide'));
+  document.getElementById('btnModeAnswer')?.addEventListener('click', () => setChatMode('answer'));
   document.getElementById('btnEffortMode').addEventListener('click', () => {
     setChatMode(state.chatMode === 'guide' ? 'answer' : 'guide');
   });

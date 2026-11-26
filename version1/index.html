@@ -24,14 +24,19 @@
          LEFT SIDEBAR (280px)
          ===================================================================== -->
     <aside class="sidebar" id="leftSidebar">
-      <!-- Workspace Switcher (Screenshot 3) -->
-      <button class="workspace-switcher" id="btnWorkspaceSwitcher" type="button" data-tooltip="HSC · Science">
-        <span class="workspace-avatar">B</span>
-        <span class="workspace-switcher-text">
-          <span class="workspace-switcher-name">BhaiOS · HSC</span>
-        </span>
-        <i class="bx bx-chevron-down workspace-chevron"></i>
-      </button>
+      <!-- Workspace Switcher + Collapse Toggle -->
+      <div class="sidebar-top-row">
+        <button class="workspace-switcher" id="btnWorkspaceSwitcher" type="button" data-tooltip="HSC · Science">
+          <span class="workspace-avatar">B</span>
+          <span class="workspace-switcher-text">
+            <span class="workspace-switcher-name">BhaiOS · HSC</span>
+          </span>
+          <i class="bx bx-chevron-down workspace-chevron"></i>
+        </button>
+        <button class="sidebar-toggle-btn" id="btnToggleSidebar" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
+          <i class="bx bx-dock-left"></i>
+        </button>
+      </div>
 
       <button class="btn-new-chat" data-slot="button" data-variant="secondary" id="btnNewChat" type="button" data-tooltip="New chat">
         <i class="bx bx-plus"></i>
@@ -150,41 +155,13 @@
     </aside>
 
     <!-- =====================================================================
-         MAIN COLUMN
+         MAIN COLUMN (Full-height, no top bar)
          ===================================================================== -->
     <div class="main-column">
-      <!-- Top Bar -->
-      <header class="top-bar">
-        <div class="top-bar-left">
-          <button class="sidebar-toggle-btn" id="btnToggleSidebar" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
-            <i class="bx bx-dock-left"></i>
-          </button>
-          <h1 class="page-title" id="topBarTitle">Chat</h1>
-
-          <div class="mode-switch" id="chatModeSwitch">
-            <button class="mode-btn active-guide" id="btnModeGuide" type="button"><i class="bx bx-compass"></i> Guide</button>
-            <button class="mode-btn" id="btnModeAnswer" type="button">Answer</button>
-          </div>
-
-          <div class="latency-chip" id="latencyChip">~8s / resp</div>
-        </div>
-
-        <div class="top-bar-right" style="gap: 10px;">
-          <button class="navbar-timer-pill" id="navbarFocusTimer" type="button" style="display: none;" title="Click to pause/resume focus timer">
-            <i class="bx bx-time-five"></i>
-            <span id="navbarTimerText">45:00</span>
-          </button>
-          <div data-slot="tabs-list" class="lang-switch" role="group" aria-label="Language">
-            <button data-slot="tabs-trigger" data-state="active" class="lang-btn" data-lang="en" type="button">EN</button>
-            <button data-slot="tabs-trigger" data-state="inactive" class="lang-btn" data-lang="bn" type="button">বাংলা</button>
-          </div>
-          <button class="topbar-search-btn" id="btnOpenCommandSearch" type="button">
-            <i class="bx bx-search"></i>
-            <span>Search…</span>
-            <kbd class="kbd-hint">⌘K</kbd>
-          </button>
-        </div>
-      </header>
+      <button class="navbar-timer-pill floating-timer-pill" id="navbarFocusTimer" type="button" style="display: none;" title="Click to pause/resume focus timer">
+        <i class="bx bx-time-five"></i>
+        <span id="navbarTimerText">45:00</span>
+      </button>
 
       <!-- ===================================================================
            SCREEN 1 — CHAT
