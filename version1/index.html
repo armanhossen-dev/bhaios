@@ -115,14 +115,20 @@
         </div>
 
         <div class="device-status">
-          <div class="status-green"><i class="bx bx-check"></i> All data stays on this device</div>
-          <div class="model-name" id="sidebarActiveModel">qwen2.5:3b</div>
-          <div class="ram-line">
-            <span><i class="bx bxs-circle dot-ready" style="font-size: 8px;"></i> <span id="sidebarRuntimeStatus">Ready</span></span>
+          <div class="status-green"><i class="bx bx-check-shield"></i> All data stays on this device</div>
+          <div class="device-row">
+            <span class="model-name" id="sidebarActiveModel">qwen2.5:3b</span>
             <button class="sidebar-token-btn" id="tokenUsagePill" type="button" title="Session token usage">
               <i class="bx bx-chip"></i>
               <span id="tokenUsageText">0 tok</span>
             </button>
+          </div>
+          <div class="ram-line">
+            <span class="runtime-badge"><i class="bx bxs-circle dot-ready" id="sidebarRuntimeDot"></i> <span id="sidebarRuntimeStatus">Ready</span></span>
+            <span class="ram-readout" id="sidebarRamUsage" title="Live device RAM usage">RAM -- / -- GB</span>
+          </div>
+          <div class="ram-bar" aria-hidden="true">
+            <div class="ram-bar-fill" id="sidebarRamBar"></div>
           </div>
         </div>
       </div>

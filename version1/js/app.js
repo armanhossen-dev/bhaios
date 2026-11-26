@@ -1012,6 +1012,33 @@ function updateActiveModelLabels() {
   }
 }
 
+async function refreshSystemHealth() {
+  const statusEl = document.getElementById('sidebarRuntimeStatus');
+  const dotEl = document.getElementById('sidebarRuntimeDot');
+  const ramEl = document.getElementById('sidebarRamUsage');
+  const barEl = document.getElementById('sidebarRamBar');
+  try {
+    const res = await fetch('/api/health');
+    if (!res.ok) throw new Error('Health unavailable');
+    const data = await res.json();
+    if (statusEl) statusEl.textContent = data.ollama ? 'Ollama Live' : 'Ollama Off';
+    if (dotEl) dotEl.classList.toggle('offline', !data.ollama);
+    if (data.ram && data.ram.total_gb > 0 && ramEl) {
+      const modelNote = data.ollama_ram_gb > 0 ? ` · Model ${data.ollama_ram_gb} GB` : '';
+      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB`;
+      ramEl.title = `System RAM: ${data.ram.used_gb} GB / ${data.ram.total_gb} GB (${data.ram.percent}%)${modelNote}`;
+      if (barEl) {
+        barEl.style.width = `${data.ram.percent}%`;
+        barEl.classList.toggle('high', data.ram.percent >= 85);
+      }
+    }
+  } catch {
+    if (statusEl) statusEl.textContent = 'Offline';
+    if (dotEl) dotEl.classList.add('offline');
+    if (ramEl) ramEl.textContent = 'RAM -- / -- GB';
+  }
+}
+
 async function loadModels() {
   const tbody = document.getElementById('installedModelsTbody');
   const grid = document.getElementById('suggestedModelsGrid');
@@ -1637,6 +1664,8 @@ function init() {
   applyLanguage(state.uiLang);
   updateActiveModelLabels();
   loadModels();
+  refreshSystemHealth();
+  setInterval(refreshSystemHealth, 4000);
   renderChat();
   renderSnippets();
   renderDocuments();

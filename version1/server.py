@@ -172,16 +172,67 @@ async def ai_suggest(req: SuggestRequest) -> dict[str, Any]:
         return {"suggestions": []}
 
 
+def _get_system_ram() -> dict[str, Any]:
+    """Return live system RAM usage in GB and percentage (macOS sysctl/vm_stat with Linux fallback)."""
+    try:
+        total_bytes = int(subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True).strip())
+        vm_out = subprocess.check_output(["vm_stat"], text=True)
+        page_match = re.search(r"page size of (\d+) bytes", vm_out)
+        page_size = int(page_match.group(1)) if page_match else 16384
+        stats: dict[str, int] = {}
+        for line in vm_out.splitlines():
+            if ":" in line:
+                key, val = line.split(":", 1)
+                val_clean = val.strip().rstrip(".")
+                if val_clean.isdigit():
+                    stats[key.strip()] = int(val_clean)
+        used_pages = (
+            stats.get("Pages active", 0)
+            + stats.get("Pages wired down", 0)
+            + stats.get("Pages occupied by compressor", 0)
+        )
+        used_bytes = used_pages * page_size
+        total_gb = round(total_bytes / (1024 ** 3), 1)
+        used_gb = round(used_bytes / (1024 ** 3), 1)
+        pct = round((used_bytes / total_bytes) * 100) if total_bytes > 0 else 0
+        return {"used_gb": used_gb, "total_gb": total_gb, "percent": min(max(pct, 0), 100)}
+    except Exception:
+        pass
+    try:
+        meminfo: dict[str, int] = {}
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            parts = line.split()
+            if len(parts) >= 2 and parts[1].isdigit():
+                meminfo[parts[0].rstrip(":")] = int(parts[1]) * 1024
+        total_bytes = meminfo.get("MemTotal", 0)
+        avail_bytes = meminfo.get("MemAvailable", meminfo.get("MemFree", 0))
+        used_bytes = max(total_bytes - avail_bytes, 0)
+        total_gb = round(total_bytes / (1024 ** 3), 1)
+        used_gb = round(used_bytes / (1024 ** 3), 1)
+        pct = round((used_bytes / total_bytes) * 100) if total_bytes > 0 else 0
+        return {"used_gb": used_gb, "total_gb": total_gb, "percent": min(max(pct, 0), 100)}
+    except Exception:
+        return {"used_gb": 0.0, "total_gb": 0.0, "percent": 0}
+
+
 @app.get("/api/health")
 async def health() -> dict[str, Any]:
     ollama_ok = False
     installed_count = 0
+    ollama_ram_gb = 0.0
+    loaded_models: list[str] = []
     try:
         async with httpx.AsyncClient(timeout=2.5) as client:
             r = await client.get(f"{OLLAMA_URL}/api/tags")
             if r.status_code == 200:
                 ollama_ok = True
                 installed_count = len(r.json().get("models", []))
+            ps_res = await client.get(f"{OLLAMA_URL}/api/ps")
+            if ps_res.status_code == 200:
+                running = ps_res.json().get("models", [])
+                loaded_models = [m.get("name", "") for m in running if m.get("name")]
+                ollama_bytes = sum(int(m.get("size_vram") or m.get("size") or 0) for m in running)
+                ollama_ram_gb = round(ollama_bytes / (1024 ** 3), 2)
     except Exception:
         pass
     whisper_ready = (MODELS_DIR / "base.pt").exists()
@@ -189,6 +240,9 @@ async def health() -> dict[str, Any]:
         "status": "ok",
         "ollama": ollama_ok,
         "installed_models": installed_count,
+        "loaded_models": loaded_models,
+        "ollama_ram_gb": ollama_ram_gb,
+        "ram": _get_system_ram(),
         "whisper_base": whisper_ready,
     }
 
