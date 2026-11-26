@@ -2,6 +2,8 @@
 
 > Use this prompt with **Figma AI**, **FigJam AI**, **Galileo AI → Export to Figma**, or give it to a designer as a complete design brief. This is the most detailed and structured of the three prompts — covering design tokens, component inventory, layout spec, and interaction spec.
 
+> **Theme:** Dark-first. Inspired by the Framer dashboard aesthetic — deep charcoal near-black backgrounds, subtle dark-gray panel layers, clean white text hierarchy, hairline borders, Inter font, dense and focused. BhaiOS teal and amber serve as the only accent colors against this dark canvas.
+
 ---
 
 ## Prompt (Full Brief for Figma)
@@ -21,37 +23,62 @@ than giving direct answers.
 **Platform:** Desktop application (1440×900 primary, 1366×768 minimum)
 **Tech:** PyQt6 desktop app with local AI backend (no cloud)
 **Users:** University students, 18–24, Bangladesh
+**Theme Mode:** Dark-first (Framer/Linear/Vercel aesthetic — deep charcoal, NOT pure black)
 
 ---
 
 ## Design Token System
 
-### Color Palette
+### 🌑 Dark Theme Color Palette (PRIMARY — use this)
+
+> Inspired by: Framer dashboard, Linear, Vercel dark, VS Code. Deep charcoal surfaces, not pure black. White text hierarchy. Single teal + amber accent pair on dark canvas.
 
 | Token | Hex | Usage |
 |---|---|---|
-| `color.primary.900` | `#0F3D47` | Sidebar background |
-| `color.primary.700` | `#1A5C6B` | Active nav items, primary buttons |
-| `color.primary.500` | `#2A8FA8` | Hover states, links |
-| `color.primary.100` | `#D8F0F5` | Light teal tints, selected states |
-| `color.accent.500` | `#E8A020` | Amber — CTA buttons, Guide Mode pill, warning badges |
-| `color.accent.100` | `#FDF3DC` | Light amber backgrounds |
-| `color.surface.base` | `#FAF7F2` | Main content area background (warm off-white) |
-| `color.surface.card` | `#FFFFFF` | Card backgrounds |
-| `color.surface.sidebar` | `#0F3D47` | Left navigation |
-| `color.text.primary` | `#1A1A2E` | Headings, body text |
-| `color.text.secondary` | `#5E6473` | Subtitles, metadata, timestamps |
-| `color.text.inverse` | `#FFFFFF` | Text on dark sidebar |
-| `color.text.bangla` | `#1A1A2E` | Same as primary but applied with Noto Sans Bengali |
-| `color.error` | `#E03E3E` | Overdue tasks, error states |
-| `color.warning` | `#E8A020` | Due-soon tasks, caution states |
-| `color.success` | `#2D9E6B` | Completed, indexed, success |
-| `color.border.default` | `#E2DED8` | Card borders, dividers |
-| `color.border.focus` | `#2A8FA8` | Input focus rings |
+| `color.bg.base` | `#0C0C0C` | App root background (deepest layer) |
+| `color.bg.sidebar` | `#111111` | Left sidebar background |
+| `color.bg.panel` | `#161616` | Main content area, panel background |
+| `color.bg.card` | `#1C1C1C` | Cards, chat bubbles, document tiles |
+| `color.bg.card.hover` | `#242424` | Card hover state |
+| `color.bg.input` | `#1A1A1A` | Input fields, text areas |
+| `color.bg.overlay` | `#202020` | Modals, dropdowns, popovers |
+| `color.bg.selected` | `#1E2A2D` | Active nav item background (teal-tinted dark) |
+| `color.border.subtle` | `#2A2A2A` | Hairline borders between panels (Framer-style) |
+| `color.border.default` | `#333333` | Card borders, dividers |
+| `color.border.strong` | `#444444` | Input borders |
+| `color.border.focus` | `#2A8FA8` | Focus rings (teal) |
+| `color.text.primary` | `#F0F0F0` | Main headings, body text |
+| `color.text.secondary` | `#8A8A8A` | Subtitles, timestamps, metadata |
+| `color.text.tertiary` | `#555555` | Placeholder text, disabled states |
+| `color.text.bangla` | `#E8E8E8` | Bangla body text (slightly softer than primary) |
+| `color.text.inverse` | `#0C0C0C` | Text on light accent backgrounds |
+| `color.accent.teal.500` | `#2A8FA8` | Primary teal — links, active states, focus |
+| `color.accent.teal.400` | `#3BAEC9` | Hover teal, lighter teal accents |
+| `color.accent.teal.900` | `#0D2C35` | Dark teal tint for selected bg |
+| `color.accent.amber.500` | `#E8A020` | CTA buttons, Guide Mode pill, warning |
+| `color.accent.amber.900` | `#2A1E06` | Dark amber tint for warning backgrounds |
+| `color.status.error` | `#E05252` | Overdue tasks, error states |
+| `color.status.error.bg` | `#1E0F0F` | Error background tint |
+| `color.status.warning` | `#E8A020` | Due-soon, caution |
+| `color.status.success` | `#3DBE82` | Completed, indexed |
+| `color.status.success.bg` | `#0D1E16` | Success background tint |
+
+### ☀️ Light Theme Color Palette (SECONDARY — for reference only)
+
+| Token | Hex | Usage |
+|---|---|---|
+| `color.bg.base` | `#FAF7F2` | App root (warm off-white) |
+| `color.bg.sidebar` | `#0F3D47` | Left sidebar (deep teal) |
+| `color.bg.card` | `#FFFFFF` | Cards |
+| `color.text.primary` | `#1A1A2E` | Main text |
+| `color.text.secondary` | `#5E6473` | Secondary text |
+| `color.border.default` | `#E2DED8` | Borders |
 
 ---
 
 ### Typography
+
+> Font: **Inter** throughout (same as Framer, Linear, Vercel). Noto Sans Bengali for all Bangla text. JetBrains Mono for all numbers/metrics.
 
 | Token | Font | Size | Weight | Line Height | Usage |
 |---|---|---|---|---|---|
@@ -61,7 +88,9 @@ than giving direct answers.
 | `type.body.lg` | Inter | 15px | 400 | 1.6 | Main body text, chat messages |
 | `type.body.md` | Inter | 14px | 400 | 1.6 | Secondary body, descriptions |
 | `type.label` | Inter | 12px | 500 | 1.4 | Badges, tags, metadata |
-| `type.mono` | JetBrains Mono | 13px | 400 | 1.5 | Latency stats, metric numbers |
+| `type.label.sm` | Inter | 11px | 500 | 1.3 | Timestamps, tiny metadata (Framer-style compact density) |
+| `type.mono` | JetBrains Mono | 13px | 400 | 1.5 | Latency stats, metric numbers, CER/WER values |
+| `type.code` | JetBrains Mono | 12px | 400 | 1.5 | Inline code, file paths |
 | `type.bangla.body` | Noto Sans Bengali | 15px | 400 | 1.8 | Bangla body text in chat/docs |
 | `type.bangla.label` | Noto Sans Bengali | 13px | 400 | 1.6 | Bangla tags, subject labels |
 
@@ -69,20 +98,41 @@ than giving direct answers.
 
 ### Spacing & Layout
 
+> **Density:** Framer-style compact density — tighter than typical SaaS apps. Rows feel dense; padding is purposeful.
+
 | Token | Value | Usage |
 |---|---|---|
 | `space.xs` | 4px | Inline icon gaps |
-| `space.sm` | 8px | Inner component padding |
+| `space.sm` | 8px | Inner component padding, row height padding |
 | `space.md` | 16px | Card padding, section gaps |
 | `space.lg` | 24px | Column gaps, section breaks |
 | `space.xl` | 40px | Page-level padding |
 | `space.2xl` | 64px | Between major sections |
-| `border.radius.sm` | 6px | Chips, badges, small elements |
-| `border.radius.md` | 12px | Cards, message bubbles |
-| `border.radius.lg` | 20px | Mode pills, large buttons |
-| `shadow.card` | `0 2px 8px rgba(0,0,0,0.08)` | Cards, panels |
-| `shadow.sidebar` | `2px 0 12px rgba(0,0,0,0.12)` | Sidebar right edge |
-| `shadow.popover` | `0 8px 24px rgba(0,0,0,0.14)` | Tooltips, dropdowns |
+| `border.radius.xs` | 4px | Tags, chips (Framer-style very tight rounding) |
+| `border.radius.sm` | 6px | Buttons, small elements |
+| `border.radius.md` | 10px | Cards, panels |
+| `border.radius.lg` | 16px | Message bubbles, mode pills |
+| `shadow.card` | `0 1px 4px rgba(0,0,0,0.4)` | Dark-theme cards (deeper shadow on dark bg) |
+| `shadow.sidebar` | `1px 0 0 #2A2A2A` | Sidebar right hairline border (Framer-style) |
+| `shadow.popover` | `0 8px 32px rgba(0,0,0,0.6)` | Dropdowns, modals on dark bg |
+| `shadow.glow.teal` | `0 0 12px rgba(42,143,168,0.2)` | Active state subtle glow on dark bg |
+
+---
+
+## 🌑 Dark Theme Design Rules (Framer-Style)
+
+Apply these rules across every screen:
+
+1. **Never use pure black (#000).** Use `#0C0C0C` for the deepest background. Layers stack upward in luminance: `#0C0C0C` → `#111111` → `#161616` → `#1C1C1C` → `#242424`.
+2. **Borders are hairlines, not heavy.** Use `1px solid #2A2A2A` between panels. Use `1px solid #333333` for card outlines. Never use thick decorative borders.
+3. **Text is NOT pure white.** Primary text is `#F0F0F0`. Secondary is `#8A8A8A`. Tertiary is `#555555`. This creates a natural hierarchy without harsh contrast.
+4. **Teal and amber are the ONLY accent colors.** Everything else is neutral gray. No purple, blue, or red except for semantic states (error = `#E05252`).
+5. **Sidebar** has a hairline right border (`1px solid #2A2A2A`), not a shadow. Active nav item gets a teal left border (2px) and a very subtle dark-teal background (`#1E2A2D`).
+6. **Inter font everywhere.** The same Inter used by Framer, Linear, Vercel. No other sans-serif. Only Noto Sans Bengali for Bangla text and JetBrains Mono for numbers.
+7. **Icons:** 16px or 20px, `color: #8A8A8A` by default, `#F0F0F0` on hover/active. Use Lucide icons or Heroicons (same as Framer/Linear aesthetic).
+8. **Hover states:** Subtle — `background: #242424` for rows, `border-color: #444444` for inputs. No dramatic color changes.
+9. **Focus states:** `2px solid #2A8FA8` ring with `2px offset`. Visible but not garish.
+10. **Status colors always pair with an icon** — never color alone (accessibility rule).
 
 ---
 
@@ -109,12 +159,17 @@ than giving direct answers.
 └─────────────────────────┴─────────────────────────────────────┘
 ```
 
-**Sidebar specs:**
-- Background: `color.primary.900`
-- Width: 280px (collapses to 64px icon-only at < 1280px)
-- Logo area (64px height): BhaiOS icon (teal icon on dark bg) + wordmark "BhaiOS" in white Inter 600
-- Nav items: icon (24px, white) + label (Inter 14px 500, white 85% opacity). Active state: `color.primary.700` left-border (3px) + background tint.
-- Bottom section: "Guide Mode / Answer Mode" toggle pill + small RAM/latency indicator
+**Sidebar specs (Dark Theme):**
+- Background: `#111111`
+- Right edge: `1px solid #2A2A2A` (hairline, Framer-style — no box shadow)
+- Width: 280px (collapses to 56px icon-only at < 1280px)
+- Logo area (56px height): BhaiOS icon (teal on dark) + wordmark "BhaiOS" in `#F0F0F0` Inter 600 15px
+- Nav items: icon (18px, `#8A8A8A` default → `#F0F0F0` hover/active) + label (Inter 13px 500, `#8A8A8A` default → `#F0F0F0` active)
+- Active nav item: `2px solid #2A8FA8` left border + background `#1E2A2D` (dark teal tint)
+- Hover nav item: background `#1A1A1A`
+- Section separator: `1px solid #2A2A2A` horizontal rule
+- Bottom section: "🧭 Guide Mode" pill (amber `#E8A020` tint) + latency chip in JetBrains Mono 11px (`#555555`)
+- RAM/model indicator: "llama3.2:3b • 7.2 GB RAM" in `#555555` 11px at very bottom
 
 ---
 
@@ -127,47 +182,56 @@ than giving direct answers.
 [Sidebar] | [Chat Panel (flex)] | [Context Panel (320px, collapsible)]
 ```
 
-**Top Bar:**
-- Left: "Chat" page title (type.heading.lg, color.text.inverse on sidebar; type.heading.lg, color.text.primary in main)
-- Center: Mode toggle — two pills: "🧭 Guide Mode" (amber active) | "💬 Answer Mode" (gray inactive). Tooltip on hover.
-- Right: Latency chip (JetBrains Mono 12px): "~8s / response" in a gray bordered pill.
+**Top Bar (Dark Theme):**
+- Background: `#161616`, bottom border: `1px solid #2A2A2A`
+- Left: "Chat" page title (`#F0F0F0`, Inter 15px 500)
+- Center: Mode toggle pills:
+  - "🧭 Guide Mode" active: `background #2A1E06`, `border 1px solid #E8A020`, text `#E8A020`, Inter 12px 500
+  - "💬 Answer Mode" inactive: `background #1A1A1A`, `border 1px solid #333333`, text `#555555`, Inter 12px 500
+- Right: Latency chip (JetBrains Mono 11px, `#555555`): "~8s / resp" in a `#1A1A1A` pill with `#2A2A2A` border
 
-**Chat Area:**
-- Background: `color.surface.base`
+**Chat Area (Dark Theme):**
+- Background: `#161616`
 - Message alignment: User right, Assistant left
-- **User message bubble:** 
-  - Background: `color.primary.100` (light teal)
-  - Border radius: 16px 16px 4px 16px
+- **User message bubble:**
+  - Background: `#1E2A2D` (dark teal tint)
+  - Border: `1px solid #2A3D45`
+  - Border radius: 14px 14px 4px 14px
   - Max width: 68%
-  - Padding: 12px 16px
-  - Timestamp below in `color.text.secondary` 11px
+  - Padding: 10px 14px
+  - Text: `#E8E8E8`, Inter 14px
+  - Timestamp below in `#555555` 11px JetBrains Mono
 - **Assistant message bubble:**
-  - Background: `color.surface.card`
-  - Border: 1px `color.border.default`
-  - Left accent bar: 3px `color.primary.500`
-  - Border radius: 4px 16px 16px 16px
+  - Background: `#1C1C1C`
+  - Border: `1px solid #2A2A2A`
+  - Left accent bar: `3px solid #2A8FA8` (teal)
+  - Border radius: 4px 14px 14px 14px
   - Max width: 76%
-  - Padding: 14px 16px
-  - Shows a small BhaiOS icon (16px) top-left of bubble
-  - Bangla text renders in Noto Sans Bengali
-  - Below message: subtle "Show source" text link in `color.primary.500`
-- **Scroll behavior:** Auto-scroll to latest message; "↓ Jump to latest" pill appears when scrolled up
+  - Padding: 12px 14px
+  - BhaiOS icon (14px, teal) top-left inside bubble
+  - Bangla text: Noto Sans Bengali 15px, `#E8E8E8`, line-height 1.8
+  - Below message: "Show source →" in `#2A8FA8` 12px Inter
+- **Scroll behavior:** Auto-scroll to latest; "↓ New message" pill in teal when scrolled up
 
-**Input Bar (bottom, sticky):**
-- Background: `color.surface.card` with top border
-- Height: 64px
-- Left icon: paperclip (attach document) — `color.text.secondary`
-- Input field: `Inter 15px`, placeholder "Ask BhaiOS anything..." with subtle ghost text
-- Right icons: mic icon (grayed out, future feature), send button (`color.primary.700` filled, arrow icon)
+**Input Bar (Dark Theme, bottom sticky):**
+- Background: `#111111`, top border: `1px solid #2A2A2A`
+- Height: 60px, padding: 0 16px
+- Left icon: paperclip `#555555`, hover `#8A8A8A`
+- Input field: `background #1A1A1A`, `border 1px solid #333333`, `border-radius 8px`, `padding 8px 12px`
+  - Placeholder "Ask BhaiOS anything..." in `#555555`, Inter 14px
+  - Focus: `border-color #2A8FA8`, teal ring
+- Right icons: mic `#333333` (disabled/future), send button `#2A8FA8` filled circle, `#F0F0F0` arrow icon
 
-**Context Panel (right, 320px):**
-- Header: "Related from your notes" with a collapse arrow
-- 2–3 retrieved chunk cards:
-  - Thumbnail / file type icon
-  - File name in `type.label`
-  - Text snippet (Bangla or English, 2 lines truncated)
-  - "Page 4 · Physics_Notes.pdf" metadata in `color.text.secondary`
-- Divider, then: "Recent Documents" section with 3 file rows
+**Context Panel (Dark Theme, right 320px):**
+- Background: `#111111`, left border: `1px solid #2A2A2A`
+- Header: "Related from your notes" in `#8A8A8A` Inter 11px 500 uppercase tracking-wide + collapse arrow
+- Chunk cards: `background #1C1C1C`, `border 1px solid #2A2A2A`, `border-radius 8px`, padding 10px
+  - File type icon (16px, `#555555`)
+  - File name: `#F0F0F0` Inter 12px 500
+  - Snippet: `#8A8A8A` Inter 12px, 2-line clamp
+  - "Page 4 · Physics_Notes.pdf" in `#555555` 11px
+- Section divider: `1px solid #2A2A2A`
+- "Recent Documents": 3 rows, `hover background #1A1A1A`, same density as Framer sidebar items
 
 ---
 
@@ -336,21 +400,24 @@ Create these as reusable Figma components with variants:
 
 | Feel | Reference |
 |---|---|
-| Navigation & shell | Linear app — clean, dense, keyboard-driven |
-| Chat UI | Claude.ai — calm, readable, assistant-forward |
-| Document grid | Notion's gallery view — card-based, preview-first |
-| Task tracker | Things 3 — list hierarchy, clean checkboxes |
-| Color warmth | Bear Notes — warm off-white, not clinical white |
-| Data cards | Vercel dashboard — monospace numbers, clean stat layout |
-| Bangla text rendering | Prothom Alo web app — Noto Sans Bengali, generous line-height |
+| **Overall dark theme & density** | **Framer dashboard** — deep charcoal surfaces, hairline borders, Inter font, compact nav |
+| Navigation & shell | **Linear app** — clean, dense, keyboard-driven, icon+label sidebar |
+| Chat UI | **Claude.ai** — calm, readable, assistant-forward message layout |
+| Dark surface layering | **Vercel dashboard** — `#0A0A0A` → `#111` → `#1A1A1A` elevation system |
+| Document grid | **Notion dark mode** — card-based, preview-first, tight radius |
+| Task tracker | **Linear Issues** — compact list rows, status chips, priority dots |
+| Monospace metrics | **Vercel analytics** — JetBrains Mono numbers, clean stat layout |
+| Bangla text rendering | **Prothom Alo web app** — Noto Sans Bengali, generous line-height |
+| Accent color on dark | **Raycast** — single accent color (teal) pops against charcoal canvas |
 
 ---
 
 ## Accessibility Requirements
 
-- All text on colored backgrounds must meet **WCAG AA (4.5:1 contrast ratio minimum)**
-- Interactive elements must have visible focus states (2px teal ring)
-- Icon-only buttons must have a tooltip/aria-label equivalent
-- Bangla text must have line-height ≥ 1.8 for readability
-- All status indicators must NOT rely on color alone — use icon + color
+- All text on dark backgrounds must meet **WCAG AA (4.5:1 contrast ratio minimum)** — `#8A8A8A` on `#161616` = 4.6:1 ✅
+- Interactive elements must have visible focus states: `2px solid #2A8FA8`, `2px offset`
+- Icon-only buttons must have tooltip on hover
+- Bangla text must have `line-height ≥ 1.8` for readability
+- Status indicators always pair icon + color (never color alone)
+- Hover states must be visible even on the darkest backgrounds
 ```

@@ -10,14 +10,33 @@
 App: BhaiOS — a local-first, offline desktop study assistant for Bangladeshi university students.
 Target users: 18–24-year-old university students in Bangladesh who study in Bangla and English.
 Platform: Desktop application (PyQt6 / web-rendered). Screen sizes: 1366×768 and 1920×1080.
-Mood: Calm, focused, slightly warm and academic — not corporate, not flashy, not childlike.
-Language: UI labels appear in English; content can be Bangla or English depending on the student's material.
-Color palette direction: Deep teal or deep indigo primary. Warm off-white or light cream background. 
-  Soft amber or saffron accent (evokes warmth + Bangladesh). Subtle gray for secondary text and dividers.
-Typography: Clean geometric sans-serif for UI labels (like Inter or Nunito). Noto Sans Bengali for 
-  Bangla text rendering, ensuring clean Unicode display.
-Style: Modern minimal with subtle depth (soft shadows, card-based layout). Not flat, not neumorphic. 
-  Feels like a focused productivity tool — reference: Notion, Linear, or Bear Notes in spirit.
+
+THEME: Dark-first. Inspired by the Framer dashboard aesthetic. Deep charcoal near-black 
+  surfaces (NOT pure black). Hairline borders. Clean white text hierarchy. Very similar to 
+  Linear, Vercel dark mode, or the Framer CMS dashboard.
+
+Mood: Focused, dense, professional — like a tool a developer or serious student would use.
+  NOT corporate, NOT flashy, NOT childlike, NOT clinical.
+
+Language: UI labels appear in English; content can be Bangla or English.
+
+Color palette (DARK THEME):
+  Background layers (darkest → lightest): #0C0C0C → #111111 → #161616 → #1C1C1C → #242424
+  Borders: hairline 1px #2A2A2A between panels; 1px #333333 for card outlines
+  Text: primary #F0F0F0 (NOT pure white), secondary #8A8A8A, tertiary/placeholder #555555
+  Accent 1 — Teal: #2A8FA8 (links, active states, focus rings, source indicators)
+  Accent 2 — Amber: #E8A020 (Guide Mode pill, CTA buttons, warning, overdue)
+  Status: success #3DBE82, error #E05252, warning #E8A020
+  Bangla text: Noto Sans Bengali, #E8E8E8, line-height 1.8
+
+Typography:
+  Inter everywhere (same as Framer, Linear, Vercel).
+  Noto Sans Bengali for all Bangla content.
+  JetBrains Mono for all numbers, metrics, latency values.
+
+Style references: Framer dashboard (dark, dense, hairline borders), Linear (sidebar + list rows), 
+  Vercel analytics (monospace metrics on dark), Claude.ai (chat bubble layout).
+  The ONLY color that pops is teal or amber — everything else is neutral gray on charcoal.
 ```
 
 ---
@@ -28,27 +47,41 @@ Style: Modern minimal with subtle depth (soft shadows, card-based layout). Not f
 
 **For v0.dev / Galileo / Uizard:**
 ```
-Design a desktop study assistant chat interface called "BhaiOS". 
+Design a dark-themed desktop study assistant chat interface called "BhaiOS". 
+Reference aesthetic: Framer CMS dashboard + Claude.ai chat.
 
 Layout:
-- Left sidebar (280px): navigation icons + labels — Chat, Documents, Tasks, Progress, Settings. 
-  Show a small circular avatar/logo at the top. Active item highlighted with the primary teal color.
-- Main area: a conversational chat window. 
-  Top bar shows "Guide Mode" toggle pill (teal = active) and "Answer Mode" pill (gray = inactive), 
-  plus a small latency indicator showing "~8s / response".
-  Chat messages: user messages right-aligned with a warm cream bubble, 
-  assistant messages left-aligned in a teal-tinted card with a subtle BhaiOS logo watermark.
-  The latest assistant message shows a Socratic hint: 
-  "Before I give you the answer — what do you think happens to kinetic energy when velocity doubles? 
-   Try to think about the formula first. 🤔"
-  Below the chat: a wide text input bar with a paperclip icon (attach document), 
-  a mic icon (voice, grayed out/future), and a send button.
-- Right panel (320px, collapsible): "Related from your notes" — shows 2 retrieved document 
-  chunk cards with a snippet of Bangla text and a file reference badge at the bottom.
+- Left sidebar (280px, background #111111): navigation icons + labels — Chat, Documents, Tasks, 
+  Progress, Settings. Each item: 18px icon (#8A8A8A) + Inter 13px 500 label (#8A8A8A). 
+  Active item: 2px left border #2A8FA8 + background #1E2A2D. Hover: background #1A1A1A.
+  Bottom: "🧭 Guide Mode" amber pill + "llama3.2:3b • ~8s" in JetBrains Mono 11px #555555.
+  Right edge of sidebar: hairline 1px #2A2A2A.
+- Main chat area (background #161616):
+  Top bar (background #161616, bottom border 1px #2A2A2A): 
+    "Chat" in #F0F0F0 Inter 15px 500 on left.
+    Two mode pills center: "🧭 Guide Mode" (background #2A1E06, border 1px #E8A020, text #E8A020) 
+    and "💬 Answer Mode" (background #1A1A1A, border 1px #333333, text #555555).
+    Latency chip right: "~8s / resp" JetBrains Mono 11px #555555, border 1px #2A2A2A.
+  Chat messages in scrollable area:
+    User message (right-aligned): background #1E2A2D, border 1px #2A3D45, 
+      border-radius 14px 14px 4px 14px, text #E8E8E8 Inter 14px.
+    Assistant message (left-aligned): background #1C1C1C, border 1px #2A2A2A, 
+      3px left border #2A8FA8, border-radius 4px 14px 14px 14px.
+      Latest assistant message shows: "Before I give you the answer — what do you think happens 
+      to kinetic energy when velocity doubles? Think about the formula first. 🤔"
+      Below message: "Show source →" in #2A8FA8 Inter 12px.
+  Input bar at bottom (background #111111, top border 1px #2A2A2A):
+    Input field: background #1A1A1A, border 1px #333333, border-radius 8px.
+    Placeholder "Ask BhaiOS anything..." in #555555. Paperclip icon left (#555555). 
+    Send button: filled circle #2A8FA8 with #F0F0F0 arrow icon.
+- Right context panel (320px, background #111111, left border 1px #2A2A2A):
+  "RELATED FROM YOUR NOTES" header: #555555 Inter 11px uppercase letter-spacing.
+  2 retrieved chunk cards: background #1C1C1C, border 1px #2A2A2A, border-radius 8px.
+    One card shows a Bangla text snippet in Noto Sans Bengali #8A8A8A 12px.
+    File reference: "Page 4 · Physics_Notes.pdf" in #555555 11px.
 
-Color: deep teal sidebar (#1A5C6B), warm off-white main area (#FAF7F2), amber accent for the 
-active guide-mode pill, clean card shadows.
-Mood: calm, academic, focused. No unnecessary decorations.
+Overall feel: dense, focused, professional. Only teal (#2A8FA8) and amber (#E8A020) are colored. 
+Everything else is charcoal gray. Looks like Linear or Framer but for studying.
 ```
 
 ---
@@ -154,23 +187,29 @@ Style: Data-dense but clean. Monospace numbers. Teal accents for section headers
 ### Hero Screenshot Concept
 ```
 Photorealistic UI screenshot of a modern desktop productivity app called BhaiOS, 
-a study assistant for university students. Dark teal sidebar on the left with clean icons and labels. 
-Warm off-white main content area showing an AI chat conversation between a student and the BhaiOS assistant. 
-The assistant message shows a thoughtful Socratic hint in a teal accent card. 
-Bangla Unicode text visible in one of the chat messages. 
-A right panel shows retrieved document snippets. 
-Mood: calm, academic, focused, slightly warm. 
-Style: clean modern UI, subtle card shadows, no excessive decoration. 
-Aspect ratio 16:9, high resolution, professional product screenshot aesthetic.
+a study assistant for university students. 
+Deep charcoal near-black desktop app with #111111 sidebar and #161616 main area. 
+NOT pure black — layered charcoal surfaces like Framer or Linear. 
+Left sidebar shows nav icons with hairline right border. 
+Main chat area shows an AI conversation in dark card bubbles: user messages in a dark teal-tinted bubble (#1E2A2D), 
+assistant messages in a #1C1C1C card with a 3px teal left accent bar. 
+Bangla Unicode text visible inside one assistant message bubble, Noto Sans Bengali font. 
+Right panel shows retrieved document snippets in dark cards (#1C1C1C). 
+Top bar shows an amber "Guide Mode" pill glowing softly against the dark background. 
+The ONLY accent colors are teal (#2A8FA8) and amber (#E8A020). Everything else is neutral charcoal gray. 
+Aspect ratio 16:9, high resolution, professional product screenshot. Inter font throughout.
 ```
 
 ### App Icon Concept
 ```
 Minimalist app icon for a desktop study assistant called BhaiOS. 
-The icon represents a guiding big brother helping a younger student — abstract, geometric, not literal. 
-Deep teal circle background. White geometric symbol: a speech bubble with a small lightbulb or upward arrow 
-inside, suggesting guidance not answers. Clean, bold, scalable. 
-Flat design with subtle gradient depth. 512×512 px, app icon aesthetic.
+Deep charcoal background (#111111), not pure black. 
+A teal (#2A8FA8) geometric symbol centered: a speech bubble merged with an upward arrow, 
+suggesting guidance and forward movement — not a final answer, but a nudge. 
+The speech bubble has a subtle amber (#E8A020) glow dot inside, like a hint being given.
+Clean, geometric, bold, scalable. No text. No decorative elements. 
+Very similar to Linear or Vercel's icon aesthetic — precise and minimal. 
+512×512 px. Dark background with single teal accent. App icon aesthetic.
 ```
 
 ---
@@ -179,9 +218,12 @@ Flat design with subtle gradient depth. 512×512 px, app icon aesthetic.
 
 | Concern | Decision |
 |---|---|
-| **Bangla rendering** | Use `Noto Sans Bengali` via Google Fonts or system font; never use a bitmap font for Bangla |
+| **Theme** | **Dark-first** (Framer/Linear/Vercel aesthetic). `#0C0C0C` root → `#111111` sidebar → `#161616` main → `#1C1C1C` cards |
+| **Bangla rendering** | Use `Noto Sans Bengali`, line-height 1.8 minimum. Never use a bitmap font for Bangla |
 | **RTL/LTR mixing** | Bangla is LTR — no RTL layout needed; mixed content handled with Unicode bidi |
-| **Color contrast** | Deep teal + white: WCAG AA compliant. Test amber accent against white background. |
-| **Font sizes** | Base: 14px / 16px. Bangla text may need +1–2px for legibility at smaller sizes. |
-| **Dark mode** | Nice-to-have but not in scope for initial build — design for light mode first |
-| **Responsive** | Target 1366×768 minimum; sidebar collapses to icons only below 1280px |
+| **Color contrast** | `#F0F0F0` on `#161616` = 9.6:1 ✅. `#8A8A8A` on `#161616` = 4.6:1 ✅ WCAG AA |
+| **Font** | Inter for all UI text. Noto Sans Bengali for Bangla. JetBrains Mono for all numbers |
+| **Accent discipline** | Only teal (#2A8FA8) and amber (#E8A020). No other colors except semantic (error red, success green) |
+| **Borders** | Hairline only: `1px solid #2A2A2A` between panels; `1px solid #333333` for cards. Never thick borders. |
+| **Hover states** | Subtle: row `background #242424`, input `border-color #444444`. Not dramatic. |
+| **Responsive** | Target 1366×768 minimum; sidebar collapses to 56px icon-only below 1280px |
