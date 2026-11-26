@@ -259,7 +259,7 @@ function renderChat() {
           <div class="msg-actions" style="padding: 0;">
             <button class="msg-action-btn copy-msg-btn" data-text="${copyText}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
             <button class="msg-action-btn regen-msg-btn" data-msg-id="${msg.id}" type="button" title="Repeat prompt"><i class="bx bx-refresh"></i></button>
-            <button class="msg-action-btn" type="button" title="More"><i class="bx bx-dots-horizontal-rounded"></i></button>
+            <button class="msg-action-btn more-msg-btn" data-meta="${escapeHtml(msg.hintChip || 'Local response')}" type="button" title="Response info"><i class="bx bx-dots-horizontal-rounded"></i></button>
           </div>
           ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
           ${msg.hintChip ? `<span class="hint-chip">${msg.hintChip}</span>` : ''}
@@ -1558,6 +1558,10 @@ function init() {
     if (e.key === 'Enter') sendChatMessage();
   });
   document.getElementById('chatInput').addEventListener('input', syncSendButtons);
+  document.getElementById('btnWelcomeLocal')?.addEventListener('click', () => {
+    showToast(`100% Local & Offline · ${formatModelName(state.activeModel)}`);
+  });
+
   document.getElementById('btnWelcomeVoice').addEventListener('click', toggleVoiceRecording);
   document.getElementById('btnWelcomeVoiceLang').addEventListener('click', cycleVoiceLang);
   document.getElementById('btnChatVoiceLang').addEventListener('click', cycleVoiceLang);
@@ -1710,6 +1714,11 @@ function init() {
     if (copyBtn && navigator.clipboard) {
       navigator.clipboard.writeText(copyBtn.dataset.text || '');
       showToast('Copied to clipboard');
+      return;
+    }
+    const moreBtn = e.target.closest('.more-msg-btn');
+    if (moreBtn) {
+      showToast(moreBtn.dataset.meta || 'Local response');
       return;
     }
     const editBtn = e.target.closest('.edit-msg-btn');
