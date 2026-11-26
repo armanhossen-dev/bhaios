@@ -515,7 +515,7 @@ i.bx {
 }
 
 .assistant-name {
-  color: var(--teal-400);
+  color: var(--violet-400);
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -573,7 +573,7 @@ i.bx {
   background: var(--bg-hint-chip);
   border-radius: var(--radius-sm);
   font-size: 12px;
-  color: var(--teal-400);
+  color: var(--violet-400);
 }
 
 .link-source {

@@ -4,7 +4,7 @@
    ========================================================================== */
 
 :root {
-  --ring: rgba(42, 143, 168, 0.45);
+  --ring: rgba(32, 134, 247, 0.45);
 }
 
 /* Focus-visible ring matching shadcn/ui focus-visible:ring-[3px] */

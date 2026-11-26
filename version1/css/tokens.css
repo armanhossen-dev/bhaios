@@ -17,56 +17,60 @@
   --radius-lg: 14px;
   --radius-pill: 999px;
 
-  /* Shared Accents */
-  --teal-500: #2A8FA8;
-  --teal-400: #4AB4CE;
-  --teal-900: #182A30;
-  --teal-border: #254049;
+  /* Shared Accents (Blue · Violet · Amber · Lime Green) */
+  --teal-500: #2086F7;
+  --teal-400: #4DA3FF;
+  --teal-900: #132238;
+  --teal-border: #1E3A5F;
+
+  --violet-500: #B957FF;
+  --violet-400: #C97BFF;
+  --violet-900: #261636;
 
   --amber-500: #F5A623;
   --amber-400: #F7B749;
-  --amber-900: #261B07;
-  --amber-border: #4A340B;
+  --amber-900: #281C08;
+  --amber-border: #4D360C;
 
   --orange-light: #FF5C16;
   --orange-light-hover: #E64E0E;
 
-  --success: #3DBE82;
-  --error: #E05252;
+  --success: #84CC16;
+  --error: #F05252;
 }
 
 /* --------------------------------------------------------------------------
-   Dark Theme (Chat, Documents, Tasks, Benchmark)
+   Dark Theme (Obsidian Slate + Blue, Violet, Amber, Lime Green Accents)
    -------------------------------------------------------------------------- */
 [data-theme="dark"] {
-  --bg-root: #0C0C0C;
-  --bg-sidebar: #111111;
-  --bg-main: #111111;
-  --bg-card: #161616;
-  --bg-card-elevated: #1A1A1A;
-  --bg-card-hover: #1E1E1E;
-  --bg-input: #141414;
-  --bg-nav-active: #1B2B30;
-  --bg-user-bubble: #18292E;
-  --bg-hint-chip: #182C32;
-  --bg-dropzone: #111A1D;
-  --bg-code-bar: #122126;
+  --bg-root: #121316;
+  --bg-sidebar: #16171B;
+  --bg-main: #121316;
+  --bg-card: #191B20;
+  --bg-card-elevated: #202229;
+  --bg-card-hover: #262932;
+  --bg-input: #16171B;
+  --bg-nav-active: #162235;
+  --bg-user-bubble: #132238;
+  --bg-hint-chip: #231633;
+  --bg-dropzone: #141A24;
+  --bg-code-bar: #161C28;
 
-  --border-hairline: #242424;
-  --border-card: #2A2A2A;
-  --border-strong: #363636;
-  --border-user-bubble: #243D44;
+  --border-hairline: #23252D;
+  --border-card: #2B2E38;
+  --border-strong: #393D4A;
+  --border-user-bubble: #1E3A5F;
 
-  --text-primary: #F0F0F0;
-  --text-secondary: #8E9299;
-  --text-muted: #5C6066;
-  --text-bangla: #EDEDED;
+  --text-primary: #F2F3F5;
+  --text-secondary: #9498A3;
+  --text-muted: #5F6470;
+  --text-bangla: #F0F1F4;
 
-  --pill-guide-bg: #261B07;
-  --pill-guide-border: #4A340B;
+  --pill-guide-bg: #281C08;
+  --pill-guide-border: #4D360C;
   --pill-guide-text: #F5A623;
   --cta-bg: #F5A623;
-  --cta-text: #0C0C0C;
+  --cta-text: #121316;
   --cta-hover: #F7B749;
 }
 
