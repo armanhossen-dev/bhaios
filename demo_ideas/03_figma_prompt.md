@@ -78,21 +78,49 @@ than giving direct answers.
 
 ### Typography
 
-> Font: **Inter** throughout (same as Framer, Linear, Vercel). Noto Sans Bengali for all Bangla text. JetBrains Mono for all numbers/metrics.
+> **Font stack (Unicorn Studio / editorial dark aesthetic):**
+> - **Display & headings:** `Instrument Serif` — elegant transitional serif with high stroke contrast. As seen on unicorn.studio. Free on Google Fonts. Use at 22px+ for page titles, hero text, section headers. This is what gives BhaiOS a distinct, non-generic look against the charcoal dark background.
+> - **UI & body:** `Inter` — geometric sans-serif for all UI labels, chat messages, metadata. Same as Framer, Linear, Vercel.
+> - **Bangla:** `Noto Sans Bengali` — renders Unicode Bangla correctly. Use for all Bangla content.
+> - **Metrics & numbers:** `JetBrains Mono` — monospace for latency, stats, model names, timestamps.
+>
+> **The key typographic move (from Unicorn Studio):** Large `Instrument Serif` white headline on dark charcoal bg → smaller `Inter` muted gray body below. The font contrast alone creates hierarchy — no color needed.
 
 | Token | Font | Size | Weight | Line Height | Usage |
 |---|---|---|---|---|---|
-| `type.display` | Inter | 24px | 700 | 1.3 | Page titles |
-| `type.heading.lg` | Inter | 20px | 600 | 1.4 | Section headers |
-| `type.heading.md` | Inter | 16px | 600 | 1.4 | Card titles, sub-sections |
+| `type.display` | **Instrument Serif** | 36px | 400 | 1.2 | Hero text, empty state headings, onboarding |
+| `type.heading.xl` | **Instrument Serif** | 28px | 400 | 1.25 | Page titles ("My Study Materials", "Weekly Progress") |
+| `type.heading.lg` | **Instrument Serif** | 22px | 400 | 1.3 | Section headers, review card titles |
+| `type.heading.md` | Inter | 15px | 600 | 1.4 | Card titles, panel headers, sub-sections |
+| `type.heading.sm` | Inter | 11px | 600 | 1.4 | Sidebar section labels (uppercase, letter-spaced 0.08em) |
 | `type.body.lg` | Inter | 15px | 400 | 1.6 | Main body text, chat messages |
-| `type.body.md` | Inter | 14px | 400 | 1.6 | Secondary body, descriptions |
+| `type.body.md` | Inter | 14px | 400 | 1.6 | Secondary body, descriptions, tooltips |
 | `type.label` | Inter | 12px | 500 | 1.4 | Badges, tags, metadata |
 | `type.label.sm` | Inter | 11px | 500 | 1.3 | Timestamps, tiny metadata (Framer-style compact density) |
 | `type.mono` | JetBrains Mono | 13px | 400 | 1.5 | Latency stats, metric numbers, CER/WER values |
-| `type.code` | JetBrains Mono | 12px | 400 | 1.5 | Inline code, file paths |
+| `type.code` | JetBrains Mono | 12px | 400 | 1.5 | Inline code, model names, file paths |
 | `type.bangla.body` | Noto Sans Bengali | 15px | 400 | 1.8 | Bangla body text in chat/docs |
 | `type.bangla.label` | Noto Sans Bengali | 13px | 400 | 1.6 | Bangla tags, subject labels |
+
+**Where to use Instrument Serif:**
+- Welcome / empty state: `"What would you like to study today?"` — 36px, `#F0F0F0`, Instrument Serif italic optional
+- Page titles: "My Study Materials", "Tasks & Deadlines", "Weekly Progress" — 28px
+- Weekly review card header — editorial serif gives it a dignified, reportlike feel
+- Large stat numerals in progress view (e.g. "7" completed) — Instrument Serif numerals look elegant at big sizes
+- **Never use for:** nav labels, input fields, badges, small UI text — Inter only there
+
+**Google Fonts import:**
+```css
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+```
+
+**Fallback stack:**
+```css
+/* Display headings */
+font-family: 'Instrument Serif', 'Playfair Display', 'DM Serif Display', Georgia, serif;
+/* UI / body */
+font-family: 'Inter', 'Helvetica Neue', system-ui, sans-serif;
+```
 
 ---
 

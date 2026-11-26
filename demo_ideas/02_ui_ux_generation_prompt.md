@@ -30,9 +30,17 @@ Color palette (DARK THEME):
   Bangla text: Noto Sans Bengali, #E8E8E8, line-height 1.8
 
 Typography:
-  Inter everywhere (same as Framer, Linear, Vercel).
-  Noto Sans Bengali for all Bangla content.
-  JetBrains Mono for all numbers, metrics, latency values.
+  DISPLAY / HEADINGS: "Instrument Serif" — elegant transitional serif, high stroke contrast,
+    as seen on unicorn.studio. Use for page titles and section headers at 22px+.
+    Large white Instrument Serif headline on dark charcoal = the signature visual move.
+  UI / BODY: "Inter" — geometric sans-serif for all UI labels, chat text, metadata.
+  BANGLA: "Noto Sans Bengali" for all Bangla content, line-height 1.8.
+  NUMBERS / METRICS: "JetBrains Mono" for latency values, stats, model names.
+  
+  KEY TYPOGRAPHIC RULE (Unicorn Studio style): 
+    Large Instrument Serif in #F0F0F0 for the headline/title.
+    Smaller Inter in #8A8A8A for the supporting body text below it.
+    The font + size + color contrast does the hierarchy — no decorative elements needed.
 
 Style references: Framer dashboard (dark, dense, hairline borders), Linear (sidebar + list rows), 
   Vercel analytics (monospace metrics on dark), Claude.ai (chat bubble layout).
