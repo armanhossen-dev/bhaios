@@ -3,8 +3,9 @@
 **A local, private study assistant that sees your notes and teaches you to solve, not just copy.**
 
 Built for Bangla-speaking students. Runs offline on a standard laptop.
-
+<!--
 ![Status](https://img.shields.io/badge/status-title%20defense-blue)
+-->
 ![Runs](https://img.shields.io/badge/runs-100%25%20local-green)
 ![Languages](https://img.shields.io/badge/language-বাংলা%20%7C%20English-orange)
 ![License](https://img.shields.io/badge/license-MIT-lightgrey)
