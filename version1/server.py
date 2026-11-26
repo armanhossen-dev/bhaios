@@ -329,11 +329,16 @@ async def chat(req: ChatRequest) -> dict[str, Any]:
 
     elapsed = round(time.perf_counter() - t0, 1)
     reply_text = data.get("message", {}).get("content", "").strip()
+    prompt_tok = int(data.get("prompt_eval_count", 0) or 0)
+    eval_tok = int(data.get("eval_count", 0) or 0)
     return {
         "reply": reply_text,
         "model_used": target_model,
         "used_vision": bool(img_b64),
         "latency_s": elapsed,
+        "prompt_tokens": prompt_tok,
+        "completion_tokens": eval_tok,
+        "total_tokens": prompt_tok + eval_tok,
     }
 
 

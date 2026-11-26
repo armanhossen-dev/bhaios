@@ -158,10 +158,16 @@
          MAIN COLUMN (Full-height, no top bar)
          ===================================================================== -->
     <div class="main-column">
-      <button class="navbar-timer-pill floating-timer-pill" id="navbarFocusTimer" type="button" style="display: none;" title="Click to pause/resume focus timer">
-        <i class="bx bx-time-five"></i>
-        <span id="navbarTimerText">45:00</span>
-      </button>
+      <div class="top-floating-bar">
+        <button class="token-pill" id="tokenUsagePill" type="button" title="Session token usage">
+          <i class="bx bx-chip"></i>
+          <span id="tokenUsageText">0 tok</span>
+        </button>
+        <button class="navbar-timer-pill" id="navbarFocusTimer" type="button" style="display: none;" title="Click to pause/resume focus timer">
+          <i class="bx bx-time-five"></i>
+          <span id="navbarTimerText">45:00</span>
+        </button>
+      </div>
 
       <!-- ===================================================================
            SCREEN 1 — CHAT

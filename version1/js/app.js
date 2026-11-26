@@ -19,6 +19,7 @@ const state = {
   themePref: 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
+  sessionTokens: { prompt: 0, completion: 0, total: 0 },
   uploadPipeline: 'VLM',
   activeModel: 'qwen2.5:3b',
   activeVisionModel: 'llava-phi3:latest',
@@ -364,6 +365,13 @@ async function sendChatMessage(customText) {
     }
     const latChip = document.getElementById('latencyChip');
     if (latChip) latChip.textContent = `${data.latency_s}s / resp`;
+
+    state.sessionTokens.prompt += data.prompt_tokens || 0;
+    state.sessionTokens.completion += data.completion_tokens || 0;
+    state.sessionTokens.total += data.total_tokens || 0;
+    const tokEl = document.getElementById('tokenUsageText');
+    if (tokEl) tokEl.textContent = `${state.sessionTokens.total.toLocaleString()} tok`;
+
     state.attachedImageBase64 = null;
     state.attachedFilename = null;
   } catch (err) {
@@ -1386,6 +1394,10 @@ function init() {
 
   document.getElementById('btnStartFocus').addEventListener('click', toggleFocusTimer);
   document.getElementById('navbarFocusTimer').addEventListener('click', toggleFocusTimer);
+  document.getElementById('tokenUsagePill')?.addEventListener('click', () => {
+    const { prompt, completion, total } = state.sessionTokens;
+    showToast(`Tokens — ${prompt} in · ${completion} out · ${total} total`);
+  });
   document.getElementById('btnManageReminders').addEventListener('click', () => switchScreen('settings'));
 
   // Progress quick review CTA
