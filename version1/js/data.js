@@ -1,0 +1,216 @@
+/* ==========================================================================
+   BhaiOS Prototype Data (Bilingual Bangla & English Study Content)
+   ========================================================================== */
+
+export const INITIAL_MESSAGES = [
+  {
+    id: 'm1',
+    role: 'student',
+    bangla: 'নিউটনের দ্বিতীয় সূত্রটা সহজ করে বুঝিয়ে দাও।',
+    english: "Can you explain Newton's second law simply?",
+    timestamp: 'Today, 4:32 PM',
+  },
+  {
+    id: 'm2',
+    role: 'assistant',
+    mode: 'guide',
+    bangla: 'একটি খালি ট্রলি আর একটি ভর্তি ট্রলি কল্পনা করো। একই জোরে ঠেললে কোনটির গতি বেশি বদলাবে?',
+    english: 'Imagine an empty trolley and a full one. If you push both with the same force, which one accelerates more — and why?',
+    hintChip: 'Hint: think about mass',
+    meta: 'Grounded in 3 local sources · 7.8s',
+    sourceId: 's3',
+  },
+  {
+    id: 'm3',
+    role: 'student',
+    english: 'The empty trolley, because it is lighter?',
+  },
+  {
+    id: 'm4',
+    role: 'assistant-inline',
+    english: 'Try thinking about the same push on different masses.',
+  },
+];
+
+export const RETRIEVED_SNIPPETS = [
+  {
+    id: 's1',
+    index: '01 / Physics · Chapter 03',
+    title: 'Force & motion',
+    body: 'The rate of change of momentum is proportional to the applied force.',
+    source: 'p. 24 · class-notes.pdf',
+    isBangla: false,
+  },
+  {
+    id: 's2',
+    index: '02 / Physics · Chapter 03',
+    title: 'F = ma',
+    body: 'For constant mass, acceleration is directly proportional to net force.',
+    source: 'p. 26 · class-notes.pdf',
+    isBangla: false,
+  },
+  {
+    id: 's3',
+    index: '03 / Handwritten notes',
+    title: 'বল ও ত্বরণ',
+    body: 'একই ভরের বস্তুর উপর বল বাড়ালে ত্বরণও বাড়ে।',
+    source: 'p. 3 · revision-notes.jpg',
+    isBangla: true,
+  },
+];
+
+export const DOCUMENTS_DATA = [
+  {
+    id: 'd1',
+    topic: 'Force & motion',
+    formula: 'F = ma',
+    title: 'Physics · Chapter 03',
+    pages: 24,
+    size: '4.2 MB',
+    subject: 'Physics',
+    mode: 'VLM',
+    status: 'indexed',
+    progress: 100,
+    isBangla: false,
+  },
+  {
+    id: 'd2',
+    topic: 'Organic compounds',
+    formula: 'CH₃ — CH₂ — OH',
+    title: 'Organic chemistry',
+    pages: 36,
+    size: '6.8 MB',
+    subject: 'Chemistry',
+    mode: 'OCR',
+    status: 'indexed',
+    progress: 100,
+    isBangla: false,
+  },
+  {
+    id: 'd3',
+    topic: 'সাহিত্য ও জীবন',
+    formula: 'পাঠ ০৪ · মূলভাব',
+    title: 'বাংলা প্রথম পত্র',
+    pages: 18,
+    size: '2.1 MB',
+    subject: 'Bangla',
+    mode: 'OCR',
+    status: 'indexed',
+    progress: 100,
+    isBangla: true,
+    tintGreen: true,
+  },
+  {
+    id: 'd4',
+    topic: 'Differentiation',
+    formula: 'd/dx (xⁿ) = nxⁿ⁻¹',
+    title: 'Calculus revision',
+    pages: 42,
+    size: '8.4 MB',
+    subject: 'Math',
+    mode: 'VLM',
+    status: 'indexed',
+    progress: 100,
+    isBangla: false,
+  },
+  {
+    id: 'd5',
+    topic: "Newton's laws",
+    formula: 'ΣF = m · a',
+    title: 'Handwritten physics',
+    pages: 6,
+    size: '3.6 MB',
+    subject: 'Physics',
+    mode: 'VLM',
+    status: 'processing',
+    progress: 65,
+    eta: '2 min left',
+    isBangla: false,
+  },
+  {
+    id: 'd6',
+    topic: 'Reading & writing',
+    formula: 'Practice makes progress.',
+    title: 'English practice',
+    pages: 20,
+    size: '2.7 MB',
+    subject: 'English',
+    mode: 'OCR',
+    status: 'indexed',
+    progress: 100,
+    isBangla: false,
+  },
+];
+
+export const INITIAL_TASKS = [
+  {
+    id: 't1',
+    title: "Revise Newton's laws",
+    subject: 'Physics',
+    due: 'Yesterday · 5:00 PM',
+    bucket: 'overdue',
+    priority: 'High',
+    completed: false,
+  },
+  {
+    id: 't2',
+    title: 'Solve chapter 3 practice problems',
+    subject: 'Physics',
+    due: 'Today · 6:00 PM',
+    bucket: 'week',
+    priority: 'High',
+    completed: false,
+    today: true,
+  },
+  {
+    id: 't3',
+    title: 'Review organic reaction flashcards',
+    subject: 'Chemistry',
+    due: 'Thu, 17 Jul · 4:30 PM',
+    bucket: 'week',
+    priority: 'Medium',
+    completed: false,
+  },
+  {
+    id: 't4',
+    title: 'Complete English reading practice',
+    subject: 'English',
+    due: 'Fri, 18 Jul · 10:00 AM',
+    bucket: 'week',
+    priority: 'Low',
+    completed: false,
+  },
+  {
+    id: 't5',
+    title: 'Practice differentiation · Exercise 4.2',
+    subject: 'Math',
+    due: 'Mon, 21 Jul · 5:00 PM',
+    bucket: 'upcoming',
+    priority: 'Medium',
+    completed: false,
+  },
+];
+
+export const STUDY_RHYTHM = [
+  { day: 'Thu', mins: 60, active: false },
+  { day: 'Fri', mins: 80, active: false },
+  { day: 'Sat', mins: 0, active: false },
+  { day: 'Sun', mins: 100, active: false },
+  { day: 'Mon', mins: 0, active: false },
+  { day: 'Tue', mins: 70, active: false },
+  { day: 'Wed', mins: 90, active: true },
+];
+
+export const SUBJECT_FOCUS = [
+  { name: 'Physics', mins: 160, pct: 84 },
+  { name: 'Chemistry', mins: 100, pct: 52 },
+  { name: 'Math', mins: 80, pct: 42 },
+  { name: 'English', mins: 60, pct: 32 },
+];
+
+export const BENCHMARK_METRICS = [
+  { metric: 'Character error rate · CER', vlm: '4.8%', ocr: '7.2%', preferred: 'VLM', preferredType: 'vlm' },
+  { metric: 'Word error rate · WER', vlm: '10.6%', ocr: '14.9%', preferred: 'VLM', preferredType: 'vlm' },
+  { metric: 'Median latency / page', vlm: '8.2s', ocr: '5.6s', preferred: 'OCR + LLM', preferredType: 'ocr' },
+  { metric: 'Peak memory usage', vlm: '3.8 GB', ocr: '2.9 GB', preferred: 'OCR + LLM', preferredType: 'ocr' },
+];

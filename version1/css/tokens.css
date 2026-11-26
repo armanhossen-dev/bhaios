@@ -1,0 +1,105 @@
+/* ==========================================================================
+   BhaiOS Design Tokens — Exact match to Figma (Dark-First + Flowstate Light)
+   ========================================================================== */
+
+:root {
+  /* Typography */
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-bangla: 'Noto Sans Bengali', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Shared Accents */
+  --teal-500: #2A8FA8;
+  --teal-400: #4AB4CE;
+  --teal-900: #182A30;
+  --teal-border: #254049;
+
+  --amber-500: #F5A623;
+  --amber-400: #F7B749;
+  --amber-900: #261B07;
+  --amber-border: #4A340B;
+
+  --orange-light: #FF5C16;
+  --orange-light-hover: #E64E0E;
+
+  --success: #3DBE82;
+  --error: #E05252;
+}
+
+/* --------------------------------------------------------------------------
+   Dark Theme (Chat, Documents, Tasks, Benchmark)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --bg-root: #0C0C0C;
+  --bg-sidebar: #111111;
+  --bg-main: #111111;
+  --bg-card: #161616;
+  --bg-card-elevated: #1A1A1A;
+  --bg-card-hover: #1E1E1E;
+  --bg-input: #141414;
+  --bg-nav-active: #1B2B30;
+  --bg-user-bubble: #18292E;
+  --bg-hint-chip: #182C32;
+  --bg-dropzone: #111A1D;
+  --bg-code-bar: #122126;
+
+  --border-hairline: #242424;
+  --border-card: #2A2A2A;
+  --border-strong: #363636;
+  --border-user-bubble: #243D44;
+
+  --text-primary: #F0F0F0;
+  --text-secondary: #8E9299;
+  --text-muted: #5C6066;
+  --text-bangla: #EDEDED;
+
+  --pill-guide-bg: #261B07;
+  --pill-guide-border: #4A340B;
+  --pill-guide-text: #F5A623;
+  --cta-bg: #F5A623;
+  --cta-text: #0C0C0C;
+  --cta-hover: #F7B749;
+}
+
+/* --------------------------------------------------------------------------
+   Light Theme (Progress Screen — Flowstate-inspired with #FF5C16)
+   -------------------------------------------------------------------------- */
+[data-theme="light"] {
+  --bg-root: #FFFFFF;
+  --bg-sidebar: #F4F4F2;
+  --bg-main: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-elevated: #F5F4F0;
+  --bg-card-hover: #F0EFEA;
+  --bg-input: #FFFFFF;
+  --bg-nav-active: #E8F0EE;
+  --bg-user-bubble: #EAF3F5;
+  --bg-hint-chip: #E4F2F5;
+  --bg-dropzone: #F4F8F9;
+  --bg-code-bar: #EDF5F7;
+
+  --border-hairline: #E6E6E2;
+  --border-card: #E2E2DC;
+  --border-strong: #D0D0C8;
+  --border-user-bubble: #C9E1E6;
+
+  --text-primary: #111111;
+  --text-secondary: #66686D;
+  --text-muted: #8E9096;
+  --text-bangla: #161616;
+
+  --pill-guide-bg: #FF5C16;
+  --pill-guide-border: #FF5C16;
+  --pill-guide-text: #0A0A0A;
+  --cta-bg: #FF5C16;
+  --cta-text: #0A0A0A;
+  --cta-hover: #E64E0E;
+}
