@@ -146,13 +146,21 @@ function applyLanguage(lang) {
 
   const topTitle = document.getElementById('topBarTitle');
   if (topTitle) topTitle.textContent = t.titles[state.screen] || 'BhaiOS';
-  document.getElementById('welcomeGreeting').textContent = t.greeting;
-  document.getElementById('welcomeGreeting').classList.toggle('bangla', lang === 'bn');
-  document.getElementById('welcomeInput').placeholder = t.askPlaceholder;
-  document.getElementById('chatInput').placeholder = t.askPlaceholder;
-  document.getElementById('sidebarModeLabel').textContent = state.chatMode === 'guide' ? t.guideMode : t.answerMode;
-  document.querySelector('.composer-disclaimer').textContent = t.disclaimer;
-  document.querySelector('.dropzone-title').textContent = t.dropTitle;
+  const wg = document.getElementById('welcomeGreeting');
+  if (wg) {
+    wg.textContent = t.greeting;
+    wg.classList.toggle('bangla', lang === 'bn');
+  }
+  const wi = document.getElementById('welcomeInput');
+  if (wi) wi.placeholder = t.askPlaceholder;
+  const ci = document.getElementById('chatInput');
+  if (ci) ci.placeholder = t.askPlaceholder;
+  const sml = document.getElementById('sidebarModeLabel');
+  if (sml) sml.textContent = state.chatMode === 'guide' ? t.guideMode : t.answerMode;
+  const disc = document.querySelector('.composer-disclaimer');
+  if (disc) disc.textContent = t.disclaimer;
+  const dz = document.querySelector('.dropzone-title');
+  if (dz) dz.textContent = t.dropTitle;
   const searchSpan = document.querySelector('.topbar-search-btn span');
   if (searchSpan) searchSpan.textContent = t.searchPlaceholder;
   const popLang = document.getElementById('popLangLabel');
@@ -161,8 +169,10 @@ function applyLanguage(lang) {
   // Sync voice language automatically when switching to Bangla
   if (lang === 'bn') {
     state.voiceLang = 'bn';
-    document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = 'Voice: Bangla';
-    document.getElementById('btnChatVoiceLang').querySelector('span').textContent = 'Bangla';
+    const wvl = document.getElementById('btnWelcomeVoiceLang')?.querySelector('span');
+    if (wvl) wvl.textContent = 'Voice: Bangla';
+    const cvl = document.getElementById('btnChatVoiceLang')?.querySelector('span');
+    if (cvl) cvl.textContent = 'Bangla';
   }
 }
 
@@ -235,15 +245,16 @@ function renderChat() {
   const activeEl = document.getElementById('chatActiveWrap');
 
   if (!state.chatStarted) {
-    welcomeEl.style.display = 'flex';
-    activeEl.style.display = 'none';
+    if (welcomeEl) welcomeEl.style.display = 'flex';
+    if (activeEl) activeEl.style.display = 'none';
     return;
   }
 
-  welcomeEl.style.display = 'none';
-  activeEl.style.display = 'flex';
+  if (welcomeEl) welcomeEl.style.display = 'none';
+  if (activeEl) activeEl.style.display = 'flex';
 
   const container = document.getElementById('chatMessages');
+  if (!container) return;
   container.innerHTML = '';
 
   state.messages.forEach((msg) => {
@@ -958,25 +969,27 @@ function formatTimer(secs) {
 function updateFocusTimerUI() {
   const navPill = document.getElementById('navbarFocusTimer');
   const navText = document.getElementById('navbarTimerText');
-  const btnFocus = document.getElementById('btnStartFocus');
-  const bigLabel = document.getElementById('focusCardDuration');
   const formatted = formatTimer(state.focusRemainingSecs);
+  const btnText = state.focusRunning
+    ? `<i class="bx bx-pause"></i> Pause focus (${formatted})`
+    : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < state.focusDurationMins * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
+  const bigText = state.focusRunning || state.focusRemainingSecs < state.focusDurationMins * 60
+    ? formatted
+    : `${state.focusDurationMins} min`;
 
   if (navText) navText.textContent = formatted;
   if (navPill) {
     navPill.style.display = 'inline-flex';
     navPill.classList.toggle('running', state.focusRunning);
   }
-  if (btnFocus) {
-    btnFocus.innerHTML = state.focusRunning
-      ? `<i class="bx bx-pause"></i> Pause focus (${formatted})`
-      : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < state.focusDurationMins * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
-  }
-  if (bigLabel) {
-    bigLabel.textContent = state.focusRunning || state.focusRemainingSecs < state.focusDurationMins * 60
-      ? formatted
-      : `${state.focusDurationMins} min`;
-  }
+  ['btnStartFocus', 'btnTasksStartFocus'].forEach((id) => {
+    const b = document.getElementById(id);
+    if (b) b.innerHTML = btnText;
+  });
+  ['focusCardDuration', 'tasksFocusCardDuration'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = bigText;
+  });
 }
 
 function setFocusDuration(mins) {
@@ -1597,8 +1610,10 @@ function cycleVoiceLang() {
   const next = order[(order.indexOf(state.voiceLang) + 1) % order.length];
   state.voiceLang = next;
   const labels = { auto: 'Auto', bn: 'Bangla', en: 'English' };
-  document.getElementById('btnWelcomeVoiceLang').querySelector('span').textContent = `Voice: ${labels[next]}`;
-  document.getElementById('btnChatVoiceLang').querySelector('span').textContent = labels[next];
+  const wSpan = document.getElementById('btnWelcomeVoiceLang')?.querySelector('span');
+  if (wSpan) wSpan.textContent = `Voice: ${labels[next]}`;
+  const cSpan = document.getElementById('btnChatVoiceLang')?.querySelector('span');
+  if (cSpan) cSpan.textContent = labels[next];
   showToast(`Whisper voice language: ${labels[next]}`);
 }
 
@@ -1815,7 +1830,8 @@ function init() {
     switchScreen('chat');
     renderChat();
     renderSavedChats();
-    document.getElementById('welcomeInput').focus();
+    document.getElementById('welcomeInput')?.focus();
+    document.getElementById('chatInput')?.focus();
     showToast('Started a fresh study session');
   });
 
@@ -1844,8 +1860,8 @@ function init() {
     showToast('Cleared all saved chats');
   });
 
-  // Welcome screen interactions
-  document.getElementById('btnWelcomeSend').addEventListener('click', () => {
+  // Welcome screen interactions (optional)
+  document.getElementById('btnWelcomeSend')?.addEventListener('click', () => {
     if (state.isGenerating) stopChatGeneration();
     else sendChatMessage();
   });
@@ -1877,14 +1893,14 @@ function init() {
     showToast(`100% Local & Offline · ${formatModelName(state.activeModel)}`);
   });
 
-  document.getElementById('btnWelcomeVoice').addEventListener('click', toggleVoiceRecording);
-  document.getElementById('btnWelcomeVoiceLang').addEventListener('click', cycleVoiceLang);
-  document.getElementById('btnChatVoiceLang').addEventListener('click', cycleVoiceLang);
+  document.getElementById('btnWelcomeVoice')?.addEventListener('click', toggleVoiceRecording);
+  document.getElementById('btnWelcomeVoiceLang')?.addEventListener('click', cycleVoiceLang);
+  document.getElementById('btnChatVoiceLang')?.addEventListener('click', cycleVoiceLang);
   const uploadModal = document.getElementById('uploadModal');
-  document.getElementById('btnWelcomeScan').addEventListener('click', () => uploadModal.classList.add('open'));
-  document.getElementById('btnChatAttach').addEventListener('click', () => uploadModal.classList.add('open'));
-  document.getElementById('btnCloseUploadX').addEventListener('click', () => uploadModal.classList.remove('open'));
-  document.getElementById('btnChatVoice').addEventListener('click', toggleVoiceRecording);
+  document.getElementById('btnWelcomeScan')?.addEventListener('click', () => uploadModal?.classList.add('open'));
+  document.getElementById('btnChatAttach')?.addEventListener('click', () => uploadModal?.classList.add('open'));
+  document.getElementById('btnCloseUploadX')?.addEventListener('click', () => uploadModal?.classList.remove('open'));
+  document.getElementById('btnChatVoice')?.addEventListener('click', toggleVoiceRecording);
   // Setup Model Dropdowns (Welcome Screen & Active Chat)
   const setupModelDropdown = (btnEl, menuEl, wrapEl) => {
     if (!btnEl || !menuEl) return;
@@ -2183,6 +2199,17 @@ function init() {
     });
   });
 
+  // Home screen task checkboxes
+  document.getElementById('screen-home')?.addEventListener('click', (e) => {
+    const chk = e.target.closest('.task-checkbox[data-task-id]');
+    if (!chk) return;
+    const isChecked = chk.classList.toggle('checked');
+    chk.innerHTML = isChecked ? '<i class="bx bx-check"></i>' : '';
+    const titleEl = chk.closest('.task-checkbox-wrap')?.querySelector('.home-task-title');
+    if (titleEl) titleEl.classList.toggle('done-text', isChecked);
+    showToast(isChecked ? 'Task marked complete' : 'Task marked active');
+  });
+
   // Study Mode Switcher (2:2306)
   document.querySelectorAll('.mode-switch-btn[data-mode]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -2195,19 +2222,33 @@ function init() {
     });
   });
 
-  // Focus Timer & Calendar in Aside Card (Screenshot 4)
+  // Focus Timer & Calendar in Aside Cards (Single clean bindings)
+  const shiftCalendarMonth = (delta) => {
+    state.calendarAnchor = new Date(
+      state.calendarAnchor.getFullYear(),
+      state.calendarAnchor.getMonth() + delta,
+      1
+    );
+    const monthStr = state.calendarAnchor.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const calHdr = document.getElementById('calMonthHeader');
+    if (calHdr) calHdr.textContent = monthStr;
+    const calSub = document.getElementById('calSubDate');
+    if (calSub) calSub.textContent = state.calendarAnchor.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' });
+    if (typeof renderCalendar === 'function') renderCalendar();
+  };
+
   document.getElementById('btnStartFocus')?.addEventListener('click', toggleFocusTimer);
+  document.getElementById('btnTasksStartFocus')?.addEventListener('click', toggleFocusTimer);
   document.querySelectorAll('.focus-chip[data-mins]').forEach((chip) => {
     chip.addEventListener('click', () => {
       setFocusDuration(Number(chip.dataset.mins));
     });
   });
-  document.getElementById('btnCalPrev')?.addEventListener('click', () => {
-    showToast('Showing previous month');
-  });
-  document.getElementById('btnCalNext')?.addEventListener('click', () => {
-    showToast('Showing next month');
-  });
+  document.getElementById('btnCalPrev')?.addEventListener('click', () => shiftCalendarMonth(-1));
+  document.getElementById('btnCalNext')?.addEventListener('click', () => shiftCalendarMonth(1));
+  document.getElementById('btnTasksCalPrev')?.addEventListener('click', () => shiftCalendarMonth(-1));
+  document.getElementById('btnTasksCalNext')?.addEventListener('click', () => shiftCalendarMonth(1));
+  document.getElementById('btnTasksManageReminders')?.addEventListener('click', () => switchScreen('settings'));
   document.getElementById('btnTopSearch')?.addEventListener('click', () => {
     openCommandModal();
   });
@@ -2431,8 +2472,7 @@ function init() {
     showToast('Task saved to local SQLite store');
   });
 
-  document.getElementById('btnStartFocus').addEventListener('click', toggleFocusTimer);
-  document.getElementById('navbarFocusTimer').addEventListener('click', toggleFocusTimer);
+  document.getElementById('navbarFocusTimer')?.addEventListener('click', toggleFocusTimer);
 
   const focusPop = document.getElementById('focusTimerPopover');
   const btnFocusOpts = document.getElementById('btnFocusTimerOptions');

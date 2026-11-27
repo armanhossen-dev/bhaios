@@ -774,9 +774,9 @@
                 <div class="calendar-head">
                   <span class="serif" id="calendarMonthLabel" style="font-size: 20px;">July 2025</span>
                   <span style="display: inline-flex; gap: 4px;">
-                    <button class="context-collapse-btn" id="btnCalPrev" type="button" aria-label="Previous week"><i
+                    <button class="context-collapse-btn btn-cal-prev" id="btnTasksCalPrev" type="button" aria-label="Previous week"><i
                         class="bx bx-chevron-left"></i></button>
-                    <button class="context-collapse-btn" id="btnCalNext" type="button" aria-label="Next week"><i
+                    <button class="context-collapse-btn btn-cal-next" id="btnTasksCalNext" type="button" aria-label="Next week"><i
                         class="bx bx-chevron-right"></i></button>
                   </span>
                 </div>
@@ -793,7 +793,7 @@
                 <div class="nudge-body">
                   Your physics session starts at 6 PM. Reminders work even when you're offline.
                 </div>
-                <button class="nudge-link" id="btnManageReminders" type="button"
+                <button class="nudge-link btn-manage-reminders" id="btnTasksManageReminders" type="button"
                   style="display:inline-flex; align-items:center; gap:4px;">Manage reminders <i
                     class="bx bx-right-arrow-alt"></i></button>
               </div>
@@ -802,7 +802,7 @@
                 <div class="serif" style="font-size: 20px; margin-bottom: 10px;">Focus timer</div>
                 <div class="mono" style="font-size: 10.5px; color: var(--text-muted); letter-spacing: 0.08em;">SESSION
                 </div>
-                <div class="focus-card-big" id="focusCardDuration">45 min</div>
+                <div class="focus-card-big focus-duration-display" id="tasksFocusCardDuration">45 min</div>
                 <div class="focus-presets-row" id="focusPresetsRow">
                   <button class="focus-chip" data-mins="15" type="button">15m</button>
                   <button class="focus-chip" data-mins="25" type="button">25m</button>
@@ -810,7 +810,7 @@
                   <button class="focus-chip" data-mins="60" type="button">60m</button>
                 </div>
                 <div style="font-size: 12px; color: var(--text-secondary);" id="focusTasksMeta">0 active tasks</div>
-                <button class="btn-outline-full" id="btnStartFocus" type="button"><i class="bx bx-play"></i> Start focus
+                <button class="btn-outline-full btn-start-focus" id="btnTasksStartFocus" type="button"><i class="bx bx-play"></i> Start focus
                   session</button>
               </div>
             </aside>
