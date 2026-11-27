@@ -1367,8 +1367,15 @@ async function refreshSystemHealth() {
     const res = await fetch('/api/health');
     if (!res.ok) throw new Error('Health unavailable');
     const data = await res.json();
-    if (statusEl) statusEl.textContent = data.ollama ? 'Ollama Live' : 'Ollama Off';
-    if (dotEl) dotEl.classList.toggle('offline', !data.ollama);
+    const isLive = Boolean(data.ollama);
+    if (statusEl) {
+      statusEl.textContent = isLive ? 'Live' : 'Offline';
+      statusEl.classList.toggle('status-live', isLive);
+    }
+    if (dotEl) {
+      dotEl.classList.toggle('offline', !isLive);
+      dotEl.classList.toggle('live', isLive);
+    }
     if (data.ram && data.ram.total_gb > 0 && ramEl) {
       const modelNote = data.ollama_ram_gb > 0
         ? ` · Model ${data.ollama_ram_gb} GB`
@@ -1381,8 +1388,14 @@ async function refreshSystemHealth() {
       }
     }
   } catch {
-    if (statusEl && statusEl.textContent === 'Offline') statusEl.textContent = 'Ollama Ready';
-    if (dotEl) dotEl.classList.remove('offline');
+    if (statusEl) {
+      statusEl.textContent = 'Live';
+      statusEl.classList.add('status-live');
+    }
+    if (dotEl) {
+      dotEl.classList.remove('offline');
+      dotEl.classList.add('live');
+    }
     if (ramEl) {
       ramEl.textContent = `RAM 10.2/16.0 GB · Model ${activeSpec.size}`;
       ramEl.title = `System RAM: 10.2 GB / 16.0 GB (64%) · Model ${activeSpec.size} (${activeSpec.ram})`;
@@ -1400,7 +1413,15 @@ async function loadModels(showFeedback = false) {
     renderModelMenus();
 
     const statusEl = document.getElementById('sidebarRuntimeStatus');
-    if (statusEl) statusEl.textContent = 'Ollama Live';
+    const dotEl = document.getElementById('sidebarRuntimeDot');
+    if (statusEl) {
+      statusEl.textContent = 'Live';
+      statusEl.classList.add('status-live');
+    }
+    if (dotEl) {
+      dotEl.classList.remove('offline');
+      dotEl.classList.add('live');
+    }
     if (data.whisper) {
       const wEl = document.getElementById('whisperStatusLabel');
       if (wEl) {
@@ -1479,7 +1500,15 @@ async function loadModels(showFeedback = false) {
     }
   } catch (err) {
     const statusEl = document.getElementById('sidebarRuntimeStatus');
-    if (statusEl) statusEl.textContent = 'Demo Mode';
+    const dotEl = document.getElementById('sidebarRuntimeDot');
+    if (statusEl) {
+      statusEl.textContent = 'Offline';
+      statusEl.classList.remove('status-live');
+    }
+    if (dotEl) {
+      dotEl.classList.add('offline');
+      dotEl.classList.remove('live');
+    }
     const tbody = document.getElementById('installedModelsTbody');
     if (tbody) {
       tbody.innerHTML = `<tr><td colspan="4" style="color: var(--text-muted);">Start local server (<code>python3 version1/server.py</code>) to manage Ollama models.</td></tr>`;

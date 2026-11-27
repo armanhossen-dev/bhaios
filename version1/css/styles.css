@@ -1056,10 +1056,28 @@ i.bx {
 .dot-ready {
   color: var(--success);
   font-size: 7px;
+  transition: color 0.2s ease;
+}
+
+.dot-ready.live {
+  color: #10B981;
+  animation: pulseDot 1.8s infinite ease-in-out;
+}
+
+.status-live {
+  color: #10B981;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.35); }
 }
 
 .dot-ready.offline {
   color: var(--danger);
+  animation: none;
 }
 
 /* ==========================================================================
