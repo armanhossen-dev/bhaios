@@ -492,36 +492,28 @@ button {
   font-size: 16px;
 }
 
-/* Compact Utility Toolbar (Theme Toggle + Shortcuts + Quick Settings) */
-.sidebar-util-bar {
-  margin: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-}
-
+/* 3-Way Theme Switcher (Device / Light / Dark) */
 .theme-switcher-rail {
-  margin: 0;
+  margin: 0 4px;
   padding: 3px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 9px;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
 }
 
 .sidebar.collapsed .theme-switcher-rail {
+  margin: 0;
   width: 40px;
-  flex-direction: column;
+  grid-template-columns: 1fr;
 }
 
 .theme-icon-btn {
   position: relative;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  height: 30px;
+  border-radius: 7px;
   color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
@@ -542,61 +534,6 @@ button {
   background: var(--bg-card-elevated);
   color: var(--text-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.sidebar-action-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.sidebar-pill-action {
-  height: 34px;
-  padding: 0 9px;
-  border-radius: 8px;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  border: 1px solid var(--border-card);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  white-space: nowrap;
-}
-
-.sidebar-pill-action.icon-only {
-  width: 34px;
-  padding: 0;
-  font-size: 15px;
-}
-
-.sidebar-pill-action:hover,
-.sidebar-pill-action.active {
-  background: var(--bg-card-hover);
-  color: var(--text-primary);
-  border-color: var(--figma-border-strong);
-}
-
-.sidebar.collapsed .sidebar-util-bar {
-  flex-direction: column;
-  gap: 6px;
-}
-
-.sidebar.collapsed .sidebar-action-group {
-  flex-direction: column;
-}
-
-.sidebar.collapsed .sidebar-pill-action span {
-  display: none;
-}
-
-.sidebar.collapsed .sidebar-pill-action {
-  width: 40px;
-  padding: 0;
 }
 
 .sidebar-icon-btn:hover,

@@ -1763,7 +1763,7 @@ function init() {
   // Settings Popover Toggle (Screenshot 2)
   const settingsPopover = document.getElementById('settingsPopover');
   const btnSettingsPop = document.getElementById('btnSettingsPopover');
-  btnSettingsPop.addEventListener('click', (e) => {
+  btnSettingsPop?.addEventListener('click', (e) => {
     e.stopPropagation();
     const isOpen = settingsPopover.classList.toggle('open');
     btnSettingsPop.classList.toggle('active', isOpen);
@@ -1771,9 +1771,9 @@ function init() {
   });
 
   document.addEventListener('click', (e) => {
-    if (!settingsPopover.contains(e.target) && e.target !== btnSettingsPop) {
+    if (settingsPopover && !settingsPopover.contains(e.target) && e.target !== btnSettingsPop) {
       settingsPopover.classList.remove('open');
-      btnSettingsPop.classList.remove('active');
+      btnSettingsPop?.classList.remove('active');
     }
   });
 
@@ -1848,7 +1848,7 @@ function init() {
     setTimeout(() => cmdInput.focus(), 30);
   };
   document.getElementById('btnOpenCommandSearch')?.addEventListener('click', openCommandModal);
-  document.getElementById('btnSidebarHelp').addEventListener('click', openCommandModal);
+  document.getElementById('btnSidebarHelp')?.addEventListener('click', openCommandModal);
   document.getElementById('btnCloseCommand').addEventListener('click', () => cmdModal.classList.remove('open'));
   cmdInput.addEventListener('input', (e) => renderCommandResults(e.target.value));
   document.getElementById('commandResults').addEventListener('click', (e) => {
