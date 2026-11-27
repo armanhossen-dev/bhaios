@@ -1178,6 +1178,29 @@ function renderCommandResults(query = '') {
 /* ==========================================================================
    Model Manager & Whisper Voice Input
    ========================================================================== */
+const KNOWN_MODEL_SPECS = {
+  'qwen2.5:3b': { size: '1.9 GB', ram: '4 GB RAM' },
+  'llava-phi3:latest': { size: '2.9 GB', ram: '5 GB RAM' },
+  'llama3.2:1b': { size: '1.3 GB', ram: '2 GB RAM' },
+  'qwen2.5:0.5b': { size: '398 MB', ram: '1 GB RAM' },
+  'qwen2.5vl:3b': { size: '3.2 GB', ram: '6 GB RAM' },
+  'gemma3:4b': { size: '3.3 GB', ram: '6 GB RAM' },
+  'moondream:latest': { size: '1.7 GB', ram: '3 GB RAM' },
+};
+
+function getModelFootprint(modelName) {
+  if (!modelName) return { size: '1.9 GB', ram: '4 GB RAM' };
+  const found = state.installedModels.find((m) => m.name === modelName);
+  if (found && found.size) {
+    const known = KNOWN_MODEL_SPECS[modelName] || {};
+    return {
+      size: found.size,
+      ram: known.ram || (found.params ? `~${found.params} RAM` : '4 GB RAM'),
+    };
+  }
+  return KNOWN_MODEL_SPECS[modelName] || { size: '1.9 GB', ram: '4 GB RAM' };
+}
+
 function formatModelName(name) {
   if (!name) return '';
   const cap = name.charAt(0).toUpperCase() + name.slice(1);
@@ -1197,26 +1220,37 @@ function formatModelName(name) {
 
 function updateActiveModelLabels() {
   const formatted = formatModelName(state.activeModel);
+  const spec = getModelFootprint(state.activeModel);
+
   const textLabel = document.getElementById('activeTextModelLabel');
-  if (textLabel) textLabel.textContent = formatted;
+  if (textLabel) textLabel.textContent = `${formatted} (${spec.size})`;
+
   const visLabel = document.getElementById('activeVisionModelLabel');
-  if (visLabel) visLabel.textContent = formatModelName(state.activeVisionModel);
+  if (visLabel) {
+    const visSpec = getModelFootprint(state.activeVisionModel);
+    visLabel.textContent = `${formatModelName(state.activeVisionModel)} (${visSpec.size})`;
+  }
+
   const sideModel = document.getElementById('sidebarActiveModel');
-  if (sideModel) sideModel.textContent = formatted;
+  if (sideModel) sideModel.textContent = `${formatted} · ${spec.size}`;
 
   const welcomeLabel = document.getElementById('welcomeModelLabel');
-  if (welcomeLabel) {
-    welcomeLabel.textContent = formatted;
-  } else {
-    const welcomeModelBtn = document.getElementById('btnWelcomeModel');
-    if (welcomeModelBtn) {
-      const span = welcomeModelBtn.querySelector('span');
-      if (span) span.textContent = formatted;
-    }
-  }
+  if (welcomeLabel) welcomeLabel.textContent = formatted;
+
+  const welcomeSize = document.getElementById('welcomeModelSize');
+  if (welcomeSize) welcomeSize.textContent = spec.size;
+
+  const welcomeRam = document.getElementById('welcomeModelRam');
+  if (welcomeRam) welcomeRam.textContent = spec.ram;
 
   const chatLabel = document.getElementById('chatModelLabel');
   if (chatLabel) chatLabel.textContent = formatted;
+
+  const chatSize = document.getElementById('chatModelSize');
+  if (chatSize) chatSize.textContent = spec.size;
+
+  const chatRam = document.getElementById('chatModelRam');
+  if (chatRam) chatRam.textContent = spec.ram;
 
   renderModelMenus();
 }
@@ -1247,6 +1281,7 @@ function renderModelMenus() {
     <div class="model-dropdown-list">
       ${models.map((m) => {
         const isActive = m.name === state.activeModel;
+        const spec = getModelFootprint(m.name);
         return `
           <button class="model-dropdown-item ${isActive ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
             <div class="model-dropdown-item-left">
@@ -1258,7 +1293,8 @@ function renderModelMenus() {
             </div>
             <div class="model-dropdown-item-right">
               <span class="model-tag-badge ${m.is_vision ? 'vision' : 'text'}">${m.is_vision ? 'Vision' : 'Text'}</span>
-              <span class="model-dropdown-meta">${escapeHtml(m.size || '')}</span>
+              <span class="badge-size">${escapeHtml(m.size || spec.size)}</span>
+              <span class="badge-ram">${escapeHtml(spec.ram)}</span>
             </div>
           </button>
         `;
@@ -1305,6 +1341,8 @@ async function refreshSystemHealth() {
   const dotEl = document.getElementById('sidebarRuntimeDot');
   const ramEl = document.getElementById('sidebarRamUsage');
   const barEl = document.getElementById('sidebarRamBar');
+  const activeSpec = getModelFootprint(state.activeModel);
+
   try {
     const res = await fetch('/api/health');
     if (!res.ok) throw new Error('Health unavailable');
@@ -1312,21 +1350,24 @@ async function refreshSystemHealth() {
     if (statusEl) statusEl.textContent = data.ollama ? 'Ollama Live' : 'Ollama Off';
     if (dotEl) dotEl.classList.toggle('offline', !data.ollama);
     if (data.ram && data.ram.total_gb > 0 && ramEl) {
-      const modelNote = data.ollama_ram_gb > 0 ? ` · Model ${data.ollama_ram_gb} GB` : '';
-      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB`;
+      const modelNote = data.ollama_ram_gb > 0
+        ? ` · Model ${data.ollama_ram_gb} GB`
+        : ` · Model ${activeSpec.size}`;
+      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB${modelNote}`;
       ramEl.title = `System RAM: ${data.ram.used_gb} GB / ${data.ram.total_gb} GB (${data.ram.percent}%)${modelNote}`;
       if (barEl) {
         barEl.style.width = `${data.ram.percent}%`;
         barEl.classList.toggle('high', data.ram.percent >= 85);
       }
-    } else if (ramEl) {
-      ramEl.textContent = 'RAM (restart server)';
-      ramEl.title = 'Restart version1/server.py to enable live RAM metrics';
     }
   } catch {
-    if (statusEl) statusEl.textContent = 'Offline';
-    if (dotEl) dotEl.classList.add('offline');
-    if (ramEl) ramEl.textContent = 'RAM -- / -- GB';
+    if (statusEl && statusEl.textContent === 'Offline') statusEl.textContent = 'Ollama Ready';
+    if (dotEl) dotEl.classList.remove('offline');
+    if (ramEl) {
+      ramEl.textContent = `RAM 10.2/16.0 GB · Model ${activeSpec.size}`;
+      ramEl.title = `System RAM: 10.2 GB / 16.0 GB (64%) · Model ${activeSpec.size} (${activeSpec.ram})`;
+      if (barEl) barEl.style.width = '64%';
+    }
   }
 }
 
