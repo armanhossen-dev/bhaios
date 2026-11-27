@@ -4048,57 +4048,33 @@ html[data-font-size="small"] .snippet-body {
   color: var(--figma-text-primary, #f1f3fa);
 }
 
-.local-card-head i {
-  font-size: 16px;
-  color: var(--figma-status-private, #78dcaf);
-}
-
-.local-card-sub {
-  font-size: 11px;
-  color: var(--figma-tone-28, #929bad);
-  margin-top: 4px;
-}
-
-.storage-meter-track {
-  width: 100%;
-  height: 3px;
-  background: var(--figma-tone-27, #252932);
-  border-radius: 2px;
+.sidebar-privacy-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-top: 8px;
-  overflow: hidden;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-hairline);
+  font-size: 11px;
+  color: var(--figma-status-private);
 }
 
-.storage-meter-used {
-  height: 100%;
-  background: var(--figma-accent-primary, #6c7cff);
-  border-radius: 2px;
-}
-
-.sidebar-motto-bangla {
-  padding: 6px 14px 2px;
-  font-size: 12.5px;
-  color: var(--figma-tone-28, #929bad);
-  line-height: 1.5;
-}
-
-.sidebar-version-line {
-  padding: 0 14px 10px;
-  font-size: 10px;
-  color: var(--figma-tone-28, #929bad);
-  letter-spacing: 0.04em;
+.sidebar-privacy-foot i {
+  font-size: 14px;
 }
 
 /* Canonical Figma Top Bar (2:4) */
 .app-top-bar {
-  height: 64px;
-  min-height: 64px;
-  background: var(--figma-canvas, #050505);
-  border-bottom: 1px solid var(--figma-tone-27, #252932);
+  height: 58px;
+  min-height: 58px;
+  background: var(--figma-canvas);
+  border-bottom: 1px solid var(--figma-border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  padding: 0 24px;
   z-index: 20;
+  flex-shrink: 0;
 }
 
 .top-bar-left {
@@ -4109,35 +4085,43 @@ html[data-font-size="small"] .snippet-body {
 
 .top-bar-title {
   font-size: 14.5px;
-  font-weight: 500;
-  color: var(--figma-text-primary, #f1f3fa);
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  color: var(--figma-text-primary);
+  letter-spacing: -0.015em;
 }
 
 .top-bar-right {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
-.top-bar-icon-btn {
-  width: 32px;
-  height: 32px;
+.top-bar-search-pill {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  color: var(--figma-text-secondary, #9aa3b6);
+  gap: 8px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--figma-surface-elevated);
+  border: 1px solid var(--figma-border-subtle);
+  color: var(--figma-text-secondary);
+  font-size: 12px;
   transition: all 0.15s ease;
 }
 
-.top-bar-icon-btn:hover {
-  color: var(--figma-text-primary, #f1f3fa);
-  background: var(--figma-surface-elevated, #171a21);
+.top-bar-search-pill:hover {
+  color: var(--figma-text-primary);
+  border-color: var(--border-strong);
 }
 
-.top-bar-icon-btn i {
-  font-size: 18px;
+.top-bar-search-pill kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--figma-chip-bg);
+  color: var(--figma-text-secondary);
 }
 
 .privacy-badge {
@@ -4145,13 +4129,13 @@ html[data-font-size="small"] .snippet-body {
   align-items: center;
   gap: 6px;
   height: 32px;
-  padding: 0 14px;
-  background: var(--figma-status-private-surface, #10251d);
-  border-radius: 16px;
-  color: var(--figma-status-private, #78dcaf);
+  padding: 0 12px;
+  background: var(--figma-status-private-surface);
+  border-radius: 999px;
+  color: var(--figma-status-private);
   font-size: 11.5px;
   font-weight: 500;
-  border: 1px solid rgba(120, 220, 175, 0.2);
+  border: 1px solid rgba(120, 220, 175, 0.22);
 }
 
 .privacy-badge i {
@@ -4855,9 +4839,9 @@ html[data-font-size="small"] .snippet-body {
   color: var(--figma-text-secondary, #9aa3b6);
 }
 
-/* Unified Compact Composer Bar (Matching User Screenshot 5) */
+/* Unified Compact Composer Bar — 2-row spacious edit & clean tools */
 .unified-composer-wrap {
-  padding: 10px 16px 12px;
+  padding: 12px 18px 14px;
   background: var(--figma-surface-base);
   border-top: 1px solid var(--figma-border-subtle);
   flex-shrink: 0;
@@ -4870,14 +4854,15 @@ html[data-font-size="small"] .snippet-body {
   gap: 8px;
   background: var(--figma-surface-elevated);
   border: 1px solid var(--figma-border-subtle);
-  border-radius: 22px;
-  padding: 6px 10px;
-  transition: all 0.15s ease;
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .unified-composer-bar:focus-within {
-  border-color: rgba(108, 124, 255, 0.45);
-  box-shadow: 0 0 0 2px rgba(108, 124, 255, 0.12);
+  border-color: var(--figma-accent-primary);
+  box-shadow: 0 0 0 3px rgba(108, 124, 255, 0.14);
 }
 
 .composer-icon-btn {
@@ -4902,26 +4887,30 @@ html[data-font-size="small"] .snippet-body {
 }
 
 .composer-auto-textarea {
-  flex: 1 1 160px;
-  min-width: 120px;
+  flex: 1 1 100%;
+  order: -1;
+  width: 100%;
+  min-width: 0;
   background: transparent;
   border: none;
+  border-bottom: 1px solid var(--figma-border-subtle);
   outline: none;
   color: var(--figma-text-primary);
   font-family: var(--font-bangla);
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 14.5px;
+  line-height: 1.5;
   resize: none;
-  max-height: 120px;
-  padding: 4px 0;
+  max-height: 140px;
+  padding: 2px 4px 8px;
 }
 
 .composer-embedded-tools {
   display: flex;
+  flex: 1;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: 6px;
-  margin-left: auto;
   max-width: 100%;
 }
 
@@ -5109,13 +5098,19 @@ html[data-font-size="small"] .snippet-body {
 }
 
 .math-notebook-paper {
-  background: var(--figma-paper-bg);
+  background-color: var(--figma-paper-bg);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 31px,
+    rgba(108, 124, 255, 0.08) 32px
+  );
   border: 1px solid var(--figma-paper-border);
-  border-radius: 10px;
-  padding: 18px 20px;
+  border-radius: 12px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .math-line {

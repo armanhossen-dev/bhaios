@@ -180,10 +180,10 @@
   --figma-chip-bg: rgba(15, 23, 42, 0.05);
   --figma-chip-hover: rgba(15, 23, 42, 0.1);
 
-  --pill-guide-bg: #FF5C16;
-  --pill-guide-border: #FF5C16;
-  --pill-guide-text: #0A0A0A;
-  --cta-bg: #FF5C16;
-  --cta-text: #0A0A0A;
-  --cta-hover: #E64E0E;
+  --pill-guide-bg: rgba(76, 90, 201, 0.12);
+  --pill-guide-border: rgba(76, 90, 201, 0.28);
+  --pill-guide-text: #4C5AC9;
+  --cta-bg: #4C5AC9;
+  --cta-text: #FFFFFF;
+  --cta-hover: #3E4CB8;
 }

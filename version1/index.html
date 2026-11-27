@@ -158,21 +158,6 @@
           </button>
         </div>
 
-        <!-- Canonical Figma Local Storage Card & Motto -->
-        <div class="local-storage-card">
-          <div class="local-card-head">
-            <i class="bx bx-shield-quarter"></i>
-            <span>Only on this device</span>
-          </div>
-          <div class="local-card-sub">No uploads. No tracking.</div>
-          <div class="storage-meter-track">
-            <div class="storage-meter-used" style="width: 30%;"></div>
-          </div>
-        </div>
-
-        <div class="sidebar-motto-bangla bangla">তোমার শেখা, তোমার নিয়ন্ত্রণে।</div>
-        <div class="sidebar-version-line">BhaiOS 0.9 · Local-first</div>
-
         <div class="device-status">
           <div class="device-row">
             <span class="model-name" id="sidebarActiveModel">qwen2.5:3b</span>
@@ -188,6 +173,10 @@
           </div>
           <div class="ram-bar" aria-hidden="true">
             <div class="ram-bar-fill" id="sidebarRamBar"></div>
+          </div>
+          <div class="sidebar-privacy-foot">
+            <i class="bx bx-shield-quarter"></i>
+            <span>On-device · BhaiOS 0.9</span>
           </div>
         </div>
       </div>
@@ -232,12 +221,14 @@
           <span class="top-bar-title" id="topBarTitle">Your study space</span>
         </div>
         <div class="top-bar-right">
-          <button class="top-bar-icon-btn" id="btnTopSearch" type="button" title="Search (⌘K)" aria-label="Search">
+          <button class="top-bar-search-pill" id="btnTopSearch" type="button" title="Search (⌘K)" aria-label="Search">
             <i class="bx bx-search"></i>
+            <span>Search…</span>
+            <kbd>⌘K</kbd>
           </button>
           <div class="privacy-badge">
             <i class="bx bx-shield-quarter"></i>
-            <span>Offline - Private</span>
+            <span>Offline · Private</span>
           </div>
           <div class="model-status-chip" id="topModelStatusChip">
             <span class="ready-dot"></span>
