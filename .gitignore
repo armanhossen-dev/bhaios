@@ -26,3 +26,7 @@ data/
 .DS_Store
 .vscode/
 .idea/
+
+version2/src-tauri/target/
+version2/node_modules/
+version2/data/
