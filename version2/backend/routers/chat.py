@@ -296,6 +296,8 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
         ) + "\n"
 
         full_response = ""
+        thinking_text = ""
+        in_think_block = False
         total_tokens = 0
         try:
             async for chunk in stream_with_fallback(
@@ -306,7 +308,43 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
                 delta = chunk.get("message", {}).get("content", "")
                 if delta:
                     full_response += delta
-                    yield json.dumps({"type": "token", "content": delta}) + "\n"
+
+                    # Parse <think>...</think> tags from streamed tokens
+                    # We track whether we're inside a think block and emit
+                    # the right event type for each delta.
+                    buf = delta
+                    while buf:
+                        if not in_think_block:
+                            # Look for <think> opening tag
+                            open_idx = buf.lower().find("<think>")
+                            if open_idx != -1:
+                                # Emit any content before the tag as normal token
+                                before = buf[:open_idx]
+                                if before:
+                                    yield json.dumps({"type": "token", "content": before}) + "\n"
+                                in_think_block = True
+                                buf = buf[open_idx + 7:]  # skip past <think>
+                            else:
+                                # No think tag in this chunk — emit as token
+                                yield json.dumps({"type": "token", "content": buf}) + "\n"
+                                buf = ""
+                        else:
+                            # Inside think block — look for </think> closing tag
+                            close_idx = buf.lower().find("</think>")
+                            if close_idx != -1:
+                                # Emit thinking content before the closing tag
+                                think_part = buf[:close_idx]
+                                if think_part:
+                                    thinking_text += think_part
+                                    yield json.dumps({"type": "thinking", "content": think_part}) + "\n"
+                                in_think_block = False
+                                buf = buf[close_idx + 8:]  # skip past </think>
+                            else:
+                                # Still inside — all of buf is thinking
+                                thinking_text += buf
+                                yield json.dumps({"type": "thinking", "content": buf}) + "\n"
+                                buf = ""
+
                 if chunk.get("done"):
                     total_tokens = int(chunk.get("eval_count", 0) or 0) + int(
                         chunk.get("prompt_eval_count", 0) or 0
@@ -315,7 +353,9 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
             yield json.dumps({"type": "error", "error": str(exc)}) + "\n"
             return
 
-        cleaned_response = clean_bangla_text(full_response)
+        # Strip <think>...</think> blocks from the display content
+        stripped = re.sub(r"<think>[\s\S]*?</think>", "", full_response, flags=re.IGNORECASE).strip()
+        cleaned_response = clean_bangla_text(stripped)
         hints = parse_hint_ladder(cleaned_response) if req.mode == "guide" else None
         display_content = strip_hint_tags(cleaned_response) if (req.mode != "guide" or hints is None) else cleaned_response
         asst_msg_id = new_id("msg")
@@ -324,13 +364,14 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
         with db_session() as conn:
             conn.execute(
                 """
-                INSERT INTO messages (id, chat_id, role, content, hints_json, citations_json, tokens, created_at)
-                VALUES (?, ?, 'assistant', ?, ?, ?, ?, ?)
+                INSERT INTO messages (id, chat_id, role, content, thinking, hints_json, citations_json, tokens, created_at)
+                VALUES (?, ?, 'assistant', ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     asst_msg_id,
                     chat_id,
                     display_content,
+                    thinking_text or "",
                     json.dumps(hints) if hints else None,
                     json.dumps(citations),
                     total_tokens,
@@ -348,6 +389,7 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
                     "chat_id": chat_id,
                     "role": "assistant",
                     "content": display_content,
+                    "thinking": thinking_text or "",
                     "hints": hints,
                     "citations": citations,
                     "tokens": total_tokens,

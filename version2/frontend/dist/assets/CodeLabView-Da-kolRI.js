@@ -1,4 +1,4 @@
-import{u as B,r as s,j as e,c as O,B as j,P as o,M as _,a as y}from"./index-CJzmdkRc.js";const d={python:`def binary_search(arr, target):
+import{u as B,r as s,j as e,c as O,B as j,P as o,M as _,a as y}from"./index-DV7Mo-le.js";const d={python:`def binary_search(arr, target):
     lo, hi = 0, len(arr) - 1
     while lo <= hi:
         mid = (lo + hi) // 2

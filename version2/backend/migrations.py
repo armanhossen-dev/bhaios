@@ -306,3 +306,10 @@ def run_migrations(conn: sqlite3.Connection) -> None:
             "INSERT INTO schema_migrations (version, name, applied_at) VALUES (4, 'v3_agent_audit_and_approvals', ?)",
             (time.time(),),
         )
+
+    if 5 not in applied:
+        _add_column_if_missing(conn, "messages", "thinking", "TEXT DEFAULT ''")
+        conn.execute(
+            "INSERT INTO schema_migrations (version, name, applied_at) VALUES (5, 'v3_message_thinking', ?)",
+            (time.time(),),
+        )

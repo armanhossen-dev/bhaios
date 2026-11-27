@@ -50,6 +50,7 @@ export interface ChatMessage {
   chat_id: string;
   role: "user" | "assistant";
   content: string;
+  thinking?: string;
   hints?: HintLadderData | null;
   citations?: Citation[];
   tokens: number;

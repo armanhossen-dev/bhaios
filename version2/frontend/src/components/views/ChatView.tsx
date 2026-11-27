@@ -5,7 +5,6 @@ import type { ChatMessage, Citation, HintLadderData, IntelligenceMode, RoutingMe
 import { Composer } from "../Composer";
 import { HintLadder } from "../HintLadder";
 import { MarkdownMath } from "../MarkdownMath";
-import { Badge } from "../ui/Primitives";
 
 function extractHintsClient(text: string): HintLadderData | null {
   if (!/\[\/?(NUDGE|HINT|SCAFFOLD)\]/i.test(text)) return null;
@@ -41,6 +40,8 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
     agentMode,
     answerPolicy,
     setAnswerPolicy,
+    showThinking,
+    setShowThinking,
     activeCourseId,
     activeCourse,
     activeDoc,
@@ -54,6 +55,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streamingText, setStreamingText] = useState("");
+  const [streamingThinking, setStreamingThinking] = useState("");
   const [streamingCitations, setStreamingCitations] = useState<Citation[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -94,6 +96,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
     setMessages((prev) => [...prev, tempUserMsg]);
     setIsStreaming(true);
     setStreamingText("");
+    setStreamingThinking("");
     setStreamingCitations([]);
 
     const controller = new AbortController();
@@ -144,6 +147,8 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
             }
             if (evt.citations) setStreamingCitations(evt.citations);
             if (evt.routing) setRoutingMeta(evt.routing);
+          } else if (evt.type === "thinking") {
+            setStreamingThinking((prev) => prev + evt.content);
           } else if (evt.type === "token") {
             setStreamingText((prev) => prev + evt.content);
           } else if (evt.type === "error") {
@@ -151,6 +156,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
           } else if (evt.type === "done" && evt.message) {
             setMessages((prev) => [...prev, evt.message]);
             setStreamingText("");
+            setStreamingThinking("");
             addSessionTokens(evt.message.tokens || 0);
             refreshChats();
           }
@@ -180,20 +186,16 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
-      {/* Compact Grounding, Model Router & Local Privacy Header */}
-      <div className="px-4 md:px-6 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/50 flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
+      {/* Clean compact header */}
+      <div className="px-4 md:px-6 py-1.5 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/50 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
           {activeCourse && (
-            <Badge tone="blue" className="font-mono">
+            <span className="text-[11px] font-mono font-semibold text-[var(--accent-blue)]">
               {activeCourse.code}
-            </Badge>
+            </span>
           )}
-          <Badge tone="neutral">{agentMode.replace("_", " ")}</Badge>
-          <Badge tone="emerald">
-            <i className="bx bx-shield-quarter text-xs" />
-            LOCAL MODE
-          </Badge>
-          <div className="flex items-center bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-md p-0.5 text-[11px]">
+          {/* Model selector pill group */}
+          <div className="flex items-center bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-lg p-0.5 text-[11px]">
             {(
               [
                 { id: "auto", label: "Auto" },
@@ -206,9 +208,9 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
                 key={opt.id}
                 type="button"
                 onClick={() => setIntelligenceMode(opt.id)}
-                className={`px-2 py-0.5 rounded font-semibold cursor-pointer ${
+                className={`px-2 py-0.5 rounded-md font-medium cursor-pointer transition ${
                   intelligenceMode === opt.id
-                    ? "bg-[var(--accent-blue)] text-white"
+                    ? "bg-[var(--accent-blue)] text-white shadow-sm"
                     : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                 }`}
               >
@@ -218,42 +220,62 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-[11px]">
+        {/* Right side: icon toggles */}
+        <div className="flex items-center gap-1 text-[11px]">
           {routingMeta && (
             <button
               type="button"
               onClick={() => setActivityExpanded((v) => !v)}
-              className="px-2 py-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--accent-blue)] cursor-pointer font-mono"
+              title={`${routingMeta.selected_model} — ${activityExpanded ? "Hide" : "Show"} routing details`}
+              className={`p-1.5 rounded-md border cursor-pointer transition ${
+                activityExpanded
+                  ? "border-[var(--accent-blue)]/40 bg-[var(--accent-blue)]/10 text-[var(--accent-blue)]"
+                  : "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+              }`}
             >
-              {routingMeta.selected_model} · {activityExpanded ? "Hide Activity" : "Activity"}
+              <i className="bx bx-scatter-chart text-sm" />
             </button>
           )}
           <button
             type="button"
-            onClick={() => setAnswerPolicy(answerPolicy === "source_only" ? "balanced" : "source_only")}
-            className={`px-2.5 py-1 rounded-md border font-medium cursor-pointer ${
-              answerPolicy === "source_only"
-                ? "border-emerald-500/40 bg-emerald-500/12 text-emerald-400"
-                : "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+            onClick={() => setShowThinking(!showThinking)}
+            title={showThinking ? "Hide model thinking" : "Show model thinking"}
+            className={`p-1.5 rounded-md border cursor-pointer transition ${
+              showThinking
+                ? "border-purple-500/40 bg-purple-500/10 text-purple-400"
+                : "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
             }`}
           >
-            {answerPolicy === "source_only" ? "Source-Only" : "Balanced"}
+            <i className="bx bx-brain text-sm" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setAnswerPolicy(answerPolicy === "source_only" ? "balanced" : "source_only")}
+            title={answerPolicy === "source_only" ? "Source-Only mode (switch to Balanced)" : "Balanced mode (switch to Source-Only)"}
+            className={`p-1.5 rounded-md border cursor-pointer transition ${
+              answerPolicy === "source_only"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
+                : "border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+            }`}
+          >
+            <i className={`bx ${answerPolicy === "source_only" ? "bx-book-bookmark" : "bx-equalizer"} text-sm`} />
           </button>
         </div>
       </div>
 
+      {/* Expandable activity detail — only when toggled */}
       {activityExpanded && routingMeta && (
-        <div className="px-4 md:px-6 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-base)] text-[11px] flex flex-wrap items-center justify-between gap-2">
+        <div className="px-4 md:px-6 py-1.5 border-b border-[var(--border-subtle)] bg-[var(--bg-base)] text-[11px] flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 flex-wrap text-[var(--text-secondary)]">
+            <span className="font-mono font-semibold text-[var(--text-primary)]">{routingMeta.selected_model}</span>
             {(routingMeta.activity_steps || []).map((st, idx) => (
               <span key={idx} className="inline-flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span className="w-1 h-1 rounded-full bg-emerald-400" />
                 {st}
               </span>
             ))}
-            <span className="text-emerald-400 font-semibold">· {isStreaming ? "Processing" : "Completed"}</span>
           </div>
-          <span className="font-mono text-[var(--text-muted)] truncate">{routingMeta.reason}</span>
+          <span className="font-mono text-[var(--text-muted)] truncate max-w-[200px]">{routingMeta.reason}</span>
         </div>
       )}
 
@@ -304,6 +326,19 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
                   </div>
                 ) : (
                   <div className="max-w-[92%] rounded-xl rounded-tl-sm bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-4 py-3 space-y-2.5">
+                    {/* Thinking block (collapsible) */}
+                    {showThinking && msg.thinking && msg.thinking.trim() && (
+                      <details className="group/think">
+                        <summary className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)] cursor-pointer select-none hover:text-[var(--text-secondary)] transition">
+                          <i className="bx bx-brain text-sm text-purple-400" />
+                          <span>Thinking</span>
+                          <i className="bx bx-chevron-right text-xs transition-transform group-open/think:rotate-90" />
+                        </summary>
+                        <div className="mt-1.5 pl-3 border-l-2 border-purple-500/20 text-[12px] text-[var(--text-muted)] leading-relaxed whitespace-pre-wrap max-h-60 overflow-y-auto">
+                          {msg.thinking}
+                        </div>
+                      </details>
+                    )}
                     {msg.citations && msg.citations.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {msg.citations.map((cit, i) => (
@@ -357,6 +392,19 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
             {isStreaming && (
               <div className="flex justify-start">
                 <div className="max-w-[92%] rounded-xl rounded-tl-sm bg-[var(--bg-surface)] border border-[var(--border-subtle)] px-4 py-3 space-y-2">
+                  {/* Live thinking stream */}
+                  {showThinking && streamingThinking && (
+                    <details open className="group/think">
+                      <summary className="flex items-center gap-1.5 text-[11px] font-medium text-purple-400 cursor-pointer select-none">
+                        <i className="bx bx-brain text-sm animate-pulse" />
+                        <span>Thinking…</span>
+                        <i className="bx bx-chevron-right text-xs transition-transform group-open/think:rotate-90" />
+                      </summary>
+                      <div className="mt-1.5 pl-3 border-l-2 border-purple-500/30 text-[12px] text-[var(--text-muted)] leading-relaxed whitespace-pre-wrap max-h-48 overflow-y-auto">
+                        {streamingThinking}
+                      </div>
+                    </details>
+                  )}
                   {streamingCitations.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {streamingCitations.map((cit, i) => (

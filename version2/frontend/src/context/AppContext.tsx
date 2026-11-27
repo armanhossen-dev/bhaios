@@ -66,6 +66,8 @@ interface AppContextValue {
   setAgentMode: (m: AgentMode) => void;
   answerPolicy: AnswerPolicy;
   setAnswerPolicy: (p: AnswerPolicy) => void;
+  showThinking: boolean;
+  setShowThinking: (s: boolean) => void;
   health: HealthTelemetry | null;
   installedModels: InstalledModel[];
   suggestedModels: SuggestedModel[];
@@ -120,6 +122,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [studyMode, setStudyMode] = useState<StudyMode>("guide");
   const [agentMode, setAgentMode] = useState<AgentMode>("tutor");
   const [answerPolicy, setAnswerPolicy] = useState<AnswerPolicy>("balanced");
+  const [showThinking, setShowThinkingState] = useState<boolean>(
+    () => localStorage.getItem("bhaios_show_thinking") === "true"
+  );
 
   const [health, setHealth] = useState<HealthTelemetry | null>(null);
   const [installedModels, setInstalledModels] = useState<InstalledModel[]>([]);
@@ -170,6 +175,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIntelligenceModeState(m);
     localStorage.setItem("bhaios_intel_mode", m);
     api.saveSettings({ ai_intelligence_mode: m }).catch(() => {});
+  };
+
+  const setShowThinking = (s: boolean) => {
+    setShowThinkingState(s);
+    localStorage.setItem("bhaios_show_thinking", s ? "true" : "false");
   };
 
   const t = useCallback(
@@ -428,6 +438,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setAgentMode,
         answerPolicy,
         setAnswerPolicy,
+        showThinking,
+        setShowThinking,
         health,
         installedModels,
         suggestedModels,
