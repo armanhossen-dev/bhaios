@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+:root,
+[data-theme="dark"] {
+  --bg-base: #0f1115;
+  --bg-surface: #161922;
+  --bg-elevated: #1c202c;
+  --border-subtle: #2d3344;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-gold: #f59e0b;
+  --accent-emerald: #10b981;
+  --accent-red: #ef4444;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+[data-theme="light"] {
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --border-subtle: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-blue: #3b82f6;
+  --accent-gold: #d97706;
+  --accent-emerald: #10b981;
+  --accent-red: #ef4444;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+[data-font-size="small"] {
+  font-size: 14px;
+}
+[data-font-size="medium"] {
+  font-size: 15px;
+}
+[data-font-size="large"] {
+  font-size: 17px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: "Inter", "Hind Siliguri", "Noto Sans Bengali", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+code,
+pre,
+.font-mono {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+}
+
+/* Custom sleek scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Markdown & KaTeX polish */
+.prose-bhaios p {
+  margin: 0.45rem 0;
+  line-height: 1.65;
+}
+.prose-bhaios ul,
+.prose-bhaios ol {
+  margin: 0.45rem 0;
+  padding-left: 1.25rem;
+}
+.prose-bhaios li {
+  margin: 0.2rem 0;
+}
+.prose-bhaios pre {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  font-size: 0.85em;
+}
+.prose-bhaios code {
+  background: var(--bg-elevated);
+  padding: 0.12rem 0.35rem;
+  border-radius: 5px;
+  font-size: 0.88em;
+}
+.prose-bhaios pre code {
+  background: transparent;
+  padding: 0;
+}
