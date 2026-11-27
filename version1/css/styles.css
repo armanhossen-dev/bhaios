@@ -1757,7 +1757,67 @@ i.bx {
   margin-top: 2px;
 }
 
-/* Bottom Pill Composer (Screenshot 1) */
+/* Auto-expanding Composer Textarea */
+.composer-textarea {
+  width: 100%;
+  min-height: 28px;
+  max-height: 170px;
+  resize: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  padding: 2px 2px;
+  margin: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.composer-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* Chat Active Composer Box */
+.chat-composer-box {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 18px;
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.chat-composer-box:focus-within {
+  border-color: var(--border-strong);
+}
+
+.chat-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chat-tools-left,
+.chat-tools-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#chatModelWrap .badge-ram,
+#chatModelWrap .badge-local {
+  display: none;
+}
+
+/* Bottom Pill Composer Fallback */
 .composer-wrap {
   margin-top: 8px;
 }

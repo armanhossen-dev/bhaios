@@ -274,7 +274,6 @@ function renderChat() {
           </div>
           ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
           ${msg.hintChip ? `<span class="hint-chip">${msg.hintChip}</span>` : ''}
-          ${msg.sourceId ? `<button class="link-source" data-source="${msg.sourceId}" type="button">Show source <i class="bx bx-link-external"></i></button>` : ''}
         </div>
       `;
       container.appendChild(group);
@@ -557,6 +556,8 @@ async function sendChatMessage(customText, options = {}) {
 
   input.value = '';
   welcomeInput.value = '';
+  if (input) input.style.height = 'auto';
+  if (welcomeInput) welcomeInput.style.height = 'auto';
   state.isGenerating = true;
   state.abortController = new AbortController();
   syncSendButtons();
@@ -1838,11 +1839,30 @@ function init() {
     if (state.isGenerating) stopChatGeneration();
     else sendChatMessage();
   });
-  document.getElementById('welcomeInput').addEventListener('input', syncSendButtons);
-  document.getElementById('welcomeInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendChatMessage();
-  });
-  document.getElementById('chatInput').addEventListener('input', syncSendButtons);
+  const setupAutoResizeTextarea = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const resize = () => {
+      el.style.height = 'auto';
+      const maxH = 170;
+      const newH = Math.min(el.scrollHeight, maxH);
+      el.style.height = `${Math.max(28, newH)}px`;
+    };
+    el.addEventListener('input', () => {
+      resize();
+      syncSendButtons();
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+        el.style.height = 'auto';
+      }
+    });
+  };
+
+  setupAutoResizeTextarea('welcomeInput');
+  setupAutoResizeTextarea('chatInput');
   document.getElementById('btnWelcomeLocal')?.addEventListener('click', () => {
     showToast(`100% Local & Offline · ${formatModelName(state.activeModel)}`);
   });
@@ -2038,9 +2058,6 @@ function init() {
   document.getElementById('btnSend').addEventListener('click', () => {
     if (state.isGenerating) stopChatGeneration();
     else sendChatMessage();
-  });
-  document.getElementById('chatInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') sendChatMessage();
   });
 
   // Right Panel Close & Reopen (with state persistence)

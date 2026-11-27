@@ -215,7 +215,7 @@
               <h2 class="welcome-greeting" id="welcomeGreeting">Hi Arman, How can I help you today?</h2>
 
               <div class="welcome-composer">
-                <input type="text" class="composer-input" id="welcomeInput" placeholder="Ask anything" />
+                <textarea class="composer-textarea" id="welcomeInput" rows="1" placeholder="Ask anything"></textarea>
                 <div class="welcome-composer-footer">
                   <div class="composer-tools-left">
                     <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline (Click to select model)">
@@ -282,57 +282,61 @@
               <div class="chat-messages-scroll" id="chatMessages"></div>
 
               <div class="composer-wrap">
-                <div class="pill-composer">
-                  <button class="pill-composer-attach" id="btnChatAttach" type="button" title="Attach document">
-                    <i class="bx bx-plus"></i>
-                  </button>
-                  <input type="text" class="composer-input" id="chatInput" placeholder="Ask anything" />
-                  <div class="pill-composer-right">
-                    <div class="model-dropdown-wrap" id="chatModelWrap">
-                      <button class="model-select-pill" id="btnChatModel" type="button" aria-haspopup="true" aria-expanded="false" title="Select Ollama model">
-                        <i class="bx bx-chip"></i>
-                        <span id="chatModelLabel">Qwen2.5 · 3B</span>
-                        <span class="badge-size" id="chatModelSize">1.9 GB</span>
-                        <span class="badge-ram" id="chatModelRam">4 GB RAM</span>
-                        <span class="badge-local">LOCAL</span>
-                        <i class="bx bx-chevron-down"></i>
+                <div class="chat-composer-box" id="pillComposer">
+                  <textarea class="composer-textarea" id="chatInput" rows="1" placeholder="Ask anything"></textarea>
+                  <div class="chat-composer-footer">
+                    <div class="chat-tools-left">
+                      <button class="pill-composer-attach" id="btnChatAttach" type="button" title="Attach document">
+                        <i class="bx bx-plus"></i>
                       </button>
-                      <div class="model-dropdown-menu" id="chatModelMenu" role="menu"></div>
-                    </div>
-                    <div class="mode-dropdown-wrap" id="chatModeWrap">
-                      <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-compass mode-icon"></i>
-                        <span class="mode-label" id="effortLabel">Guide Mode</span>
-                        <i class="bx bx-chevron-down"></i>
-                      </button>
-                      <div class="mode-dropdown-menu" role="menu">
-                        <button class="mode-dropdown-item active" data-set-mode="guide" type="button">
-                          <i class="bx bx-compass"></i>
-                          <div>
-                            <div class="mode-item-title">Guide Mode</div>
-                            <div class="mode-item-sub">Socratic step-by-step guidance</div>
-                          </div>
+                      <div class="model-dropdown-wrap" id="chatModelWrap">
+                        <button class="model-select-pill" id="btnChatModel" type="button" aria-haspopup="true" aria-expanded="false" title="Select Ollama model">
+                          <i class="bx bx-chip"></i>
+                          <span id="chatModelLabel">Qwen2.5 · 3B</span>
+                          <span class="badge-size" id="chatModelSize">1.9 GB</span>
+                          <span class="badge-ram" id="chatModelRam">4 GB RAM</span>
+                          <span class="badge-local">LOCAL</span>
+                          <i class="bx bx-chevron-down"></i>
                         </button>
-                        <button class="mode-dropdown-item" data-set-mode="answer" type="button">
-                          <i class="bx bx-bolt-circle"></i>
-                          <div>
-                            <div class="mode-item-title">Answer Mode</div>
-                            <div class="mode-item-sub">Direct, complete answers</div>
-                          </div>
+                        <div class="model-dropdown-menu" id="chatModelMenu" role="menu"></div>
+                      </div>
+                      <div class="mode-dropdown-wrap" id="chatModeWrap">
+                        <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
+                          <i class="bx bx-compass mode-icon"></i>
+                          <span class="mode-label" id="effortLabel">Guide Mode</span>
+                          <i class="bx bx-chevron-down"></i>
                         </button>
+                        <div class="mode-dropdown-menu" role="menu">
+                          <button class="mode-dropdown-item active" data-set-mode="guide" type="button">
+                            <i class="bx bx-compass"></i>
+                            <div>
+                              <div class="mode-item-title">Guide Mode</div>
+                              <div class="mode-item-sub">Socratic step-by-step guidance</div>
+                            </div>
+                          </button>
+                          <button class="mode-dropdown-item" data-set-mode="answer" type="button">
+                            <i class="bx bx-bolt-circle"></i>
+                            <div>
+                              <div class="mode-item-title">Answer Mode</div>
+                              <div class="mode-item-sub">Direct, complete answers</div>
+                            </div>
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button"
-                      title="Whisper voice language">
-                      <span>Auto</span>
-                    </button>
-                    <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button"
-                      title="Voice input (Whisper)">
-                      <i class="bx bx-microphone"></i>
-                    </button>
-                    <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
-                      <i class="bx bx-up-arrow-alt"></i>
-                    </button>
+                    <div class="chat-tools-right">
+                      <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button"
+                        title="Whisper voice language">
+                        <span>Auto</span>
+                      </button>
+                      <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button"
+                        title="Voice input (Whisper)">
+                        <i class="bx bx-microphone"></i>
+                      </button>
+                      <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
+                        <i class="bx bx-up-arrow-alt"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div class="composer-disclaimer">
