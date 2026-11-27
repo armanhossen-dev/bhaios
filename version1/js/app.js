@@ -40,9 +40,9 @@ const state = {
   attachedImageBase64: null,
   attachedFilename: null,
   chatStarted: false,
-  messages: [...INITIAL_MESSAGES],
-  snippets: [...RETRIEVED_SNIPPETS],
-  documents: [...DOCUMENTS_DATA],
+  messages: [],
+  snippets: [],
+  documents: [],
   tasks: JSON.parse(localStorage.getItem('bhaios_tasks') || '[]'),
   taskFilter: 'all',
   calendarAnchor: new Date(),
@@ -64,7 +64,7 @@ const state = {
 
 const SCREEN_TITLES = {
   home: 'Your study space',
-  chat: 'Guide / Calculus II',
+  chat: 'Study Session',
   documents: 'Documents · Vision linked',
   tasks: 'Tasks & Schedule',
   progress: 'Weekly Review',
@@ -238,57 +238,109 @@ function switchScreen(screenName) {
 }
 
 /* ==========================================================================
-   Chat Screen (Welcome State + Active Pill/Prose Conversation)
+   Chat Screen (Clean Starting State + Active Dynamic Conversation)
    ========================================================================== */
 function renderChat() {
-  const welcomeEl = document.getElementById('chatWelcome');
-  const activeEl = document.getElementById('chatActiveWrap');
+  const container = document.getElementById('chatMessages');
+  if (!container) return;
 
-  if (!state.chatStarted) {
-    if (welcomeEl) welcomeEl.style.display = 'flex';
-    if (activeEl) activeEl.style.display = 'none';
+  if (!state.messages || state.messages.length === 0) {
+    container.innerHTML = `
+      <div class="chat-empty-state" id="chatEmptyState">
+        <div class="empty-state-icon">
+          <i class="bx bx-compass"></i>
+        </div>
+        <h3 class="empty-state-title">How can I help you learn today?</h3>
+        <p class="empty-state-subtitle">Ask any question, share a problem, or attach study notes.</p>
+        <div class="empty-state-suggestions">
+          <button class="empty-suggest-chip" data-prompt="Help me understand Calculus Integration by Parts step-by-step" type="button">
+            <i class="bx bx-math"></i> Integration by Parts
+          </button>
+          <button class="empty-suggest-chip" data-prompt="Explain Newton's Laws of Motion with simple examples" type="button">
+            <i class="bx bx-bulb"></i> Newton's Laws
+          </button>
+          <button class="empty-suggest-chip" data-prompt="Give me a quick quiz on Thermodynamics" type="button">
+            <i class="bx bx-help-circle"></i> Quick Quiz
+          </button>
+        </div>
+      </div>
+    `;
+    renderCompanion();
     return;
   }
 
-  if (welcomeEl) welcomeEl.style.display = 'none';
-  if (activeEl) activeEl.style.display = 'flex';
-
-  const container = document.getElementById('chatMessages');
-  if (!container) return;
   container.innerHTML = '';
 
   state.messages.forEach((msg) => {
-    if (msg.role === 'student') {
+    if (msg.role === 'student' || msg.role === 'user') {
       const group = document.createElement('div');
-      group.className = 'msg-user-group';
-      const text = msg.bangla && msg.english ? `${msg.bangla} — ${msg.english}` : msg.bangla || msg.english;
+      group.className = 'guide-message student-msg';
+      const text = msg.bangla && msg.english ? `${msg.bangla} — ${msg.english}` : msg.bangla || msg.english || msg.text || '';
+      const hasBn = /[\u0980-\u09FF]/.test(text);
       group.innerHTML = `
-        <div class="msg-user-pill ${msg.bangla ? 'bangla' : ''}">${text}</div>
-        <div class="msg-actions">
-          <button class="msg-action-btn copy-msg-btn" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
-          <button class="msg-action-btn edit-msg-btn" data-msg-id="${msg.id}" data-text="${text.replace(/"/g, '&quot;')}" type="button" title="Edit"><i class="bx bx-pencil"></i></button>
-          ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
+        <div class="msg-author-time">YOU · ${msg.time || 'Just now'}</div>
+        <div class="student-question-card">
+          <p class="student-q-text ${hasBn ? 'bangla' : ''}">${escapeHtml(text)}</p>
+          ${msg.docRef ? `
+            <div class="doc-ref-chip">
+              <i class="bx bx-book-open"></i>
+              <span>${escapeHtml(msg.docRef)}</span>
+            </div>
+          ` : ''}
         </div>
       `;
       container.appendChild(group);
     } else if (msg.role === 'assistant' || msg.role === 'assistant-inline') {
       const group = document.createElement('div');
-      group.className = 'msg-assistant-group';
-      const paragraphs = [msg.bangla, msg.english].filter(Boolean);
+      group.className = 'guide-message assistant-msg';
+      const paragraphs = [msg.bangla, msg.english, msg.text].filter(Boolean);
       const hasBn = paragraphs.some((p) => /[\u0980-\u09FF]/.test(p));
       const copyText = paragraphs.join('\n\n').replace(/"/g, '&quot;');
+
+      let hintsHtml = '';
+      if (msg.hints && Array.isArray(msg.hints) && msg.hints.length) {
+        hintsHtml = `
+          <div class="hint-ladder-card">
+            <div class="hint-ladder-head">
+              <span class="hint-ladder-title">Hint ladder</span>
+              <span class="hint-ladder-counter">${msg.hints.filter((h) => h.revealed).length} of ${msg.hints.length} revealed</span>
+            </div>
+            ${msg.hints
+              .map(
+                (h, i) => `
+              <div class="hint-step ${h.revealed ? 'revealed' : 'locked'}">
+                <div class="hint-step-num">0${i + 1}</div>
+                <div class="hint-step-body">
+                  <div class="hint-step-type">${escapeHtml(h.type || 'Hint')}</div>
+                  <div class="hint-step-text ${/[\u0980-\u09FF]/.test(h.text) ? 'bangla' : ''}" style="${h.revealed ? '' : 'display: none;'}">
+                    ${escapeHtml(h.text)}
+                  </div>
+                </div>
+                ${!h.revealed ? `<i class="bx bx-lock-alt hint-lock-icon"></i>` : ''}
+              </div>
+            `
+              )
+              .join('')}
+          </div>
+        `;
+      }
+
       group.innerHTML = `
-        <div class="msg-assistant-prose ${hasBn ? 'bangla' : ''}">
-          ${paragraphs.map((p) => `<p>${p}</p>`).join('')}
+        <div class="assistant-author-row">
+          <span class="assistant-bhai-mark">ভাই</span>
+          <span class="assistant-name">BhaiOS</span>
         </div>
-        <div class="msg-assistant-meta">
+        <div class="assistant-lead-text ${hasBn ? 'bangla' : ''}">
+          ${paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('')}
+        </div>
+        ${hintsHtml}
+        <div class="msg-assistant-meta" style="margin-top: 8px;">
           <div class="msg-actions" style="padding: 0;">
             <button class="msg-action-btn copy-msg-btn" data-text="${copyText}" type="button" title="Copy"><i class="bx bx-copy"></i></button>
             <button class="msg-action-btn regen-msg-btn" data-msg-id="${msg.id}" type="button" title="Repeat prompt"><i class="bx bx-refresh"></i></button>
-            <button class="msg-action-btn more-msg-btn" data-meta="${escapeHtml(msg.hintChip || 'Local response')}" type="button" title="Response info"><i class="bx bx-dots-horizontal-rounded"></i></button>
           </div>
           ${msg.time ? `<span class="msg-time">${msg.time}</span>` : ''}
-          ${msg.hintChip ? `<span class="hint-chip">${msg.hintChip}</span>` : ''}
+          ${msg.hintChip ? `<span class="hint-chip">${escapeHtml(msg.hintChip)}</span>` : ''}
         </div>
       `;
       container.appendChild(group);
@@ -296,6 +348,25 @@ function renderChat() {
   });
 
   container.scrollTop = container.scrollHeight;
+  renderCompanion();
+}
+
+function renderCompanion() {
+  const emptyEl = document.getElementById('companionEmptyState');
+  const activeEl = document.getElementById('companionActiveWrap');
+  if (!emptyEl || !activeEl) return;
+
+  if (state.attachedFilename || state.activeDocument) {
+    emptyEl.style.display = 'none';
+    activeEl.style.display = 'block';
+    const nameEl = document.getElementById('companionFileName');
+    if (nameEl) nameEl.textContent = state.attachedFilename || state.activeDocument?.title || 'Document';
+    const pageBadge = document.getElementById('companionPageBadge');
+    if (pageBadge) pageBadge.textContent = state.activeDocument?.pages ? `PAGE 1 OF ${state.activeDocument.pages}` : 'ATTACHED NOTE';
+  } else {
+    emptyEl.style.display = 'flex';
+    activeEl.style.display = 'none';
+  }
 }
 
 function updateRightClock() {
@@ -546,12 +617,11 @@ async function sendChatMessage(customText, options = {}) {
   if (state.isGenerating) return;
   const input = document.getElementById('chatInput');
   const welcomeInput = document.getElementById('welcomeInput');
-  const text = (customText ?? (state.chatStarted ? input.value : welcomeInput.value)).trim();
+  const text = (customText ?? (input ? input.value : welcomeInput?.value || '')).trim();
   if (!text) return;
 
   if (!state.chatStarted) {
     state.chatStarted = true;
-    state.messages = [];
     state.currentChatId = `chat-${Date.now()}`;
   }
 
@@ -578,10 +648,15 @@ async function sendChatMessage(customText, options = {}) {
     hintChip: state.chatMode === 'guide' ? 'Guide Mode' : 'Answer Mode',
   });
 
-  input.value = '';
-  welcomeInput.value = '';
-  if (input) input.style.height = 'auto';
-  if (welcomeInput) welcomeInput.style.height = 'auto';
+  if (input) {
+    input.value = '';
+    input.style.height = '24px';
+    input.closest('.unified-composer-bar')?.classList.remove('is-multiline');
+  }
+  if (welcomeInput) {
+    welcomeInput.value = '';
+    welcomeInput.style.height = 'auto';
+  }
   state.isGenerating = true;
   state.abortController = new AbortController();
   syncSendButtons();
@@ -1868,11 +1943,16 @@ function init() {
   const setupAutoResizeTextarea = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
+    const bar = el.closest('.unified-composer-bar');
     const resize = () => {
       el.style.height = 'auto';
       const maxH = 170;
       const newH = Math.min(el.scrollHeight, maxH);
-      el.style.height = `${Math.max(28, newH)}px`;
+      el.style.height = `${Math.max(24, newH)}px`;
+      if (bar) {
+        if (newH > 32) bar.classList.add('is-multiline');
+        else bar.classList.remove('is-multiline');
+      }
     };
     el.addEventListener('input', () => {
       resize();
@@ -1882,13 +1962,32 @@ function init() {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendChatMessage();
-        el.style.height = 'auto';
+        el.style.height = '24px';
+        bar?.classList.remove('is-multiline');
       }
     });
   };
 
   setupAutoResizeTextarea('welcomeInput');
   setupAutoResizeTextarea('chatInput');
+
+  // Suggestion chips in clean empty state
+  document.getElementById('chatMessages')?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.empty-suggest-chip');
+    if (chip && chip.dataset.prompt) {
+      const input = document.getElementById('chatInput');
+      if (input) {
+        input.value = chip.dataset.prompt;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.focus();
+      }
+    }
+  });
+
+  // Companion upload button
+  document.getElementById('btnCompanionUpload')?.addEventListener('click', () => {
+    document.getElementById('fileUploadInput')?.click();
+  });
   document.getElementById('btnWelcomeLocal')?.addEventListener('click', () => {
     showToast(`100% Local & Offline · ${formatModelName(state.activeModel)}`);
   });

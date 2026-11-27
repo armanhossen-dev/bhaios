@@ -393,74 +393,22 @@
 
               <!-- Message Stream Scroll -->
               <div class="guide-convo-scroll" id="chatMessages" aria-live="polite" aria-label="Study conversation">
-                <!-- Figma Canonical Guided Exchange (2:279 - 2:308) -->
-                <div class="guide-message student-msg">
-                  <div class="msg-author-time">YOU · 10:42</div>
-                  <div class="student-question-card">
-                    <p class="student-q-text bangla">এই সমাকলনে শেষ লাইনে ভুল হচ্ছে কেন?</p>
-                    <div class="doc-ref-chip">
-                      <i class="bx bx-book-open"></i>
-                      <span>Calculus_notes.pdf · Page 3</span>
-                    </div>
+                <div class="chat-empty-state" id="chatEmptyState">
+                  <div class="empty-state-icon">
+                    <i class="bx bx-compass"></i>
                   </div>
-                </div>
-
-                <div class="guide-message assistant-msg">
-                  <div class="assistant-author-row">
-                    <span class="assistant-bhai-mark">ভাই</span>
-                    <span class="assistant-name">BhaiOS</span>
-                  </div>
-                  <p class="assistant-lead-text bangla">
-                    প্রথমে তোমার ধাপগুলো দেখি। উত্তরটা তুমি নিজেই বের করবে।
-                  </p>
-
-                  <!-- Hint Ladder Component (2:2201) -->
-                  <div class="hint-ladder-card" id="hintLadderCard">
-                    <div class="hint-ladder-head">
-                      <span class="hint-ladder-title">Hint ladder</span>
-                      <span class="hint-ladder-counter" id="hintLadderCounter">1 of 3 revealed</span>
-                    </div>
-
-                    <!-- Step 01: Nudge (Revealed) -->
-                    <div class="hint-step revealed" id="hintStep1">
-                      <div class="hint-step-num">01</div>
-                      <div class="hint-step-body">
-                        <div class="hint-step-type">Nudge</div>
-                        <div class="hint-step-text bangla">∫ sin x dx-এর চিহ্নটা আরেকবার দেখো।</div>
-                      </div>
-                    </div>
-
-                    <!-- Step 02: Hint -->
-                    <div class="hint-step locked" id="hintStep2">
-                      <div class="hint-step-num">02</div>
-                      <div class="hint-step-body">
-                        <div class="hint-step-type">Hint</div>
-                        <div class="hint-step-text bangla" id="hintStepText2" style="display: none;">
-                          u = x, dv = cos x dx ধরলে ∫ u dv = uv - ∫ v du। v = sin x, তাই - ∫ sin x dx এর চিহ্নটি কী হবে?
-                        </div>
-                      </div>
-                      <i class="bx bx-lock-alt hint-lock-icon" id="hintLockIcon2"></i>
-                    </div>
-
-                    <!-- Step 03: Scaffold -->
-                    <div class="hint-step locked" id="hintStep3">
-                      <div class="hint-step-num">03</div>
-                      <div class="hint-step-body">
-                        <div class="hint-step-type">Scaffold</div>
-                        <div class="hint-step-text bangla" id="hintStepText3" style="display: none;">
-                          ∫ sin x dx = -cos x, সুতরাং -(-cos x) = +cos x। চূড়ান্ত সমাকলন: x sin x + cos x + C।
-                        </div>
-                      </div>
-                      <i class="bx bx-lock-alt hint-lock-icon" id="hintLockIcon3"></i>
-                    </div>
-                  </div>
-
-                  <!-- Next Hint Button Row -->
-                  <div class="hint-action-row">
-                    <button class="btn-figma-primary btn-next-hint" id="btnNextHint" type="button">
-                      Show next hint
+                  <h3 class="empty-state-title">How can I help you learn today?</h3>
+                  <p class="empty-state-subtitle">Ask any question, share a problem, or attach study notes.</p>
+                  <div class="empty-state-suggestions">
+                    <button class="empty-suggest-chip" data-prompt="Help me understand Calculus Integration by Parts step-by-step" type="button">
+                      <i class="bx bx-math"></i> Integration by Parts
                     </button>
-                    <span class="hint-prompt-note" id="hintPromptNote">Try a step before revealing more.</span>
+                    <button class="empty-suggest-chip" data-prompt="Explain Newton's Laws of Motion with simple examples" type="button">
+                      <i class="bx bx-bulb"></i> Newton's Laws
+                    </button>
+                    <button class="empty-suggest-chip" data-prompt="Give me a quick quiz on Thermodynamics" type="button">
+                      <i class="bx bx-help-circle"></i> Quick Quiz
+                    </button>
                   </div>
                 </div>
               </div>
@@ -534,48 +482,39 @@
 
             <!-- RIGHT COLUMN: Document Companion (Figma 2:316) -->
             <div class="document-companion-col" id="documentCompanionCol">
-              <div class="doc-companion-head">
-                <div class="doc-title-row">
-                  <i class="bx bx-book-bookmark"></i>
-                  <span class="doc-filename">Calculus_notes.pdf</span>
-                </div>
-                <button class="doc-expand-btn" id="btnExpandCompanion" type="button" title="Open full view" aria-label="Open document in full Vision view">
-                  <i class="bx bx-expand-alt" aria-hidden="true"></i>
+              <div class="doc-companion-empty" id="companionEmptyState">
+                <div class="doc-empty-icon"><i class="bx bx-book-open"></i></div>
+                <div class="doc-empty-title">Document Companion</div>
+                <p class="doc-empty-sub">Attach handwritten notes or select a PDF to inspect working side-by-side with BhaiOS.</p>
+                <button class="btn-figma-ghost doc-empty-btn" id="btnCompanionUpload" type="button">
+                  <i class="bx bx-upload"></i> Attach study material
                 </button>
               </div>
 
-              <div class="doc-companion-meta">
-                <span class="doc-page-badge">PAGE 3 OF 8</span>
-                <span class="doc-vision-linked"><i class="bx bx-check-circle"></i> Vision linked</span>
-              </div>
-
-              <!-- High-Fidelity Scanned Working with Bounding Box Highlight -->
-              <div class="scanned-working-card">
-                <div class="math-notebook-paper">
-                  <div class="math-line title-line">∫ x cos x dx</div>
-                  <div class="math-line step-line">u = x, &nbsp; dv = cos x dx</div>
-                  <div class="math-line step-line">du = dx, &nbsp; v = sin x</div>
-                  <div class="math-line step-line">= x sin x − ∫ sin x dx</div>
-                  <div class="math-line mistake-line">
-                    = x sin x
-                    <span class="mistake-highlight-box" title="Referenced working highlight">
-                      − cos x
-                      <span class="mistake-pulse-border"></span>
-                    </span>
-                    + C
+              <div class="doc-companion-active" id="companionActiveWrap" style="display: none;">
+                <div class="doc-companion-head">
+                  <div class="doc-title-row">
+                    <i class="bx bx-book-bookmark"></i>
+                    <span class="doc-filename" id="companionFileName">Calculus_notes.pdf</span>
                   </div>
+                  <button class="doc-expand-btn" id="btnExpandCompanion" type="button" title="Open full view" aria-label="Open document in full Vision view">
+                    <i class="bx bx-expand-alt" aria-hidden="true"></i>
+                  </button>
                 </div>
 
-                <!-- Linked region note (Figma 2:327) -->
-                <div class="linked-region-note">
-                  <span class="note-num">01</span>
-                  <span class="note-bangla bangla">এই ধাপটি নিয়ে আমরা ভাবছি</span>
+                <div class="doc-companion-meta">
+                  <span class="doc-page-badge" id="companionPageBadge">PAGE 1 OF 1</span>
+                  <span class="doc-vision-linked"><i class="bx bx-check-circle"></i> Vision linked</span>
                 </div>
-              </div>
 
-              <div class="doc-companion-footer">
-                <span class="doc-local-note">Your document stays on this device.</span>
-                <button class="btn-open-vision" id="btnOpenInVision" type="button">Open in Vision →</button>
+                <div class="scanned-working-card" id="companionWorkingCard">
+                  <!-- Dynamic preview or content rendered here -->
+                </div>
+
+                <div class="doc-companion-footer">
+                  <span class="doc-local-note">Your document stays on this device.</span>
+                  <button class="btn-open-vision" id="btnOpenInVision" type="button">Open in Vision →</button>
+                </div>
               </div>
             </div>
 
