@@ -492,33 +492,44 @@ button {
   font-size: 16px;
 }
 
-/* 3-Way Theme Switcher (Device / Light / Dark — icons only, label on hover) */
-.theme-switcher-rail {
+/* Compact Utility Toolbar (Theme Toggle + Shortcuts + Quick Settings) */
+.sidebar-util-bar {
   margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.theme-switcher-rail {
+  margin: 0;
   padding: 3px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .sidebar.collapsed .theme-switcher-rail {
-  margin: 0;
   width: 40px;
-  grid-template-columns: 1fr;
+  flex-direction: column;
 }
 
 .theme-icon-btn {
   position: relative;
-  height: 32px;
-  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -533,35 +544,15 @@ button {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Show text label ONLY while hovering */
-.sidebar:not(.collapsed) .theme-icon-btn[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 9px;
-  background: #F4F4F5;
-  color: #111111;
-  font-size: 11.5px;
-  font-weight: 500;
-  white-space: nowrap;
-  border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-  z-index: 100;
-  pointer-events: none;
+.sidebar-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.sidebar-bottom-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  padding: 0 4px;
-}
-
-.sidebar-icon-btn {
+.sidebar-pill-action {
   height: 34px;
-  padding: 0 10px;
+  padding: 0 9px;
   border-radius: 8px;
   color: var(--text-secondary);
   background: var(--bg-card);
@@ -569,10 +560,43 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  font-size: 12.5px;
+  gap: 5px;
+  font-size: 12px;
   font-weight: 500;
+  cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.sidebar-pill-action.icon-only {
+  width: 34px;
+  padding: 0;
+  font-size: 15px;
+}
+
+.sidebar-pill-action:hover,
+.sidebar-pill-action.active {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--figma-border-strong);
+}
+
+.sidebar.collapsed .sidebar-util-bar {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar.collapsed .sidebar-action-group {
+  flex-direction: column;
+}
+
+.sidebar.collapsed .sidebar-pill-action span {
+  display: none;
+}
+
+.sidebar.collapsed .sidebar-pill-action {
+  width: 40px;
+  padding: 0;
 }
 
 .sidebar-icon-btn:hover,
@@ -987,34 +1011,36 @@ i.bx {
 
 .device-status {
   margin: 0 4px;
-  padding: 10px 11px;
+  padding: 10px 12px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 10px;
+  border-radius: 11px;
   display: flex;
   flex-direction: column;
   gap: 7px;
+  box-sizing: border-box;
 }
 
-.status-green {
-  font-size: 11px;
-  color: var(--success);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 500;
-}
-
-.device-row {
+.device-status-line {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-height: 18px;
+  width: 100%;
 }
 
-.model-name {
+.device-line-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.line-model .model-name {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text-primary);
   overflow: hidden;
@@ -1022,26 +1048,74 @@ i.bx {
   white-space: nowrap;
 }
 
-.ram-line {
+.model-icon {
+  font-size: 14px;
+  color: var(--figma-accent-primary);
+  flex-shrink: 0;
+}
+
+.sidebar-token-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: var(--bg-card-elevated);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-secondary);
   font-family: var(--font-mono);
   font-size: 10.5px;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sidebar-token-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--figma-border-strong);
 }
 
 .runtime-badge {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.runtime-badge .status-name {
+  color: var(--text-muted);
+  font-size: 10.5px;
+}
+
+.runtime-mode-badge {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--bg-card-elevated);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.memory-icon {
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .ram-readout {
-  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 11px;
   color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.model-footprint-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .ram-bar {
@@ -1050,18 +1124,38 @@ i.bx {
   border-radius: 999px;
   background: var(--border-hairline);
   overflow: hidden;
+  margin: 1px 0;
 }
 
 .ram-bar-fill {
-  width: 0%;
+  width: 53%;
   height: 100%;
   border-radius: 999px;
-  background: var(--teal-400);
+  background: #3B82F6;
   transition: width 0.35s ease, background 0.25s ease;
 }
 
 .ram-bar-fill.high {
   background: var(--warning);
+}
+
+.privacy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.privacy-badge i {
+  color: #10B981;
+  font-size: 12px;
+}
+
+.app-version-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
 }
 
 .dot-ready {
@@ -1078,7 +1172,7 @@ i.bx {
 .status-live {
   color: #10B981;
   font-weight: 600;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
 @keyframes pulseDot {

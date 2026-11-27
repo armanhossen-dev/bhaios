@@ -1353,7 +1353,10 @@ function updateActiveModelLabels() {
   }
 
   const sideModel = document.getElementById('sidebarActiveModel');
-  if (sideModel) sideModel.textContent = `${formatted} · ${spec.size}`;
+  if (sideModel) sideModel.textContent = formatted;
+
+  const footModel = document.getElementById('sidebarModelFootprint');
+  if (footModel) footModel.textContent = `${spec.size} model`;
 
   const welcomeLabel = document.getElementById('welcomeModelLabel');
   if (welcomeLabel) welcomeLabel.textContent = formatted;
@@ -1478,11 +1481,14 @@ async function refreshSystemHealth() {
       dotEl.classList.toggle('live', isLive);
     }
     if (data.ram && data.ram.total_gb > 0 && ramEl) {
-      const modelNote = data.ollama_ram_gb > 0
-        ? ` · Model ${data.ollama_ram_gb} GB`
-        : ` · Model ${activeSpec.size}`;
-      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB${modelNote}`;
-      ramEl.title = `System RAM: ${data.ram.used_gb} GB / ${data.ram.total_gb} GB (${data.ram.percent}%)${modelNote}`;
+      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB`;
+      const footModel = document.getElementById('sidebarModelFootprint');
+      if (footModel) {
+        footModel.textContent = data.ollama_ram_gb > 0
+          ? `${data.ollama_ram_gb} GB model`
+          : `${activeSpec.size} model`;
+      }
+      ramEl.title = `System RAM: ${data.ram.used_gb} GB / ${data.ram.total_gb} GB (${data.ram.percent}%)`;
       if (barEl) {
         barEl.style.width = `${data.ram.percent}%`;
         barEl.classList.toggle('high', data.ram.percent >= 85);
@@ -1498,7 +1504,9 @@ async function refreshSystemHealth() {
       dotEl.classList.add('live');
     }
     if (ramEl) {
-      ramEl.textContent = `RAM 10.2/16.0 GB · Model ${activeSpec.size}`;
+      ramEl.textContent = `RAM 10.2/16.0 GB`;
+      const footModel = document.getElementById('sidebarModelFootprint');
+      if (footModel) footModel.textContent = `${activeSpec.size} model`;
       ramEl.title = `System RAM: 10.2 GB / 16.0 GB (64%) · Model ${activeSpec.size} (${activeSpec.ram})`;
       if (barEl) barEl.style.width = '64%';
     }
