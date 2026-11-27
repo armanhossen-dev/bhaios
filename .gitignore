@@ -30,3 +30,7 @@ data/
 version2/src-tauri/target/
 version2/node_modules/
 version2/data/
+
+version2/web/node_modules/
+version2/web/.next/
+version2/web/out/

@@ -28,12 +28,14 @@ from .study import (
     generate_flashcards_from_course,
 )
 
+WEB_OUT_DIR = Path(__file__).resolve().parent.parent / "web" / "out"
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+STATIC_ROOT = WEB_OUT_DIR if WEB_OUT_DIR.exists() else FRONTEND_DIR
 
 app = FastAPI(title="BhaiOS v2 Sidecar", version="2.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8765", "http://localhost:8765", "tauri://localhost", "http://localhost:1420"],
+    allow_origins=["http://127.0.0.1:8765", "http://localhost:8765", "http://127.0.0.1:3000", "http://localhost:3000", "tauri://localhost", "http://localhost:1420"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -596,12 +598,11 @@ async def jobs_ws(websocket: WebSocket) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Static Frontend Serving
+# Static Frontend Serving (Next.js static export preferred, fallback to frontend/)
 # ---------------------------------------------------------------------------
-if FRONTEND_DIR.exists():
-    app.mount("/css", StaticFiles(directory=FRONTEND_DIR / "css"), name="css")
-    app.mount("/js", StaticFiles(directory=FRONTEND_DIR / "js"), name="js")
-
+if STATIC_ROOT.exists():
     @app.get("/")
     def serve_index() -> FileResponse:
-        return FileResponse(FRONTEND_DIR / "index.html")
+        return FileResponse(STATIC_ROOT / "index.html")
+
+    app.mount("/", StaticFiles(directory=STATIC_ROOT, html=True), name="static")
