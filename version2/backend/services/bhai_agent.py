@@ -253,7 +253,12 @@ async def generate_with_fallback(preferred_model: str, messages: list[dict[str, 
     raise RuntimeError(f"All local Ollama models failed ({last_err})")
 
 
-async def stream_with_fallback(preferred_model: str, messages: list[dict[str, Any]], candidates_override: list[str] | None = None):
+async def stream_with_fallback(
+    preferred_model: str,
+    messages: list[dict[str, Any]],
+    candidates_override: list[str] | None = None,
+    think: bool | None = None,
+):
     """Yield Ollama stream chunks with single-LLM guard & fallback if primary fails."""
     if candidates_override:
         candidates = candidates_override
@@ -264,7 +269,7 @@ async def stream_with_fallback(preferred_model: str, messages: list[dict[str, An
         emitted = False
         try:
             await ensure_single_primary_llm(model_name)
-            async for chunk in stream_ollama_chat(model_name, messages):
+            async for chunk in stream_ollama_chat(model_name, messages, think=think):
                 emitted = True
                 yield chunk
             return

@@ -63,6 +63,7 @@ class ChatStreamRequest(BaseModel):
     agent_mode: str = "tutor"
     answer_policy: str = "balanced"
     language: str = "en"
+    show_thinking: bool = False
 
 
 class TruncateRequest(BaseModel):
@@ -304,8 +305,15 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
                 routing.selected_model,
                 ollama_messages,
                 candidates_override=routing.candidates,
+                think=req.show_thinking,
             ):
-                delta = chunk.get("message", {}).get("content", "")
+                msg_chunk = chunk.get("message", {})
+                think_delta = msg_chunk.get("thinking", "")
+                if think_delta:
+                    thinking_text += think_delta
+                    yield json.dumps({"type": "thinking", "content": think_delta}) + "\n"
+
+                delta = msg_chunk.get("content", "")
                 if delta:
                     full_response += delta
 

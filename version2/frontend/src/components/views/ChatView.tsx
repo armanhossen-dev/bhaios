@@ -120,6 +120,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
           agent_mode: agentMode,
           answer_policy: answerPolicy,
           language,
+          show_thinking: showThinking,
         }),
       });
 

@@ -104,7 +104,7 @@ def parse_hint_ladder(text: str) -> dict[str, str] | None:
 
 def _ollama_options() -> tuple[dict[str, Any], float]:
     num_ctx = int(get_setting("ollama_num_ctx", "4096") or 4096)
-    num_predict = int(get_setting("ollama_num_predict", "1024") or 1024)
+    num_predict = int(get_setting("ollama_num_predict", "2048") or 2048)
     timeout = float(get_setting("ollama_timeout_sec", "120") or 120)
     return {"num_ctx": num_ctx, "num_predict": num_predict}, timeout
 
@@ -112,15 +112,20 @@ def _ollama_options() -> tuple[dict[str, Any], float]:
 async def stream_ollama_chat(
     model: str,
     messages: list[dict[str, Any]],
+    think: bool | None = None,
 ) -> AsyncGenerator[dict[str, Any], None]:
     """Stream NDJSON chunks from local Ollama /api/chat."""
     options, timeout_sec = _ollama_options()
-    payload = {
+    if think is True and options["num_predict"] < 4096:
+        options["num_predict"] = 4096
+    payload: dict[str, Any] = {
         "model": model,
         "messages": messages,
         "stream": True,
         "options": options,
     }
+    if think is not None:
+        payload["think"] = think
     async with httpx.AsyncClient(timeout=httpx.Timeout(timeout_sec, connect=5.0)) as client:
         async with client.stream("POST", f"{OLLAMA_URL}/api/chat", json=payload) as resp:
             if resp.status_code != 200:
