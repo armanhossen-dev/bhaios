@@ -28,7 +28,7 @@ const state = {
   chatMode: localStorage.getItem('bhaios_chat_mode') || 'guide', // 'guide' | 'answer'
   uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
   fontSize: localStorage.getItem('bhaios_font_size') || 'medium', // 'small' | 'medium' | 'large'
-  themePref: 'dark', // 'system' | 'light' | 'dark'
+  themePref: localStorage.getItem('bhaios_theme') || 'dark', // 'system' | 'light' | 'dark'
   voiceLang: 'auto', // 'auto' | 'bn' | 'en'
   sessionSeconds: Number(localStorage.getItem('bhaios_session_secs') || 0),
   questionsCount: Number(localStorage.getItem('bhaios_questions') || 0),
@@ -179,6 +179,7 @@ function applyFontSize(size) {
 
 function applyThemePreference(pref) {
   state.themePref = pref;
+  localStorage.setItem('bhaios_theme', pref);
   let resolved = pref;
   if (pref === 'system') {
     resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -2500,6 +2501,7 @@ function init() {
   });
 
   // Initial Render
+  applyThemePreference(state.themePref);
   applyFontSize(state.fontSize);
   applyLanguage(state.uiLang);
   setChatMode(state.chatMode, false);

@@ -18,7 +18,63 @@
   --radius-lg: 14px;
   --radius-pill: 999px;
 
-  /* Figma Canonical Design Tokens (2:631) */
+  /* Shared Accents — Clean Semantic Palette */
+  --teal-500: #3B82F6;
+  --teal-400: #60A5FA;
+  --teal-900: rgba(59, 130, 246, 0.12);
+  --teal-border: rgba(59, 130, 246, 0.3);
+
+  --violet-500: #A855F7;
+  --violet-400: #C084FC;
+  --violet-900: rgba(168, 85, 247, 0.12);
+
+  --amber-500: #F59E0B;
+  --amber-400: #FBBF24;
+  --amber-900: rgba(245, 158, 11, 0.12);
+  --amber-border: rgba(245, 158, 11, 0.3);
+
+  --orange-light: #FF5C16;
+  --orange-light-hover: #E64E0E;
+
+  --success: #22C55E;
+  --error: #EF4444;
+}
+
+/* --------------------------------------------------------------------------
+   Dark Theme (Figma Canonical Dark + Clean Neutral Obsidian)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --bg-root: #050505;
+  --bg-sidebar: #0F1115;
+  --bg-main: #050505;
+  --bg-card: #0F1115;
+  --bg-card-elevated: #171A21;
+  --bg-card-hover: #1D2028;
+  --bg-input: #171A21;
+  --bg-nav-active: #20253F;
+  --bg-user-bubble: #1C1E24;
+  --bg-hint-chip: rgba(168, 85, 247, 0.12);
+  --bg-dropzone: #0F1115;
+  --bg-code-bar: #15171C;
+
+  --border-hairline: #252932;
+  --border-card: #292D38;
+  --border-strong: #383E4E;
+  --border-user-bubble: #272930;
+
+  --text-primary: #F1F3FA;
+  --text-secondary: #9AA3B6;
+  --text-muted: #6E7687;
+  --text-bangla: #F1F3FA;
+
+  --pill-guide-bg: rgba(245, 158, 11, 0.12);
+  --pill-guide-border: rgba(245, 158, 11, 0.28);
+  --pill-guide-text: #FBBF24;
+  --cta-bg: #FAFAFA;
+  --cta-text: #0A0A0B;
+  --cta-hover: #E4E4E7;
+
+  /* Figma Canonical Design Tokens — Dark */
   --figma-canvas: #050505;
   --figma-surface-base: #0f1115;
   --figma-surface-elevated: #171a21;
@@ -45,90 +101,84 @@
   --figma-tone-50: #242b49;
   --figma-deadline-fg: #ffd097;
   --figma-deadline-bg: #3b291b;
-
-  /* Shared Accents — Clean Semantic Palette */
-  --teal-500: #3B82F6;
-  --teal-400: #60A5FA;
-  --teal-900: rgba(59, 130, 246, 0.12);
-  --teal-border: rgba(59, 130, 246, 0.3);
-
-  --violet-500: #A855F7;
-  --violet-400: #C084FC;
-  --violet-900: rgba(168, 85, 247, 0.12);
-
-  --amber-500: #F59E0B;
-  --amber-400: #FBBF24;
-  --amber-900: rgba(245, 158, 11, 0.12);
-  --amber-border: rgba(245, 158, 11, 0.3);
-
-  --orange-light: #FF5C16;
-  --orange-light-hover: #E64E0E;
-
-  --success: #22C55E;
-  --error: #EF4444;
+  --figma-nudge-bg: #302719;
+  --figma-nudge-text: #f3d49b;
+  --figma-nudge-accent: #fbbf24;
+  --figma-paper-bg: #141720;
+  --figma-paper-border: #232838;
+  --figma-paper-text: #e2e7fa;
+  --figma-paper-sub: #b8c1de;
+  --figma-note-text: #d8ddff;
+  --figma-mode-active-bg: #252b4b;
+  --figma-chip-bg: rgba(255, 255, 255, 0.05);
+  --figma-chip-hover: rgba(255, 255, 255, 0.1);
 }
 
 /* --------------------------------------------------------------------------
-   Dark Theme (Clean Neutral Obsidian — blocks.so / shadcn/ui)
-   -------------------------------------------------------------------------- */
-[data-theme="dark"] {
-  --bg-root: #0A0A0B;
-  --bg-sidebar: #0D0E10;
-  --bg-main: #0A0A0B;
-  --bg-card: #111214;
-  --bg-card-elevated: #17181C;
-  --bg-card-hover: #1D1E23;
-  --bg-input: #111214;
-  --bg-nav-active: #181A20;
-  --bg-user-bubble: #1C1E24;
-  --bg-hint-chip: rgba(168, 85, 247, 0.12);
-  --bg-dropzone: #111214;
-  --bg-code-bar: #15171C;
-
-  --border-hairline: #1F2024;
-  --border-card: #22242A;
-  --border-strong: #2E3038;
-  --border-user-bubble: #272930;
-
-  --text-primary: #FAFAFA;
-  --text-secondary: #8E9299;
-  --text-muted: #5C6068;
-  --text-bangla: #F4F4F5;
-
-  --pill-guide-bg: rgba(245, 158, 11, 0.12);
-  --pill-guide-border: rgba(245, 158, 11, 0.28);
-  --pill-guide-text: #FBBF24;
-  --cta-bg: #FAFAFA;
-  --cta-text: #0A0A0B;
-  --cta-hover: #E4E4E7;
-}
-
-/* --------------------------------------------------------------------------
-   Light Theme (Progress Screen — Flowstate-inspired with #FF5C16)
+   Light Theme (Clean High-Contrast Light Mode)
    -------------------------------------------------------------------------- */
 [data-theme="light"] {
-  --bg-root: #FFFFFF;
-  --bg-sidebar: #F4F4F2;
-  --bg-main: #FFFFFF;
+  --bg-root: #F5F6FA;
+  --bg-sidebar: #FFFFFF;
+  --bg-main: #F5F6FA;
   --bg-card: #FFFFFF;
-  --bg-card-elevated: #F5F4F0;
-  --bg-card-hover: #F0EFEA;
+  --bg-card-elevated: #F1F3F8;
+  --bg-card-hover: #E9ECF4;
   --bg-input: #FFFFFF;
-  --bg-nav-active: #E8F0EE;
+  --bg-nav-active: #E8ECFB;
   --bg-user-bubble: #EAF3F5;
   --bg-hint-chip: #E4F2F5;
   --bg-dropzone: #F4F8F9;
   --bg-code-bar: #EDF5F7;
 
-  --border-hairline: #E6E6E2;
-  --border-card: #E2E2DC;
-  --border-strong: #D0D0C8;
+  --border-hairline: #E2E6EE;
+  --border-card: #DCE1EC;
+  --border-strong: #C4CBD8;
   --border-user-bubble: #C9E1E6;
 
-  --text-primary: #111111;
-  --text-secondary: #66686D;
-  --text-muted: #8E9096;
-  --text-bangla: #161616;
+  --text-primary: #111318;
+  --text-secondary: #5B6374;
+  --text-muted: #7C8494;
+  --text-bangla: #111318;
+
+  /* Figma Canonical Design Tokens — Light */
+  --figma-canvas: #F5F6FA;
+  --figma-surface-base: #FFFFFF;
+  --figma-surface-elevated: #F1F3F8;
+  --figma-accent-primary: #4C5AC9;
+  --figma-accent-action: #4C5AC9;
+  --figma-status-private: #0F766E;
+  --figma-status-private-surface: #E6F7F2;
+  --figma-border-subtle: #DCE1EC;
+  --figma-text-primary: #111318;
+  --figma-text-secondary: #5B6374;
+  --figma-tone-27: #E2E6EE;
+  --figma-tone-28: #646D7E;
+  --figma-tone-29: #E8ECFB;
+  --figma-tone-32: #EEF1FC;
+  --figma-tone-33: #CFD7F5;
+  --figma-tone-34: #4350B5;
+  --figma-tone-35: #333A4D;
+  --figma-tone-36: #E4E9FA;
+  --figma-tone-37: #C4CEEE;
+  --figma-tone-38: #4C5AC9;
+  --figma-tone-46: #F4F6FC;
+  --figma-tone-47: #D3DBF5;
+  --figma-tone-48: #E5EAFA;
+  --figma-tone-50: #E9EDFA;
+  --figma-deadline-fg: #9A5504;
+  --figma-deadline-bg: #FEF3C7;
+  --figma-nudge-bg: #FEF7E6;
+  --figma-nudge-text: #78350F;
+  --figma-nudge-accent: #B45309;
+  --figma-paper-bg: #F8FAFC;
+  --figma-paper-border: #DCE1EC;
+  --figma-paper-text: #111318;
+  --figma-paper-sub: #475569;
+  --figma-note-text: #27326E;
+  --figma-mode-active-bg: #E8ECFB;
+  --figma-chip-bg: rgba(15, 23, 42, 0.05);
+  --figma-chip-hover: rgba(15, 23, 42, 0.1);
 
   --pill-guide-bg: #FF5C16;
   --pill-guide-border: #FF5C16;

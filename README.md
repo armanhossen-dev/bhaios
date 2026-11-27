@@ -12,6 +12,8 @@ Built for Bangla-speaking students. Runs offline on a standard laptop.
 
 > Research project · Team **Swift Lions** · Daffodil International University
 
+//  not responsive properly and not fits in 1080p and theme color change issue
+
 ---
 
 ## Why BhaiOS?
