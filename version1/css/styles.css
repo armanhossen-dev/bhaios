@@ -492,33 +492,36 @@ button {
   font-size: 16px;
 }
 
-/* 3-Way Theme Switcher (Device / Light / Dark) */
-.theme-switcher-rail {
+/* Compact Footer Toolbar: 3-Way Theme Switcher (Left) + Language Switcher (Right) */
+.sidebar-footer-toolbar {
   margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.theme-switcher-rail {
+  margin: 0;
   padding: 3px;
   background: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 10px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3px;
-}
-
-.sidebar.collapsed .theme-switcher-rail {
-  margin: 0;
-  width: 40px;
-  grid-template-columns: 1fr;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .theme-icon-btn {
   position: relative;
-  height: 30px;
-  border-radius: 7px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 14.5px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -534,6 +537,62 @@ button {
   background: var(--bg-card-elevated);
   color: var(--text-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.lang-switcher-rail {
+  margin: 0;
+  padding: 3px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.lang-btn {
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-bangla);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.lang-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
+.lang-btn[data-state="active"] {
+  background: var(--bg-card-elevated);
+  color: var(--text-primary);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.collapsed .sidebar-footer-toolbar {
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar.collapsed .theme-switcher-rail,
+.sidebar.collapsed .lang-switcher-rail {
+  width: 40px;
+  flex-direction: column;
+}
+
+.sidebar.collapsed .lang-btn {
+  width: 100%;
+  padding: 0;
+  font-size: 10.5px;
 }
 
 .sidebar-icon-btn:hover,

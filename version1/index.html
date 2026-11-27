@@ -123,20 +123,27 @@
       </nav>
 
       <div class="sidebar-footer">
-        <!-- 3-Way Theme Switcher (Device / Light / Dark) -->
-        <div class="theme-switcher-rail" role="group" aria-label="Theme selection">
-          <button class="theme-icon-btn" data-theme-pref="system" title="System theme" type="button"
-            aria-label="Device theme">
-            <i class="bx bx-desktop"></i>
-          </button>
-          <button class="theme-icon-btn" data-theme-pref="light" title="Light theme" type="button"
-            aria-label="Light theme">
-            <i class="bx bx-sun"></i>
-          </button>
-          <button class="theme-icon-btn active" data-theme-pref="dark" title="Dark theme" type="button"
-            aria-label="Dark theme">
-            <i class="bx bx-moon"></i>
-          </button>
+        <!-- Compact Footer Toolbar: 3-Way Theme Switcher (Left) + Language Switcher (Right) -->
+        <div class="sidebar-footer-toolbar">
+          <div class="theme-switcher-rail" role="group" aria-label="Theme selection">
+            <button class="theme-icon-btn" data-theme-pref="system" title="System theme" type="button"
+              aria-label="Device theme">
+              <i class="bx bx-desktop"></i>
+            </button>
+            <button class="theme-icon-btn" data-theme-pref="light" title="Light theme" type="button"
+              aria-label="Light theme">
+              <i class="bx bx-sun"></i>
+            </button>
+            <button class="theme-icon-btn active" data-theme-pref="dark" title="Dark theme" type="button"
+              aria-label="Dark theme">
+              <i class="bx bx-moon"></i>
+            </button>
+          </div>
+
+          <div class="lang-switcher-rail" role="group" aria-label="Language selection">
+            <button class="lang-btn" data-lang="en" data-state="active" type="button" title="English">EN</button>
+            <button class="lang-btn" data-lang="bn" data-state="inactive" type="button" title="বাংলা">বাং</button>
+          </div>
         </div>
 
         <!-- System & Local Model Status Card (Organized hardware monitor card, zero line-breaking) -->
