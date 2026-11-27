@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "BhaiOS",
+  "version": "2.0.0",
+  "identifier": "org.bhaios.desktop",
+  "build": {
+    "frontendDist": "../frontend",
+    "devUrl": "http://127.0.0.1:8765"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "BhaiOS v2 — Local Study OS",
+        "width": 1360,
+        "height": 860,
+        "minWidth": 960,
+        "minHeight": 640
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' http://127.0.0.1:8765 ws://127.0.0.1:8765; style-src 'self' 'unsafe-inline'; script-src 'self'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg", "msi", "appimage", "deb"]
+  }
+}

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BhaiOS v2 — Local Study OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <!-- LEFT RAIL -->
+    <aside class="left-rail" aria-label="Workspace navigation">
+      <div class="brand-row">
+        <div class="brand-mark">
+          <div class="brand-seal">ভা</div>
+          <div class="brand-text">
+            <div class="brand-title">BhaiOS</div>
+            <div class="brand-sub">Local Study OS · v2</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="course-switcher-box">
+        <select class="course-select" id="globalCourseSelect" aria-label="Active course">
+          <option value="">All courses</option>
+        </select>
+      </div>
+
+      <nav class="nav-rail">
+        <button class="rail-btn active" data-screen="today" type="button">
+          <span class="rail-btn-left"><span>Today</span></span>
+          <span class="rail-badge" id="badgeDueTasks">0</span>
+        </button>
+        <button class="rail-btn" data-screen="courses" type="button">
+          <span class="rail-btn-left"><span>Courses</span></span>
+          <span class="rail-badge" id="badgeCourses">0</span>
+        </button>
+        <button class="rail-btn" data-screen="library" type="button">
+          <span class="rail-btn-left"><span>Library</span></span>
+          <span class="rail-badge" id="badgeFiles">0</span>
+        </button>
+        <button class="rail-btn" data-screen="ask" type="button">
+          <span class="rail-btn-left"><span>Ask</span></span>
+        </button>
+        <button class="rail-btn" data-screen="study" type="button">
+          <span class="rail-btn-left"><span>Study</span></span>
+          <span class="rail-badge" id="badgeFlashcards">0</span>
+        </button>
+        <button class="rail-btn" data-screen="planner" type="button">
+          <span class="rail-btn-left"><span>Planner</span></span>
+        </button>
+        <button class="rail-btn" data-screen="grades" type="button">
+          <span class="rail-btn-left"><span>Grades</span></span>
+        </button>
+        <button class="rail-btn" data-screen="settings" type="button">
+          <span class="rail-btn-left"><span>Settings</span></span>
+        </button>
+      </nav>
+
+      <div class="rail-footer">
+        <div class="rail-controls">
+          <div class="seg-group" role="group" aria-label="Theme">
+            <button class="seg-btn active" data-theme-set="light" type="button">Paper</button>
+            <button class="seg-btn" data-theme-set="dark" type="button">Ink</button>
+          </div>
+          <div class="seg-group" role="group" aria-label="Language">
+            <button class="seg-btn active" data-lang-set="en" type="button">EN</button>
+            <button class="seg-btn" data-lang-set="bn" type="button">বাং</button>
+          </div>
+        </div>
+        <div class="local-status-dot">
+          <span class="status-indicator">
+            <span class="dot-live" id="localDot"></span>
+            <span id="localStatusLabel">Local · Ready</span>
+          </span>
+          <span class="mono" style="font-size:11px; color:var(--text-3);" id="jobsCounterLabel">0 jobs</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER WORKSPACE -->
+    <main class="center-pane">
+      <header class="topbar">
+        <h1 class="topbar-title" id="topbarTitle">Today</h1>
+        <div class="topbar-actions">
+          <button class="btn btn-sm" id="btnOpenSearch" type="button" title="Ctrl/⌘ K">Search (⌘K)</button>
+          <button class="btn btn-sm" id="btnQuickCapture" type="button" title="Ctrl+Shift+N">+ Quick Task</button>
+          <button class="btn btn-sm btn-primary" id="btnUploadTrigger" type="button">+ Add Files</button>
+          <input type="file" id="globalFileInput" hidden multiple accept=".pdf,.pptx,.ppt,.docx,.md,.txt,.png,.jpg,.jpeg,.zip" />
+        </div>
+      </header>
+
+      <div class="workspace-scroll">
+        <!-- 1. TODAY -->
+        <section class="screen active" id="screen-today">
+          <div class="stack">
+            <div class="grid-3">
+              <div class="card">
+                <div class="muted-sm">DUE TASKS</div>
+                <div class="tabular" style="font-size:26px; font-weight:600;" id="kpiDueTasks">0</div>
+              </div>
+              <div class="card">
+                <div class="muted-sm">FLASHCARDS DUE</div>
+                <div class="tabular" style="font-size:26px; font-weight:600;" id="kpiDueCards">0</div>
+              </div>
+              <div class="card">
+                <div class="muted-sm">INDEXED FILES</div>
+                <div class="tabular" style="font-size:26px; font-weight:600;" id="kpiFilesReady">0</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <div class="row-between" style="margin-bottom:10px;">
+                  <h2 class="card-title" style="margin:0;">Next up</h2>
+                  <button class="btn btn-sm" data-goto="planner" type="button">Open Planner</button>
+                </div>
+                <div id="todayTasksList" class="stack"></div>
+              </div>
+
+              <div class="card">
+                <div class="row-between" style="margin-bottom:10px;">
+                  <h2 class="card-title" style="margin:0;">Focus timer</h2>
+                  <span class="tag-pill mono tabular" id="focusTimerDisplay">25:00</span>
+                </div>
+                <p class="muted">Quiet Pomodoro tied to your active course.</p>
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                  <button class="btn btn-primary btn-sm" id="btnFocusToggle" type="button">Start 25m</button>
+                  <button class="btn btn-sm" id="btnFocusReset" type="button">Reset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. COURSES -->
+        <section class="screen" id="screen-courses">
+          <div class="stack">
+            <div class="row-between">
+              <div class="muted" id="semesterLabel">Spring 2026</div>
+              <button class="btn btn-primary btn-sm" id="btnNewCourseModal" type="button">+ New Course</button>
+            </div>
+            <div class="grid-2" id="coursesGrid"></div>
+          </div>
+        </section>
+
+        <!-- 3. LIBRARY -->
+        <section class="screen" id="screen-library">
+          <div class="stack">
+            <div class="row-between">
+              <div class="muted">PDF, PPTX, DOCX, Markdown, Images, ZIP</div>
+              <button class="btn btn-primary btn-sm" id="btnLibraryUpload" type="button">+ Import Materials</button>
+            </div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Type</th>
+                    <th>Pages/Slides</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="libraryTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. ASK (GROUNDED CHAT) -->
+        <section class="screen" id="screen-ask">
+          <div class="ask-layout">
+            <div class="ask-stream" id="askStream">
+              <div class="empty-state" id="askEmptyState">
+                <div class="serif" style="font-size:17px; color:var(--text);">Ask from your course slides and notes</div>
+                <div class="muted">Every factual claim cites exact file &amp; page/slide numbers.</div>
+              </div>
+            </div>
+
+            <div class="composer-box">
+              <textarea class="composer-input" id="askInput" rows="1" placeholder="Ask from your course slides or notes…"></textarea>
+              <div class="composer-bar">
+                <div class="composer-chips">
+                  <select class="mini-select" id="askScopeSelect" aria-label="Search scope">
+                    <option value="course">Current course</option>
+                    <option value="all">All courses</option>
+                  </select>
+                  <select class="mini-select" id="askModeSelect" aria-label="Study mode">
+                    <option value="guide">Guide (Socratic)</option>
+                    <option value="answer">Answer (Direct)</option>
+                    <option value="explain_slide">Explain slide</option>
+                    <option value="exam">Exam rubric</option>
+                    <option value="compare">Compare</option>
+                  </select>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnAskSend" type="button">Ask</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. STUDY (FLASHCARDS SM-2) -->
+        <section class="screen" id="screen-study">
+          <div class="stack">
+            <div class="row-between">
+              <div class="muted">Spaced Repetition (SM-2) · Keys: 1 Again · 2 Hard · 3 Good · 4 Easy</div>
+              <button class="btn btn-primary btn-sm" id="btnGenCards" type="button">Generate from Course Files</button>
+            </div>
+            <div id="flashcardStageWrap"></div>
+          </div>
+        </section>
+
+        <!-- 6. PLANNER (TASKS + .ICS) -->
+        <section class="screen" id="screen-planner">
+          <div class="stack">
+            <div class="row-between">
+              <div class="muted">Assignments, labs, quizzes, projects</div>
+              <div style="display:flex; gap:8px;">
+                <a class="btn btn-sm" href="/api/planner/export.ics" download="bhaios_schedule.ics">Export .ics</a>
+                <button class="btn btn-primary btn-sm" id="btnPlannerAdd" type="button">+ New Task</button>
+              </div>
+            </div>
+            <div class="card">
+              <div id="plannerTasksList" class="stack"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. GRADES & ATTENDANCE -->
+        <section class="screen" id="screen-grades">
+          <div class="stack">
+            <div class="row-between">
+              <div class="muted">Select a course in the left rail to manage assessments &amp; attendance.</div>
+              <button class="btn btn-primary btn-sm" id="btnAddAssessment" type="button">+ Add Assessment</button>
+            </div>
+            <div class="grid-2">
+              <div class="card">
+                <h2 class="card-title">Running Grade &amp; Target Planner</h2>
+                <div id="gradesSummaryBox" class="stack"></div>
+              </div>
+              <div class="card">
+                <div class="row-between" style="margin-bottom:8px;">
+                  <h2 class="card-title" style="margin:0;">Attendance</h2>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-sm" id="btnMarkPresent" type="button">Present</button>
+                    <button class="btn btn-sm" id="btnMarkAbsent" type="button">Absent</button>
+                  </div>
+                </div>
+                <div id="attendanceBox" class="stack"></div>
+              </div>
+            </div>
+            <div class="card">
+              <h2 class="card-title">Course Notes (Markdown with [[File · Slide]] links)</h2>
+              <div class="stack">
+                <input class="input" id="noteTitleInput" placeholder="Note title…" />
+                <textarea class="textarea" id="noteContentInput" rows="4" placeholder="Write notes… e.g. Review [[DSA_Lec5.pptx · Slide 12]]"></textarea>
+                <div class="row-between">
+                  <span class="muted-sm">Saved locally per course</span>
+                  <button class="btn btn-primary btn-sm" id="btnSaveNote" type="button">Save Note</button>
+                </div>
+              </div>
+              <div id="notesListBox" class="stack" style="margin-top:12px;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. SETTINGS & PERFORMANCE -->
+        <section class="screen" id="screen-settings">
+          <div class="stack">
+            <div class="card">
+              <div class="row-between">
+                <div>
+                  <h2 class="card-title" style="margin:0;">Offline Privacy &amp; Network Policy</h2>
+                  <div class="muted" id="networkPolicyText">Network: none used (localhost only)</div>
+                </div>
+                <span class="tag-pill ready">On-device</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2 class="card-title">Hardware &amp; Model Manager</h2>
+              <div id="hardwareSummaryBox" class="muted" style="margin-bottom:10px;">Scanning hardware…</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>RAM</th>
+                    <th>Speed Est.</th>
+                    <th>Bangla</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="modelCatalogBody"></tbody>
+              </table>
+            </div>
+
+            <div class="card">
+              <h2 class="card-title">Encrypted Backup (.bhaibackup)</h2>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <input class="input" id="backupPassphrase" type="password" placeholder="Optional passphrase" />
+                <button class="btn btn-primary btn-sm" id="btnExportBackup" type="button">Export Backup</button>
+                <button class="btn btn-sm" id="btnImportBackup" type="button">Import Backup</button>
+                <input type="file" id="backupFileInput" hidden accept=".bhaibackup" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- RIGHT PANE: SOURCE VIEWER -->
+    <aside class="source-pane" id="sourcePane" aria-label="Source passage viewer">
+      <div class="source-pane-head">
+        <div>
+          <div style="font-weight:600; font-size:13.5px;" id="sourcePaneTitle">Source Viewer</div>
+          <div class="muted-sm" id="sourcePaneMeta">Click any citation [1] to inspect</div>
+        </div>
+        <button class="btn btn-sm" id="btnCloseSource" type="button">Close</button>
+      </div>
+      <div class="source-pane-body" id="sourcePaneBody"></div>
+    </aside>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-backdrop" id="searchModal">
+    <div class="modal-card">
+      <div class="row-between">
+        <strong>Search Courses, Slides &amp; Notes</strong>
+        <button class="btn btn-sm" id="btnCloseSearch" type="button">Esc</button>
+      </div>
+      <input class="input" id="globalSearchInput" placeholder="Type keywords (English or বাংলা)…" />
+      <div id="globalSearchResults" class="stack" style="max-height:300px; overflow-y:auto;"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="courseModal">
+    <div class="modal-card">
+      <strong>Create Course</strong>
+      <input class="input" id="newCrsCode" placeholder="Course Code (e.g. CSE 2201)" />
+      <input class="input" id="newCrsTitle" placeholder="Course Title (e.g. Data Structures & Algorithms)" />
+      <div class="grid-2">
+        <input class="input" id="newCrsCredits" type="number" step="0.5" value="3.0" placeholder="Credits" />
+        <select class="input" id="newCrsColor">
+          <option value="teal">Teal</option>
+          <option value="terracotta">Terracotta</option>
+          <option value="marigold">Marigold</option>
+          <option value="olive">Olive</option>
+          <option value="plum">Plum</option>
+          <option value="slate">Slate</option>
+        </select>
+      </div>
+      <div class="row-between">
+        <button class="btn btn-sm" id="btnCancelCourse" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btnSaveCourse" type="button">Create Course</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="taskModal">
+    <div class="modal-card">
+      <strong>New Task</strong>
+      <input class="input" id="newTskTitle" placeholder="Task title (e.g. Lab 3 Binary Tree)" />
+      <div class="grid-2">
+        <select class="input" id="newTskType">
+          <option value="assignment">Assignment</option>
+          <option value="lab">Lab</option>
+          <option value="quiz">Quiz / CT</option>
+          <option value="project">Project</option>
+        </select>
+        <input class="input" id="newTskDue" type="date" />
+      </div>
+      <div class="row-between">
+        <button class="btn btn-sm" id="btnCancelTask" type="button">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="btnSaveTask" type="button">Save Task</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="onboardingModal">
+    <div class="modal-card">
+      <h2 class="serif" style="margin:0;">Welcome to BhaiOS v2</h2>
+      <p class="muted" style="margin:0;">Offline-first study OS for your semester. Everything stays on this device.</p>
+      <input class="input" id="obName" placeholder="Your name" value="Student" />
+      <input class="input" id="obUni" placeholder="University (e.g. BUET / BRACU / DU)" />
+      <input class="input" id="obSem" placeholder="Current semester" value="Spring 2026" />
+      <div id="obHwInfo" class="muted-sm">Scanning local RAM &amp; CPU…</div>
+      <div class="row-between">
+        <span class="muted-sm">No account · No cloud</span>
+        <button class="btn btn-primary" id="btnFinishOnboarding" type="button">Start Studying</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>
