@@ -44,6 +44,7 @@
    Dark Theme (Figma Canonical Dark + Clean Neutral Obsidian)
    -------------------------------------------------------------------------- */
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg-root: #050505;
   --bg-sidebar: #0F1115;
   --bg-main: #050505;
@@ -118,6 +119,7 @@
    Light Theme (Clean High-Contrast Light Mode)
    -------------------------------------------------------------------------- */
 [data-theme="light"] {
+  color-scheme: light;
   --bg-root: #F5F6FA;
   --bg-sidebar: #FFFFFF;
   --bg-main: #F5F6FA;

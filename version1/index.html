@@ -26,6 +26,7 @@
 </head>
 
 <body>
+  <a class="skip-link" href="#mainWorkspace">Skip to main workspace</a>
   <div class="app-shell">
     <!-- =====================================================================
          LEFT SIDEBAR (Figma 2:3 Canonical Anatomy)
@@ -214,7 +215,7 @@
     <!-- =====================================================================
          MAIN COLUMN
          ===================================================================== -->
-    <div class="main-column">
+    <main class="main-column" id="mainWorkspace">
       <!-- Canonical Figma Top Bar (2:4) -->
       <header class="app-top-bar" id="appTopBar">
         <div class="top-bar-left">
@@ -311,7 +312,7 @@
               <div class="home-task-list">
                 <div class="home-task-row">
                   <div class="task-checkbox-wrap">
-                    <button class="task-checkbox" data-task-id="t1" type="button"></button>
+                    <button class="task-checkbox" data-task-id="t1" type="button" aria-label="Toggle Calculus II task"></button>
                     <div class="home-task-info">
                       <div class="home-task-title">Calculus II — Solve remaining 4 integration problems</div>
                       <div class="home-task-meta">
@@ -326,7 +327,7 @@
 
                 <div class="home-task-row">
                   <div class="task-checkbox-wrap">
-                    <button class="task-checkbox checked" data-task-id="t2" type="button"><i class="bx bx-check"></i></button>
+                    <button class="task-checkbox checked" data-task-id="t2" type="button" aria-label="Toggle Physics Carnot Cycle task"><i class="bx bx-check" aria-hidden="true"></i></button>
                     <div class="home-task-info">
                       <div class="home-task-title done-text">Physics — Review Carnot Cycle handwritten diagram</div>
                       <div class="home-task-meta">
@@ -341,7 +342,7 @@
 
                 <div class="home-task-row">
                   <div class="task-checkbox-wrap">
-                    <button class="task-checkbox" data-task-id="t3" type="button"></button>
+                    <button class="task-checkbox" data-task-id="t3" type="button" aria-label="Toggle Organic Chemistry task"></button>
                     <div class="home-task-info">
                       <div class="home-task-title">Organic Chemistry — Mechanism of Aldol Condensation</div>
                       <div class="home-task-meta">
@@ -398,7 +399,7 @@
               </div>
 
               <!-- Message Stream Scroll -->
-              <div class="guide-convo-scroll" id="chatMessages">
+              <div class="guide-convo-scroll" id="chatMessages" aria-live="polite" aria-label="Study conversation">
                 <!-- Figma Canonical Guided Exchange (2:279 - 2:308) -->
                 <div class="guide-message student-msg">
                   <div class="msg-author-time">YOU · 10:42</div>
@@ -474,8 +475,8 @@
               <!-- Unified Compact Composer Bar (Matching User Screenshot 5) -->
               <div class="unified-composer-wrap">
                 <div class="unified-composer-bar" id="pillComposer">
-                  <button class="composer-icon-btn btn-attach" id="btnChatAttach" type="button" title="Attach document or handwritten notes">
-                    <i class="bx bx-plus"></i>
+                  <button class="composer-icon-btn btn-attach" id="btnChatAttach" type="button" title="Attach document or handwritten notes" aria-label="Attach document or handwritten notes">
+                    <i class="bx bx-plus" aria-hidden="true"></i>
                   </button>
                   <textarea class="composer-auto-textarea" id="chatInput" rows="1" placeholder="তোমার চেষ্টা লিখো বা ছবি যোগ করো…"></textarea>
 
@@ -523,8 +524,8 @@
                       <span>Auto</span>
                     </button>
 
-                    <button class="composer-icon-btn mic-trigger" id="btnChatVoice" type="button" title="Voice input (Whisper)">
-                      <i class="bx bx-microphone"></i>
+                    <button class="composer-icon-btn mic-trigger" id="btnChatVoice" type="button" title="Voice input (Whisper)" aria-label="Voice input">
+                      <i class="bx bx-microphone" aria-hidden="true"></i>
                     </button>
 
                     <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
@@ -545,8 +546,8 @@
                   <i class="bx bx-book-bookmark"></i>
                   <span class="doc-filename">Calculus_notes.pdf</span>
                 </div>
-                <button class="doc-expand-btn" id="btnExpandCompanion" type="button" title="Open full view">
-                  <i class="bx bx-expand-alt"></i>
+                <button class="doc-expand-btn" id="btnExpandCompanion" type="button" title="Open full view" aria-label="Open document in full Vision view">
+                  <i class="bx bx-expand-alt" aria-hidden="true"></i>
                 </button>
               </div>
 
@@ -605,8 +606,8 @@
                   <div class="cal-header-row">
                     <span class="cal-month-name" id="calMonthHeader">July 2025</span>
                     <div class="cal-nav-buttons">
-                      <button class="cal-nav-btn" id="btnCalPrev" type="button"><i class="bx bx-chevron-left"></i></button>
-                      <button class="cal-nav-btn" id="btnCalNext" type="button"><i class="bx bx-chevron-right"></i></button>
+                      <button class="cal-nav-btn" id="btnCalPrev" type="button" aria-label="Previous month"><i class="bx bx-chevron-left" aria-hidden="true"></i></button>
+                      <button class="cal-nav-btn" id="btnCalNext" type="button" aria-label="Next month"><i class="bx bx-chevron-right" aria-hidden="true"></i></button>
                     </div>
                   </div>
                   <div class="cal-sub-date" id="calSubDate">Wednesday, 16 July</div>
@@ -1102,7 +1103,7 @@
                 <span style="font-size: 13px; font-weight: 500;">Voice Input: <span class="mono"
                     style="color: var(--success);" id="whisperStatusLabel">whisper-base (139 MB · Ready)</span></span>
                 <span style="font-size: 13px; font-weight: 500;">Strict Offline Mode</span>
-                <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" id="switchOfflineMode"
+                <button data-slot="switch" data-state="checked" role="switch" aria-checked="true" aria-label="Toggle strict offline mode" id="switchOfflineMode"
                   type="button">
                   <span data-slot="switch-thumb"></span>
                 </button>
@@ -1154,7 +1155,7 @@
           </div>
         </div>
       </section>
-    </div>
+    </main>
   </div>
 
   <!-- Add Task Dialog (shadcn/ui Dialog pattern) -->
@@ -1245,7 +1246,7 @@
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script type="module" src="./js/app.js"></script>
 </body>

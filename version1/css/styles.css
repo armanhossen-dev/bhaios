@@ -5644,3 +5644,55 @@ html[data-font-size="small"] .snippet-body {
   }
 }
 
+/* ==========================================================================
+   WCAG 2.2 Accessibility, Focus Contracts & Reduced Motion
+   ========================================================================== */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 9999;
+  padding: 10px 16px;
+  background: var(--figma-accent-action);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 12px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--figma-accent-primary);
+  outline-offset: 2px;
+}
+
+button {
+  text-decoration: none !important;
+}
+
+.btn-figma-primary,
+.btn-figma-ghost,
+.btn-primary,
+.mode-switch-btn,
+.model-select-pill,
+.mode-toggle-btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
