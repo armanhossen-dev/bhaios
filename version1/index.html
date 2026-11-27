@@ -12,11 +12,11 @@
   <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png" />
   <link rel="shortcut icon" href="./assets/favicon.ico" />
 
-  <!-- Google Fonts: Plus Jakarta Sans (Saans-inspired Mobbin stack), Inter, Noto Sans Bengali, JetBrains Mono -->
+  <!-- Google Fonts: Hind Siliguri, Inter, JetBrains Mono, Plus Jakarta Sans, Noto Sans Bengali -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
 
@@ -28,18 +28,17 @@
 <body>
   <div class="app-shell">
     <!-- =====================================================================
-         LEFT SIDEBAR (280px)
+         LEFT SIDEBAR (Figma 2:3 Canonical Anatomy)
          ===================================================================== -->
     <aside class="sidebar" id="leftSidebar">
       <!-- App Icon = Sidebar Open/Close Toggle + Workspace Label -->
       <div class="sidebar-top-row">
         <button class="workspace-switcher" id="btnToggleSidebar" type="button" data-tooltip="Toggle sidebar"
           title="Click to collapse/expand sidebar" aria-label="Toggle sidebar">
-          <span class="workspace-avatar brand-avatar">
-            <img src="./assets/logo.png" alt="BhaiOS" class="brand-logo-img" />
-          </span>
+          <span class="figma-brand-mark">ভাই</span>
           <span class="workspace-switcher-text">
             <span class="workspace-switcher-name">BhaiOS</span>
+            <span class="workspace-switcher-sub">YOUR LOCAL STUDY SPACE</span>
           </span>
         </button>
       </div>
@@ -53,14 +52,21 @@
       <div class="sidebar-section-label">WORKSPACE</div>
 
       <nav class="nav-list" aria-label="Main navigation">
-        <button class="nav-item active" data-screen="chat" type="button" data-tooltip="Chat">
+        <button class="nav-item" data-screen="home" type="button" data-tooltip="Home">
+          <span class="nav-item-left">
+            <i class="bx bx-home-alt-2"></i>
+            <span class="nav-label">Home</span>
+          </span>
+        </button>
+
+        <button class="nav-item active" data-screen="chat" type="button" data-tooltip="Chat / Guide">
           <span class="nav-item-left">
             <i class="bx bx-message-square-detail"></i>
             <span class="nav-label">Chat</span>
           </span>
         </button>
 
-        <button class="nav-item" id="btnPastChats" type="button" data-tooltip="Past chats" aria-expanded="true">
+        <button class="nav-item" id="btnPastChats" type="button" data-tooltip="Past chats" aria-expanded="false">
           <span class="nav-item-left">
             <i class="bx bx-history"></i>
             <span class="nav-label">Past chats</span>
@@ -90,22 +96,28 @@
             <i class="bx bx-list-ul"></i>
             <span class="nav-label">Tasks</span>
           </span>
-          <span class="nav-count" id="navTaskCount">0</span>
+          <span class="nav-count" id="navTaskCount">5</span>
         </button>
 
-        <button class="nav-item" data-screen="progress" type="button" data-tooltip="Progress">
+        <button class="nav-item" data-screen="progress" type="button" data-tooltip="Weekly Review">
           <span class="nav-item-left">
             <i class="bx bx-bar-chart-alt-2"></i>
-            <span class="nav-label">Progress</span>
+            <span class="nav-label">Weekly Review</span>
           </span>
         </button>
 
-        <button class="nav-item" data-screen="benchmark" type="button" data-tooltip="Benchmark">
+        <button class="nav-item" data-screen="resources" type="button" data-tooltip="Resources">
           <span class="nav-item-left">
-            <i class="bx bx-test-tube"></i>
-            <span class="nav-label">Benchmark</span>
+            <i class="bx bx-book-bookmark"></i>
+            <span class="nav-label">Resources</span>
           </span>
-          <span class="nav-badge-dev">DEV</span>
+        </button>
+
+        <button class="nav-item" data-screen="settings" type="button" data-tooltip="Settings">
+          <span class="nav-item-left">
+            <i class="bx bx-cog"></i>
+            <span class="nav-label">Settings</span>
+          </span>
         </button>
       </nav>
 
@@ -146,8 +158,22 @@
           </button>
         </div>
 
+        <!-- Canonical Figma Local Storage Card & Motto -->
+        <div class="local-storage-card">
+          <div class="local-card-head">
+            <i class="bx bx-shield-quarter"></i>
+            <span>Only on this device</span>
+          </div>
+          <div class="local-card-sub">No uploads. No tracking.</div>
+          <div class="storage-meter-track">
+            <div class="storage-meter-used" style="width: 30%;"></div>
+          </div>
+        </div>
+
+        <div class="sidebar-motto-bangla bangla">তোমার শেখা, তোমার নিয়ন্ত্রণে।</div>
+        <div class="sidebar-version-line">BhaiOS 0.9 · Local-first</div>
+
         <div class="device-status">
-          <div class="status-green"><i class="bx bx-check-shield"></i> All data stays on this device</div>
           <div class="device-row">
             <span class="model-name" id="sidebarActiveModel">qwen2.5:3b</span>
             <button class="sidebar-token-btn" id="tokenUsagePill" type="button" title="Session token usage">
@@ -197,45 +223,291 @@
     </aside>
 
     <!-- =====================================================================
-         MAIN COLUMN (Full-height, no top bar)
+         MAIN COLUMN
          ===================================================================== -->
     <div class="main-column">
+      <!-- Canonical Figma Top Bar (2:4) -->
+      <header class="app-top-bar" id="appTopBar">
+        <div class="top-bar-left">
+          <span class="top-bar-title" id="topBarTitle">Your study space</span>
+        </div>
+        <div class="top-bar-right">
+          <button class="top-bar-icon-btn" id="btnTopSearch" type="button" title="Search (⌘K)" aria-label="Search">
+            <i class="bx bx-search"></i>
+          </button>
+          <div class="privacy-badge">
+            <i class="bx bx-shield-quarter"></i>
+            <span>Offline - Private</span>
+          </div>
+          <div class="model-status-chip" id="topModelStatusChip">
+            <span class="ready-dot"></span>
+            <span id="topModelStatusText">Local VLM ready, 4-bit</span>
+          </div>
+        </div>
+      </header>
+
       <!-- ===================================================================
-           SCREEN 1 — CHAT
+           SCREEN 0 — HOME (Figma 2:2)
+           =================================================================== -->
+      <section class="screen" id="screen-home">
+        <div class="screen-scroll home-scroll">
+          <div class="home-hero-header">
+            <div class="home-greeting-col">
+              <h1 class="home-greeting bangla">শুভ সকাল, আরমান।</h1>
+              <p class="home-subgreeting bangla">আজ একটু একটু করে, অনেকটা এগিয়ে যাও।</p>
+            </div>
+            <div class="home-date-col">
+              <div class="home-date-badge">MONDAY, 18 NOVEMBER 2024</div>
+              <div class="home-date-sub">Your week, at a glance</div>
+            </div>
+          </div>
+
+          <!-- Top Bento Grid: Continue Studying Hero + Study Streak -->
+          <div class="home-top-grid">
+            <!-- Continue Where You Left Off Card -->
+            <div class="hero-study-card">
+              <div class="hero-card-content">
+                <div class="hero-tag">CONTINUE WHERE YOU LEFT OFF</div>
+                <h2 class="hero-title bangla">একই প্রশ্ন, নতুন করে ভাবো।</h2>
+                <div class="hero-course">Calculus II · Integration by parts</div>
+                <div class="hero-meta">Page 3 · 1 hint revealed · Last studied yesterday</div>
+                <button class="btn-figma-primary hero-resume-btn" id="btnResumeHero" type="button">
+                  Resume in Guide &nbsp;→
+                </button>
+              </div>
+              <div class="hero-bookmark-card">
+                <div class="bookmark-integral">∫</div>
+                <div class="bookmark-expr">x cos x dx</div>
+                <div class="bookmark-line l1"></div>
+                <div class="bookmark-line l2"></div>
+                <div class="bookmark-tag">CALCULUS NOTES</div>
+              </div>
+            </div>
+
+            <!-- Study Streak Card -->
+            <div class="streak-card">
+              <div class="streak-head">
+                <i class="bx bx-flame"></i>
+                <span>Consistency, not cramming</span>
+              </div>
+              <div class="streak-count-row">
+                <span class="streak-number">7</span>
+                <span class="streak-unit">day streak</span>
+              </div>
+              <p class="streak-bangla bangla">দারুণ! প্রতিদিন একটু করে শিখছ।</p>
+              <div class="streak-days-row">
+                <span class="streak-day-chip done">T</span>
+                <span class="streak-day-chip done">W</span>
+                <span class="streak-day-chip done">T</span>
+                <span class="streak-day-chip done">F</span>
+                <span class="streak-day-chip done">S</span>
+                <span class="streak-day-chip done">S</span>
+                <span class="streak-day-chip done active">M</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Focus Section -->
+          <div class="home-focus-section">
+            <div class="home-focus-card">
+              <div class="home-focus-head">
+                <div class="home-focus-title-group">
+                  <span class="home-focus-title">Today's focus</span>
+                  <span class="home-focus-sub">3 tasks · About 1h 40m</span>
+                </div>
+                <button class="home-view-all-btn" id="btnHomeViewAllTasks" type="button">View all →</button>
+              </div>
+              <div class="home-task-list">
+                <div class="home-task-row">
+                  <div class="task-checkbox-wrap">
+                    <button class="task-checkbox" data-task-id="t1" type="button"></button>
+                    <div class="home-task-info">
+                      <div class="home-task-title">Calculus II — Solve remaining 4 integration problems</div>
+                      <div class="home-task-meta">
+                        <span class="task-tag math">Math</span>
+                        <span class="task-duration">45 mins</span>
+                        <span class="task-deadline-badge today">Today, 4 PM</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn-figma-ghost home-task-action" data-task-open="chat" type="button">Open in Guide →</button>
+                </div>
+
+                <div class="home-task-row">
+                  <div class="task-checkbox-wrap">
+                    <button class="task-checkbox checked" data-task-id="t2" type="button"><i class="bx bx-check"></i></button>
+                    <div class="home-task-info">
+                      <div class="home-task-title done-text">Physics — Review Carnot Cycle handwritten diagram</div>
+                      <div class="home-task-meta">
+                        <span class="task-tag physics">Physics</span>
+                        <span class="task-duration">25 mins</span>
+                        <span class="task-deadline-badge today">Today, 6 PM</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn-figma-ghost home-task-action" data-task-open="documents" type="button">View doc →</button>
+                </div>
+
+                <div class="home-task-row">
+                  <div class="task-checkbox-wrap">
+                    <button class="task-checkbox" data-task-id="t3" type="button"></button>
+                    <div class="home-task-info">
+                      <div class="home-task-title">Organic Chemistry — Mechanism of Aldol Condensation</div>
+                      <div class="home-task-meta">
+                        <span class="task-tag chem">Chemistry</span>
+                        <span class="task-duration">30 mins</span>
+                        <span class="task-deadline-badge tomorrow">Tomorrow, 10 AM</span>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn-figma-ghost home-task-action" data-task-open="chat" type="button">Open in Guide →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SCREEN 1 — CHAT / GUIDE (Figma 2:6)
            =================================================================== -->
       <section class="screen active" id="screen-chat">
-        <div class="chat-layout">
-          <div class="chat-main">
-            <button class="btn-open-context" id="btnOpenContext" type="button" title="Open right sidebar" aria-label="Open right sidebar" style="display: none;">
-              <i class="bx bx-dock-right"></i>
-              <span>Panel</span>
-            </button>
-            <!-- Empty / Welcome State (Screenshot 2 style) -->
-            <div class="chat-welcome" id="chatWelcome">
-              <h2 class="welcome-greeting" id="welcomeGreeting">Hi Arman, How can I help you today?</h2>
+        <div class="chat-layout figma-guide-layout">
+          <!-- Guide Top Header with Study Mode Switcher (2:2306) -->
+          <div class="guide-header-bar">
+            <div class="guide-title-block">
+              <h2 class="guide-title bangla">একটু ইঙ্গিত, নিজেই সমাধান।</h2>
+              <div class="guide-sub-topic">Calculus II / Integration by parts</div>
+            </div>
+            <!-- Study Mode Switcher (2:2306) -->
+            <div class="study-mode-switcher" id="studyModeSwitcher">
+              <button class="mode-switch-btn active" data-mode="guide" type="button">
+                <span>Guide</span>
+              </button>
+              <button class="mode-switch-btn" data-mode="answer" type="button">
+                <span>Answer</span>
+              </button>
+              <button class="mode-switch-btn agent-locked" data-mode="agent" type="button" title="Agent mode asks before acting">
+                <i class="bx bx-lock-alt"></i>
+                <span>Agent</span>
+                <span class="agent-sub">asks before acting</span>
+              </button>
+            </div>
+          </div>
 
-              <div class="welcome-composer">
-                <textarea class="composer-textarea" id="welcomeInput" rows="1" placeholder="Ask anything"></textarea>
-                <div class="welcome-composer-footer">
-                  <div class="composer-tools-left">
-                    <button class="model-pill-btn" id="btnWelcomeLocal" type="button" title="100% Local & Offline (Click to select model)">
-                      <i class="bx bx-chip"></i>
+          <div class="guide-columns-split">
+            <!-- LEFT COLUMN: Guided Conversation -->
+            <div class="guided-conversation-col">
+              <div class="guide-convo-head">
+                <span class="guide-session-label">STUDY SESSION</span>
+                <div class="guide-status-indicator">
+                  <span class="guide-status-dot"></span>
+                  <span class="guide-status-text" id="guideStatusText">Guide</span>
+                </div>
+              </div>
+
+              <!-- Message Stream Scroll -->
+              <div class="guide-convo-scroll" id="chatMessages">
+                <!-- Figma Canonical Guided Exchange (2:279 - 2:308) -->
+                <div class="guide-message student-msg">
+                  <div class="msg-author-time">YOU · 10:42</div>
+                  <div class="student-question-card">
+                    <p class="student-q-text bangla">এই সমাকলনে শেষ লাইনে ভুল হচ্ছে কেন?</p>
+                    <div class="doc-ref-chip">
+                      <i class="bx bx-book-open"></i>
+                      <span>Calculus_notes.pdf · Page 3</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="guide-message assistant-msg">
+                  <div class="assistant-author-row">
+                    <span class="assistant-bhai-mark">ভাই</span>
+                    <span class="assistant-name">BhaiOS</span>
+                  </div>
+                  <p class="assistant-lead-text bangla">
+                    প্রথমে তোমার ধাপগুলো দেখি। উত্তরটা তুমি নিজেই বের করবে।
+                  </p>
+
+                  <!-- Hint Ladder Component (2:2201) -->
+                  <div class="hint-ladder-card" id="hintLadderCard">
+                    <div class="hint-ladder-head">
+                      <span class="hint-ladder-title">Hint ladder</span>
+                      <span class="hint-ladder-counter" id="hintLadderCounter">1 of 3 revealed</span>
+                    </div>
+
+                    <!-- Step 01: Nudge (Revealed) -->
+                    <div class="hint-step revealed" id="hintStep1">
+                      <div class="hint-step-num">01</div>
+                      <div class="hint-step-body">
+                        <div class="hint-step-type">Nudge</div>
+                        <div class="hint-step-text bangla">∫ sin x dx-এর চিহ্নটা আরেকবার দেখো।</div>
+                      </div>
+                    </div>
+
+                    <!-- Step 02: Hint -->
+                    <div class="hint-step locked" id="hintStep2">
+                      <div class="hint-step-num">02</div>
+                      <div class="hint-step-body">
+                        <div class="hint-step-type">Hint</div>
+                        <div class="hint-step-text bangla" id="hintStepText2" style="display: none;">
+                          u = x, dv = cos x dx ধরলে ∫ u dv = uv - ∫ v du। v = sin x, তাই - ∫ sin x dx এর চিহ্নটি কী হবে?
+                        </div>
+                      </div>
+                      <i class="bx bx-lock-alt hint-lock-icon" id="hintLockIcon2"></i>
+                    </div>
+
+                    <!-- Step 03: Scaffold -->
+                    <div class="hint-step locked" id="hintStep3">
+                      <div class="hint-step-num">03</div>
+                      <div class="hint-step-body">
+                        <div class="hint-step-type">Scaffold</div>
+                        <div class="hint-step-text bangla" id="hintStepText3" style="display: none;">
+                          ∫ sin x dx = -cos x, সুতরাং -(-cos x) = +cos x। চূড়ান্ত সমাকলন: x sin x + cos x + C।
+                        </div>
+                      </div>
+                      <i class="bx bx-lock-alt hint-lock-icon" id="hintLockIcon3"></i>
+                    </div>
+                  </div>
+
+                  <!-- Next Hint Button Row -->
+                  <div class="hint-action-row">
+                    <button class="btn-figma-primary btn-next-hint" id="btnNextHint" type="button">
+                      Show next hint
                     </button>
-                    <div class="model-dropdown-wrap" id="welcomeModelWrap">
-                      <button class="model-select-pill" id="btnWelcomeModel" type="button" aria-haspopup="true"
-                        aria-expanded="false" title="Select Ollama model">
-                        <span id="welcomeModelLabel">Qwen2.5 · 3B</span>
-                        <span class="badge-size" id="welcomeModelSize">1.9 GB</span>
-                        <span class="badge-ram" id="welcomeModelRam">4 GB RAM</span>
+                    <span class="hint-prompt-note" id="hintPromptNote">Try a step before revealing more.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Unified Compact Composer Bar (Matching User Screenshot 5) -->
+              <div class="unified-composer-wrap">
+                <div class="unified-composer-bar" id="pillComposer">
+                  <button class="composer-icon-btn btn-attach" id="btnChatAttach" type="button" title="Attach document or handwritten notes">
+                    <i class="bx bx-plus"></i>
+                  </button>
+                  <textarea class="composer-auto-textarea" id="chatInput" rows="1" placeholder="তোমার চেষ্টা লিখো বা ছবি যোগ করো…"></textarea>
+
+                  <!-- Right embedded chips -->
+                  <div class="composer-embedded-tools">
+                    <!-- Model chip with real RAM/GB badges -->
+                    <div class="model-dropdown-wrap" id="chatModelWrap">
+                      <button class="model-select-pill" id="btnChatModel" type="button" aria-haspopup="true" aria-expanded="false" title="Select Ollama model">
+                        <i class="bx bx-chip"></i>
+                        <span id="chatModelLabel">Qwen2.5 · 3B</span>
+                        <span class="badge-size" id="chatModelSize">1.9 GB</span>
+                        <span class="badge-ram" id="chatModelRam">4 GB RAM</span>
                         <span class="badge-local">LOCAL</span>
                         <i class="bx bx-chevron-down"></i>
                       </button>
-                      <div class="model-dropdown-menu" id="welcomeModelMenu" role="menu"></div>
+                      <div class="model-dropdown-menu" id="chatModelMenu" role="menu"></div>
                     </div>
-                    <div class="mode-dropdown-wrap" id="welcomeModeWrap">
-                      <button class="effort-pill mode-toggle-btn guide" id="btnWelcomeMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
+
+                    <!-- Guide Mode switchable pill -->
+                    <div class="mode-dropdown-wrap" id="chatModeWrap">
+                      <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
                         <i class="bx bx-compass mode-icon"></i>
-                        <span class="mode-label">Guide Mode</span>
+                        <span class="mode-label" id="effortLabel">Guide Mode</span>
                         <i class="bx bx-chevron-down"></i>
                       </button>
                       <div class="mode-dropdown-menu" role="menu">
@@ -255,179 +527,151 @@
                         </button>
                       </div>
                     </div>
-                  </div>
-                  <div class="composer-tools-right">
-                    <button class="effort-pill voice-lang-btn" id="btnWelcomeVoiceLang" type="button"
-                      title="Whisper voice language">
-                      <span>Voice: Auto</span>
+
+                    <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button" title="Whisper voice language">
+                      <span>Auto</span>
                     </button>
-                    <button class="icon-circle-btn" id="btnWelcomeScan" type="button" title="Scan handwritten notes">
-                      <i class="bx bx-scan"></i>
-                    </button>
-                    <button class="icon-circle-btn mic-trigger" id="btnWelcomeVoice" type="button"
-                      title="Voice input (Whisper)">
+
+                    <button class="composer-icon-btn mic-trigger" id="btnChatVoice" type="button" title="Voice input (Whisper)">
                       <i class="bx bx-microphone"></i>
                     </button>
-                    <button class="btn-send-circle is-hidden" id="btnWelcomeSend" type="button"
-                      aria-label="Send message">
-                      <i class="bx bx-up-arrow-alt"></i>
+
+                    <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
+                      <i class="bx bx-right-arrow-alt"></i>
                     </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Active Conversation State (Screenshot 1 style) -->
-            <div class="chat-active-wrap" id="chatActiveWrap" style="display: none;">
-              <div class="chat-messages-scroll" id="chatMessages"></div>
-
-              <div class="composer-wrap">
-                <div class="chat-composer-box" id="pillComposer">
-                  <textarea class="composer-textarea" id="chatInput" rows="1" placeholder="Ask anything"></textarea>
-                  <div class="chat-composer-footer">
-                    <div class="chat-tools-left">
-                      <button class="pill-composer-attach" id="btnChatAttach" type="button" title="Attach document">
-                        <i class="bx bx-plus"></i>
-                      </button>
-                      <div class="model-dropdown-wrap" id="chatModelWrap">
-                        <button class="model-select-pill" id="btnChatModel" type="button" aria-haspopup="true" aria-expanded="false" title="Select Ollama model">
-                          <i class="bx bx-chip"></i>
-                          <span id="chatModelLabel">Qwen2.5 · 3B</span>
-                          <span class="badge-size" id="chatModelSize">1.9 GB</span>
-                          <span class="badge-ram" id="chatModelRam">4 GB RAM</span>
-                          <span class="badge-local">LOCAL</span>
-                          <i class="bx bx-chevron-down"></i>
-                        </button>
-                        <div class="model-dropdown-menu" id="chatModelMenu" role="menu"></div>
-                      </div>
-                      <div class="mode-dropdown-wrap" id="chatModeWrap">
-                        <button class="effort-pill mode-toggle-btn guide" id="btnEffortMode" type="button" title="Switch study mode" aria-haspopup="true" aria-expanded="false">
-                          <i class="bx bx-compass mode-icon"></i>
-                          <span class="mode-label" id="effortLabel">Guide Mode</span>
-                          <i class="bx bx-chevron-down"></i>
-                        </button>
-                        <div class="mode-dropdown-menu" role="menu">
-                          <button class="mode-dropdown-item active" data-set-mode="guide" type="button">
-                            <i class="bx bx-compass"></i>
-                            <div>
-                              <div class="mode-item-title">Guide Mode</div>
-                              <div class="mode-item-sub">Socratic step-by-step guidance</div>
-                            </div>
-                          </button>
-                          <button class="mode-dropdown-item" data-set-mode="answer" type="button">
-                            <i class="bx bx-bolt-circle"></i>
-                            <div>
-                              <div class="mode-item-title">Answer Mode</div>
-                              <div class="mode-item-sub">Direct, complete answers</div>
-                            </div>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="chat-tools-right">
-                      <button class="effort-pill voice-lang-btn" id="btnChatVoiceLang" type="button"
-                        title="Whisper voice language">
-                        <span>Auto</span>
-                      </button>
-                      <button class="pill-composer-mic mic-trigger" id="btnChatVoice" type="button"
-                        title="Voice input (Whisper)">
-                        <i class="bx bx-microphone"></i>
-                      </button>
-                      <button class="btn-send-circle is-hidden" id="btnSend" type="button" aria-label="Send message">
-                        <i class="bx bx-up-arrow-alt"></i>
-                      </button>
-                    </div>
                   </div>
                 </div>
                 <div class="composer-disclaimer">
-                  BhaiOS can make mistakes. Check important info.
+                  BhaiOS runs 100% locally on this device. No uploads. No tracking.
                 </div>
               </div>
             </div>
-          </div>
 
-          <aside class="context-panel" id="contextPanel">
-            <div class="context-header">
-              <div class="right-time-card">
-                <div class="right-clock-row">
-                  <div class="right-clock-time" id="rightClockTime">--:--:--</div>
-                  <div class="right-countdown-wrap" id="focusTimerWrap">
-                    <button class="right-countdown-btn" id="navbarFocusTimer" type="button"
-                      title="Click to start/pause reverse focus timer">
-                      <span id="navbarTimerText">45:00</span>
-                    </button>
-                    <button class="right-timer-options-btn" id="btnFocusTimerOptions" type="button"
-                      title="Focus timer options" aria-haspopup="true" aria-expanded="false">
-                      <i class="bx bx-chevron-down"></i>
-                    </button>
-                    <div class="focus-timer-popover" id="focusTimerPopover" role="menu">
-                      <div class="focus-pop-title">Focus Duration</div>
-                      <div class="focus-pop-options">
-                        <button class="focus-opt-btn" data-mins="15" type="button">15m <span class="focus-opt-sub">Sprint</span></button>
-                        <button class="focus-opt-btn" data-mins="25" type="button">25m <span class="focus-opt-sub">Pomodoro</span></button>
-                        <button class="focus-opt-btn active" data-mins="45" type="button">45m <span class="focus-opt-sub">Deep</span></button>
-                        <button class="focus-opt-btn" data-mins="60" type="button">60m <span class="focus-opt-sub">Exam</span></button>
-                      </div>
-                      <div class="focus-pop-divider"></div>
-                      <button class="focus-pop-action" id="btnResetFocusTimer" type="button">
-                        <i class="bx bx-reset"></i> Reset timer
-                      </button>
+            <!-- RIGHT COLUMN: Document Companion (Figma 2:316) -->
+            <div class="document-companion-col" id="documentCompanionCol">
+              <div class="doc-companion-head">
+                <div class="doc-title-row">
+                  <i class="bx bx-book-bookmark"></i>
+                  <span class="doc-filename">Calculus_notes.pdf</span>
+                </div>
+                <button class="doc-expand-btn" id="btnExpandCompanion" type="button" title="Open full view">
+                  <i class="bx bx-expand-alt"></i>
+                </button>
+              </div>
+
+              <div class="doc-companion-meta">
+                <span class="doc-page-badge">PAGE 3 OF 8</span>
+                <span class="doc-vision-linked"><i class="bx bx-check-circle"></i> Vision linked</span>
+              </div>
+
+              <!-- High-Fidelity Scanned Working with Bounding Box Highlight -->
+              <div class="scanned-working-card">
+                <div class="math-notebook-paper">
+                  <div class="math-line title-line">∫ x cos x dx</div>
+                  <div class="math-line step-line">u = x, &nbsp; dv = cos x dx</div>
+                  <div class="math-line step-line">du = dx, &nbsp; v = sin x</div>
+                  <div class="math-line step-line">= x sin x − ∫ sin x dx</div>
+                  <div class="math-line mistake-line">
+                    = x sin x
+                    <span class="mistake-highlight-box" title="Referenced working highlight">
+                      − cos x
+                      <span class="mistake-pulse-border"></span>
+                    </span>
+                    + C
+                  </div>
+                </div>
+
+                <!-- Linked region note (Figma 2:327) -->
+                <div class="linked-region-note">
+                  <span class="note-num">01</span>
+                  <span class="note-bangla bangla">এই ধাপটি নিয়ে আমরা ভাবছি</span>
+                </div>
+              </div>
+
+              <div class="doc-companion-footer">
+                <span class="doc-local-note">Your document stays on this device.</span>
+                <button class="btn-open-vision" id="btnOpenInVision" type="button">Open in Vision →</button>
+              </div>
+            </div>
+
+            <!-- Toggleable Right Side Context Panel (Matching User Screenshot 4) -->
+            <button class="btn-open-context" id="btnOpenContext" type="button" title="Open right sidebar" aria-label="Open right sidebar" style="display: none;">
+              <i class="bx bx-dock-right"></i>
+              <span>Panel</span>
+            </button>
+
+            <aside class="context-panel" id="contextPanel">
+              <div class="context-panel-header">
+                <span class="context-panel-title"><i class="bx bx-calendar"></i> Study Schedule</span>
+                <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Close right sidebar" aria-label="Close right sidebar">
+                  <i class="bx bx-x"></i>
+                </button>
+              </div>
+
+              <div class="context-panel-body">
+                <!-- Card 1: Calendar Card (Screenshot 4) -->
+                <div class="aside-card calendar-aside-card">
+                  <div class="cal-header-row">
+                    <span class="cal-month-name" id="calMonthHeader">July 2025</span>
+                    <div class="cal-nav-buttons">
+                      <button class="cal-nav-btn" id="btnCalPrev" type="button"><i class="bx bx-chevron-left"></i></button>
+                      <button class="cal-nav-btn" id="btnCalNext" type="button"><i class="bx bx-chevron-right"></i></button>
                     </div>
                   </div>
+                  <div class="cal-sub-date" id="calSubDate">Wednesday, 16 July</div>
                 </div>
-                <div class="right-clock-date" id="rightClockDate">Loading date…</div>
-                <script>
-                  (function() {
-                    try {
-                      var n = new Date();
-                      var t = document.getElementById('rightClockTime');
-                      var d = document.getElementById('rightClockDate');
-                      if (t) t.textContent = n.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                      if (d) d.textContent = n.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
-                    } catch (e) {}
-                  })();
-                </script>
-              </div>
-              <button class="context-collapse-btn" id="btnToggleContext" type="button" title="Close right sidebar"
-                aria-label="Close right sidebar">
-                <i class="bx bx-x"></i>
-              </button>
-            </div>
 
-            <div class="context-body">
-              <div class="right-section" id="rightTasksSection">
-                <div class="right-section-head">
-                  <span class="right-section-title">
-                    <i class="bx bx-check-square"></i> Tasks
-                    <span class="right-count-badge" id="rightTaskCount">0</span>
-                  </span>
-                  <div style="display: flex; gap: 4px; align-items: center;">
-                    <button class="right-clear-btn" id="btnRightViewAllTasks" type="button" title="View all tasks">View all</button>
-                    <button class="right-clear-btn" id="btnRightAddTask" type="button" title="Add quick task">
-                      <i class="bx bx-plus"></i> Add
-                    </button>
+                <!-- Card 2: A Gentle Nudge Card (Screenshot 4) -->
+                <div class="nudge-card">
+                  <div class="nudge-head">
+                    <i class="bx bx-time-five"></i>
+                    <span>A gentle nudge</span>
                   </div>
-                </div>
-                <div class="right-task-quick-add" id="rightTaskQuickAdd" style="display: none;">
-                  <input type="text" class="right-task-input" id="rightTaskInput" placeholder="Quick task title… (Enter to save)" />
-                </div>
-                <div class="right-list right-tasks-list" id="rightTasksList"></div>
-              </div>
-
-              <div class="right-section">
-                <div class="right-section-head">
-                  <span class="right-section-title">
-                    <i class="bx bx-folder"></i> Uploaded files
-                    <span class="right-count-badge" id="rightFilesCount">0</span>
-                  </span>
-                  <button class="right-clear-btn" id="btnRightUpload" type="button" title="Upload file">
-                    <i class="bx bx-plus"></i> Add
+                  <div class="nudge-text">
+                    Your physics session starts at 6 PM. Reminders work even when you're offline.
+                  </div>
+                  <button class="nudge-action-link" id="btnManageReminders" type="button">
+                    Manage reminders →
                   </button>
                 </div>
-                <div class="right-list" id="rightUploadedFiles"></div>
+
+                <!-- Card 3: Focus Timer Card (Screenshot 4) -->
+                <div class="aside-card focus-aside-card">
+                  <div class="focus-card-head">Focus timer</div>
+                  <div class="focus-session-tag">SESSION</div>
+                  <div class="focus-big-display" id="focusCardDuration">45 min</div>
+                  <div class="focus-presets-row">
+                    <button class="focus-chip" data-mins="15" type="button">15m</button>
+                    <button class="focus-chip" data-mins="25" type="button">25m</button>
+                    <button class="focus-chip active" data-mins="45" type="button">45m</button>
+                    <button class="focus-chip" data-mins="60" type="button">60m</button>
+                  </div>
+                  <div class="focus-active-tasks-label" id="focusActiveTasksLabel">0 active tasks</div>
+                  <button class="btn-start-focus-session" id="btnStartFocus" type="button">
+                    <i class="bx bx-play"></i> Start focus session
+                  </button>
+                </div>
+
+                <!-- Card 4: Compact Tasks Section -->
+                <div class="right-tasks-compact-section" id="rightTasksSection">
+                  <div class="right-tasks-head">
+                    <div class="right-tasks-title">
+                      <i class="bx bx-check-square"></i> Tasks
+                      <span class="right-tasks-badge" id="rightTaskCount">0</span>
+                    </div>
+                    <div class="right-tasks-actions">
+                      <button class="right-task-link" id="btnRightViewAllTasks" type="button">View all</button>
+                      <button class="right-task-link" id="btnRightAddTask" type="button"><i class="bx bx-plus"></i> Add</button>
+                    </div>
+                  </div>
+                  <div class="right-task-quick-add" id="rightTaskQuickAdd" style="display: none;">
+                    <input type="text" class="right-task-input" id="rightTaskInput" placeholder="Quick task title… (Enter to save)" />
+                  </div>
+                  <div class="right-tasks-list" id="rightTasksList"></div>
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          </div>
         </div>
       </section>
 
@@ -788,7 +1032,54 @@
       </section>
 
       <!-- ===================================================================
-           SCREEN 6 — SETTINGS & LOCAL MODEL MANAGER
+           SCREEN 6 — RESOURCES (Figma 2:760)
+           =================================================================== -->
+      <section class="screen" id="screen-resources">
+        <div class="screen-scroll">
+          <div class="screen-header-row">
+            <div>
+              <h2 class="serif" style="font-size: 24px; font-weight: 500;">Study Resources &amp; Formula Sheets</h2>
+              <div class="screen-subtitle">Curated offline references, cheat sheets, and problem sets.</div>
+            </div>
+            <span class="privacy-badge"><i class="bx bx-check-shield"></i> 100% Offline</span>
+          </div>
+
+          <div class="resources-grid">
+            <div class="resource-card">
+              <div class="resource-tag math">Calculus II</div>
+              <h3 class="resource-title">Integration by Parts &amp; Trigonometric Substitution</h3>
+              <p class="resource-desc">Essential formulas, tabular integration shortcuts, and common reduction formulas.</p>
+              <div class="resource-meta">
+                <span><i class="bx bx-file"></i> 8 pages PDF</span>
+                <button class="btn-figma-ghost" data-resource-open="Calculus_notes.pdf" type="button">Open in Guide →</button>
+              </div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-tag physics">Physics</div>
+              <h3 class="resource-title">Thermodynamics: Heat Engines &amp; Carnot Cycle</h3>
+              <p class="resource-desc">Entropy changes, P-V diagrams, second law of thermodynamics, and handwritten notes.</p>
+              <div class="resource-meta">
+                <span><i class="bx bx-file"></i> 12 pages PDF</span>
+                <button class="btn-figma-ghost" data-resource-open="Physics_Carnot.pdf" type="button">Open in Vision →</button>
+              </div>
+            </div>
+
+            <div class="resource-card">
+              <div class="resource-tag chem">Chemistry</div>
+              <h3 class="resource-title">Organic Reaction Mechanisms Cheat Sheet</h3>
+              <p class="resource-desc">Aldol condensation, Cannizzaro reaction, Grignard reagents with arrow pushing.</p>
+              <div class="resource-meta">
+                <span><i class="bx bx-file"></i> 15 pages PDF</span>
+                <button class="btn-figma-ghost" data-resource-open="Organic_Chemistry.pdf" type="button">Open in Guide →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================================================================
+           SCREEN 7 — SETTINGS & LOCAL MODEL MANAGER
            =================================================================== -->
       <section class="screen" id="screen-settings">
         <div class="screen-scroll">

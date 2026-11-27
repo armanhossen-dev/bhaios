@@ -24,6 +24,7 @@ function escapeHtml(str) {
 
 const state = {
   screen: 'chat',
+  hintRevealed: 1,
   chatMode: localStorage.getItem('bhaios_chat_mode') || 'guide', // 'guide' | 'answer'
   uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
   fontSize: localStorage.getItem('bhaios_font_size') || 'medium', // 'small' | 'medium' | 'large'
@@ -62,12 +63,14 @@ const state = {
 };
 
 const SCREEN_TITLES = {
-  chat: 'Chat',
-  documents: 'Documents',
-  tasks: 'Tasks',
-  progress: 'Progress',
+  home: 'Your study space',
+  chat: 'Guide / Calculus II',
+  documents: 'Documents · Vision linked',
+  tasks: 'Tasks & Schedule',
+  progress: 'Weekly Review',
+  resources: 'Study Resources',
   benchmark: 'Benchmark / Dev',
-  settings: 'Settings',
+  settings: 'Settings & Local Models',
 };
 
 /* ==========================================================================
@@ -386,6 +389,15 @@ function setChatMode(mode, showFeedback = true) {
     item.classList.toggle('active', item.dataset.setMode === mode);
   });
 
+  // Canonical Figma Study Mode Switcher (2:2306)
+  document.querySelectorAll('.mode-switch-btn[data-mode]').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  const guideStatus = document.getElementById('guideStatusText');
+  if (guideStatus) {
+    guideStatus.textContent = isGuide ? 'Guide' : 'Answer';
+  }
+
   if (showFeedback) {
     showToast(isGuide ? 'Switched to Guide Mode (Socratic hints)' : 'Switched to Answer Mode (Direct answers)');
   }
@@ -697,13 +709,12 @@ function renderDocuments() {
           <div data-slot="progress-indicator" class="${d.status === 'processing' ? 'processing' : ''}" style="transform: translateX(-${100 - d.progress}%)"></div>
         </div>
         <div class="doc-footer">
-          ${
-            d.status === 'indexed'
-              ? `<span class="doc-status-ok"><i class="bx bx-check"></i> Indexed</span>
+          ${d.status === 'indexed'
+          ? `<span class="doc-status-ok"><i class="bx bx-check"></i> Indexed</span>
                  <button class="link-source doc-open-btn" data-doc="${d.title}" type="button" style="color: var(--text-secondary);">Open <i class="bx bx-link-external"></i></button>`
-              : `<span class="doc-status-proc"><i class="bx bx-loader-alt bx-spin"></i> Processing · ${d.progress}%</span>
+          : `<span class="doc-status-proc"><i class="bx bx-loader-alt bx-spin"></i> Processing · ${d.progress}%</span>
                  <span class="mono" style="font-size: 11px; color: var(--text-muted);">${d.eta}</span>`
-          }
+        }
         </div>
       </article>
     `
@@ -831,8 +842,8 @@ function renderTasks() {
           </div>
           <div class="task-list">
             ${items
-              .map(
-                (t) => `
+          .map(
+            (t) => `
                 <div class="task-row ${t.completed ? 'done' : ''}">
                   <div class="task-left">
                     <button class="task-checkbox ${t.completed ? 'checked' : ''}" data-task-id="${t.id}" type="button">
@@ -854,8 +865,8 @@ function renderTasks() {
                   </div>
                 </div>
               `
-              )
-              .join('')}
+          )
+          .join('')}
           </div>
         </div>
       `;
@@ -1286,11 +1297,11 @@ function renderModelMenus() {
   const models = state.installedModels.length
     ? state.installedModels
     : [
-        { name: 'llava-phi3:latest', size: '2.7 GB', is_vision: true },
-        { name: 'qwen2.5:3b', size: '1.8 GB', is_vision: false },
-        { name: 'llama3.2:1b', size: '1.2 GB', is_vision: false },
-        { name: 'qwen2.5:0.5b', size: '379 MB', is_vision: false }
-      ];
+      { name: 'llava-phi3:latest', size: '2.7 GB', is_vision: true },
+      { name: 'qwen2.5:3b', size: '1.8 GB', is_vision: false },
+      { name: 'llama3.2:1b', size: '1.2 GB', is_vision: false },
+      { name: 'qwen2.5:0.5b', size: '379 MB', is_vision: false }
+    ];
 
   const html = `
     <div class="model-dropdown-header">
@@ -1301,9 +1312,9 @@ function renderModelMenus() {
     </div>
     <div class="model-dropdown-list">
       ${models.map((m) => {
-        const isActive = m.name === state.activeModel;
-        const spec = getModelFootprint(m.name);
-        return `
+    const isActive = m.name === state.activeModel;
+    const spec = getModelFootprint(m.name);
+    return `
           <button class="model-dropdown-item ${isActive ? 'active' : ''}" data-select-model="${escapeHtml(m.name)}" type="button">
             <div class="model-dropdown-item-left">
               <i class="bx ${isActive ? 'bx-check-circle' : 'bx-chip'}"></i>
@@ -1319,7 +1330,7 @@ function renderModelMenus() {
             </div>
           </button>
         `;
-      }).join('')}
+  }).join('')}
     </div>
     <div class="model-dropdown-footer">
       <button type="button" class="btn-dropdown-footer-action" data-action="refresh-models">
@@ -1449,13 +1460,12 @@ async function loadModels(showFeedback = false) {
                 <button data-slot="button" data-size="sm" data-variant="${isActiveText ? 'default' : 'outline'}" class="btn-set-text-model" data-model="${m.name}" type="button">
                   ${isActiveText ? 'Active Text' : 'Use Text'}
                 </button>
-                ${
-                  m.is_vision
-                    ? `<button data-slot="button" data-size="sm" data-variant="${isActiveVision ? 'default' : 'outline'}" class="btn-set-vision-model" data-model="${m.name}" type="button">
+                ${m.is_vision
+              ? `<button data-slot="button" data-size="sm" data-variant="${isActiveVision ? 'default' : 'outline'}" class="btn-set-vision-model" data-model="${m.name}" type="button">
                         ${isActiveVision ? 'Active Vision' : 'Use Vision'}
                       </button>`
-                    : ''
-                }
+              : ''
+            }
                 <button data-slot="button" data-size="sm" data-variant="ghost" class="btn-delete-model" data-model="${m.name}" type="button" title="Remove model">
                   <i class="bx bx-trash"></i>
                 </button>
@@ -1477,13 +1487,12 @@ async function loadModels(showFeedback = false) {
                 <div style="font-weight: 600; font-size: 14px;">${s.title}</div>
                 <div class="mono" style="font-size: 11.5px; color: var(--text-muted);">${s.name} · ${s.size} · ${s.ram}</div>
               </div>
-              ${
-                s.installed
-                  ? `<span data-slot="badge" data-variant="secondary"><i class="bx bx-check"></i> Installed</span>`
-                  : `<button data-slot="button" data-size="sm" data-variant="default" class="btn-pull-model" data-model="${s.name}" type="button">
+              ${s.installed
+              ? `<span data-slot="badge" data-variant="secondary"><i class="bx bx-check"></i> Installed</span>`
+              : `<button data-slot="button" data-size="sm" data-variant="default" class="btn-pull-model" data-model="${s.name}" type="button">
                       <i class="bx bx-download"></i> Download
                     </button>`
-              }
+            }
             </div>
             <div style="font-size: 12.5px; color: var(--text-secondary);">${s.description}</div>
             <div class="model-tags-row">
@@ -1547,7 +1556,7 @@ async function pullOllamaModel(modelName, btn) {
         } else if (obj.status && statusEl) {
           statusEl.textContent = obj.status;
         }
-      } catch {}
+      } catch { }
     }
     showToast(`${modelName} downloaded!`);
     await loadModels();
@@ -2093,17 +2102,113 @@ function init() {
     renderNotifications();
   });
 
-  document.getElementById('btnRightUpload').addEventListener('click', () => {
-    document.getElementById('uploadModal').classList.add('open');
+  document.getElementById('btnRightUpload')?.addEventListener('click', () => {
+    document.getElementById('uploadModal')?.classList.add('open');
   });
 
-  document.getElementById('rightUploadedFiles').addEventListener('click', (e) => {
+  document.getElementById('rightUploadedFiles')?.addEventListener('click', (e) => {
     if (e.target.closest('.right-empty-upload')) {
-      document.getElementById('uploadModal').classList.add('open');
+      document.getElementById('uploadModal')?.classList.add('open');
       return;
     }
     const askBtn = e.target.closest('.right-file-ask');
     if (askBtn) sendChatMessage(askBtn.dataset.ask);
+  });
+
+  // Canonical Figma Hint Ladder Interactivity (2:2201)
+  const btnNext = document.getElementById('btnNextHint');
+  const counterEl = document.getElementById('hintLadderCounter');
+  const promptNote = document.getElementById('hintPromptNote');
+
+  btnNext?.addEventListener('click', () => {
+    if (state.hintRevealed === 1) {
+      state.hintRevealed = 2;
+      const s2 = document.getElementById('hintStep2');
+      const text2 = document.getElementById('hintStepText2');
+      const lock2 = document.getElementById('hintLockIcon2');
+      if (s2) {
+        s2.classList.remove('locked');
+        s2.classList.add('revealed');
+      }
+      if (text2) text2.style.display = 'block';
+      if (lock2) lock2.style.display = 'none';
+      if (counterEl) counterEl.textContent = '2 of 3 revealed';
+      btnNext.textContent = 'Show final scaffold';
+      if (promptNote) promptNote.textContent = 'One more hint available if you get stuck.';
+      showToast('Revealed Hint 2 of 3');
+    } else if (state.hintRevealed === 2) {
+      state.hintRevealed = 3;
+      const s3 = document.getElementById('hintStep3');
+      const text3 = document.getElementById('hintStepText3');
+      const lock3 = document.getElementById('hintLockIcon3');
+      if (s3) {
+        s3.classList.remove('locked');
+        s3.classList.add('revealed');
+      }
+      if (text3) text3.style.display = 'block';
+      if (lock3) lock3.style.display = 'none';
+      if (counterEl) counterEl.textContent = '3 of 3 revealed';
+      btnNext.textContent = 'All hints revealed';
+      btnNext.disabled = true;
+      btnNext.style.opacity = '0.6';
+      btnNext.style.cursor = 'default';
+      if (promptNote) promptNote.textContent = 'Complete scaffolding revealed. Try solving it!';
+      showToast('Revealed final scaffold (3 of 3)');
+    }
+  });
+
+  // Canonical Figma Home & Navigation Bindings
+  document.getElementById('btnResumeHero')?.addEventListener('click', () => {
+    switchScreen('chat');
+  });
+  document.getElementById('btnHomeViewAllTasks')?.addEventListener('click', () => {
+    switchScreen('tasks');
+  });
+  document.querySelectorAll('[data-task-open]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchScreen(btn.dataset.taskOpen);
+    });
+  });
+  document.getElementById('btnOpenInVision')?.addEventListener('click', () => {
+    switchScreen('documents');
+  });
+  document.getElementById('btnExpandCompanion')?.addEventListener('click', () => {
+    switchScreen('documents');
+  });
+  document.querySelectorAll('[data-resource-open]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchScreen('chat');
+      showToast(`Loaded ${btn.dataset.resourceOpen} in Guide`);
+    });
+  });
+
+  // Study Mode Switcher (2:2306)
+  document.querySelectorAll('.mode-switch-btn[data-mode]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      if (mode === 'agent') {
+        showToast('Agent mode asks before executing tools on device.');
+        return;
+      }
+      setChatMode(mode);
+    });
+  });
+
+  // Focus Timer & Calendar in Aside Card (Screenshot 4)
+  document.getElementById('btnStartFocus')?.addEventListener('click', toggleFocusTimer);
+  document.querySelectorAll('.focus-chip[data-mins]').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      setFocusDuration(Number(chip.dataset.mins));
+    });
+  });
+  document.getElementById('btnCalPrev')?.addEventListener('click', () => {
+    showToast('Showing previous month');
+  });
+  document.getElementById('btnCalNext')?.addEventListener('click', () => {
+    showToast('Showing next month');
+  });
+  document.getElementById('btnTopSearch')?.addEventListener('click', () => {
+    openCommandModal();
   });
 
   document.getElementById('chatMessages').addEventListener('click', (e) => {
