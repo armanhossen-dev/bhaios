@@ -1356,7 +1356,7 @@ function updateActiveModelLabels() {
   if (sideModel) sideModel.textContent = formatted;
 
   const footModel = document.getElementById('sidebarModelFootprint');
-  if (footModel) footModel.textContent = `${spec.size} model`;
+  if (footModel) footModel.textContent = spec.size;
 
   const welcomeLabel = document.getElementById('welcomeModelLabel');
   if (welcomeLabel) welcomeLabel.textContent = formatted;
@@ -1481,12 +1481,12 @@ async function refreshSystemHealth() {
       dotEl.classList.toggle('live', isLive);
     }
     if (data.ram && data.ram.total_gb > 0 && ramEl) {
-      ramEl.textContent = `RAM ${data.ram.used_gb}/${data.ram.total_gb} GB`;
+      ramEl.textContent = `${data.ram.used_gb} / ${data.ram.total_gb} GB`;
       const footModel = document.getElementById('sidebarModelFootprint');
       if (footModel) {
         footModel.textContent = data.ollama_ram_gb > 0
-          ? `${data.ollama_ram_gb} GB model`
-          : `${activeSpec.size} model`;
+          ? `${data.ollama_ram_gb} GB`
+          : activeSpec.size;
       }
       ramEl.title = `System RAM: ${data.ram.used_gb} GB / ${data.ram.total_gb} GB (${data.ram.percent}%)`;
       if (barEl) {
@@ -1504,11 +1504,11 @@ async function refreshSystemHealth() {
       dotEl.classList.add('live');
     }
     if (ramEl) {
-      ramEl.textContent = `RAM 10.2/16.0 GB`;
+      ramEl.textContent = `8.9 / 16.0 GB`;
       const footModel = document.getElementById('sidebarModelFootprint');
-      if (footModel) footModel.textContent = `${activeSpec.size} model`;
-      ramEl.title = `System RAM: 10.2 GB / 16.0 GB (64%) · Model ${activeSpec.size} (${activeSpec.ram})`;
-      if (barEl) barEl.style.width = '64%';
+      if (footModel) footModel.textContent = activeSpec.size;
+      ramEl.title = `System RAM: 8.9 GB / 16.0 GB (55%) · Model ${activeSpec.size} (${activeSpec.ram})`;
+      if (barEl) barEl.style.width = '55%';
     }
   }
 }

@@ -152,53 +152,49 @@
           </div>
         </div>
 
-        <!-- System & Local Model Status Card (Each part clean in its own line) -->
+        <!-- System & Local Model Status Card (Organized hardware monitor card, zero line-breaking) -->
         <div class="device-status" id="deviceStatusCard">
-          <!-- Line 1: Active Model & Tokens -->
-          <div class="device-status-line line-model">
-            <div class="device-line-left">
+          <!-- Header: Model Title + Status Tag -->
+          <div class="status-top-header">
+            <div class="model-badge">
               <i class="bx bx-chip model-icon"></i>
               <span class="model-name" id="sidebarActiveModel">Qwen2.5 · 3B</span>
             </div>
-            <button class="sidebar-token-btn" id="tokenUsagePill" type="button" title="Session token usage">
+            <span class="status-live-tag">
+              <i class="bx bxs-circle dot-ready live" id="sidebarRuntimeDot"></i>
+              <span id="sidebarRuntimeStatus">Live</span>
+            </span>
+          </div>
+
+          <!-- 2-Column Metrics Grid: System RAM & Model VRAM -->
+          <div class="status-grid">
+            <div class="status-col">
+              <span class="status-mini-label">SYSTEM RAM</span>
+              <span class="status-mini-val" id="sidebarRamUsage">8.9 / 16 GB</span>
+            </div>
+            <div class="status-col text-right">
+              <span class="status-mini-label">MODEL SIZE</span>
+              <span class="status-mini-val" id="sidebarModelFootprint">1.8 GB</span>
+            </div>
+          </div>
+
+          <!-- Memory Usage Progress Bar -->
+          <div class="status-progress-wrap">
+            <div class="ram-bar" aria-hidden="true" title="Memory usage percentage">
+              <div class="ram-bar-fill" id="sidebarRamBar" style="width: 55%;"></div>
+            </div>
+          </div>
+
+          <!-- Footer: Privacy Guarantee & Session Tokens -->
+          <div class="status-bottom-row">
+            <span class="status-privacy-tag">
+              <i class="bx bx-shield-quarter"></i>
+              <span>100% On-device</span>
+            </span>
+            <button class="sidebar-token-pill" id="tokenUsagePill" type="button" title="Session token usage">
               <i class="bx bx-line-chart"></i>
               <span id="tokenUsageText">0 tok</span>
             </button>
-          </div>
-
-          <!-- Line 2: Engine Runtime Status -->
-          <div class="device-status-line line-runtime">
-            <div class="device-line-left">
-              <span class="runtime-badge">
-                <i class="bx bxs-circle dot-ready live" id="sidebarRuntimeDot"></i>
-                <span class="status-name">Engine:</span>
-                <span id="sidebarRuntimeStatus" class="status-live">Live</span>
-              </span>
-            </div>
-            <span class="runtime-mode-badge">100% Offline</span>
-          </div>
-
-          <!-- Line 3: System RAM & Model Footprint -->
-          <div class="device-status-line line-memory">
-            <div class="device-line-left">
-              <i class="bx bx-memory-card memory-icon"></i>
-              <span class="ram-readout" id="sidebarRamUsage">RAM 8.5 / 16.0 GB</span>
-            </div>
-            <span class="model-footprint-badge" id="sidebarModelFootprint">1.8 GB model</span>
-          </div>
-
-          <!-- Line 4: Memory Usage Progress Bar -->
-          <div class="ram-bar" aria-hidden="true" title="Memory usage percentage">
-            <div class="ram-bar-fill" id="sidebarRamBar" style="width: 53%;"></div>
-          </div>
-
-          <!-- Line 5: Privacy Guarantee & Version -->
-          <div class="device-status-line line-privacy">
-            <div class="privacy-badge">
-              <i class="bx bx-shield-quarter"></i>
-              <span>On-device</span>
-            </div>
-            <span class="app-version-badge">BhaiOS v0.9</span>
           </div>
         </div>
       </div>
