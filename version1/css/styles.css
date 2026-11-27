@@ -5670,6 +5670,15 @@ html[data-font-size="small"] .snippet-body {
   outline-offset: 2px;
 }
 
+.composer-auto-textarea:focus,
+.composer-auto-textarea:focus-visible,
+.composer-textarea:focus,
+.composer-textarea:focus-visible,
+.command-input:focus,
+.command-input:focus-visible {
+  outline: none !important;
+}
+
 button {
   text-decoration: none !important;
 }
