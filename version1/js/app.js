@@ -12,6 +12,16 @@ import {
   BENCHMARK_METRICS,
 } from './data.js';
 
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 const state = {
   screen: 'chat',
   chatMode: 'guide', // 'guide' | 'answer'
