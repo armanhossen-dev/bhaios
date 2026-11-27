@@ -29,7 +29,11 @@ def _get_local_embedder():
     if os.environ.get("BHAIOS_DISABLE_EMBEDDINGS") == "1":
         return None
 
+    from ..config import DEFAULT_EMBEDDING_MODEL
+
     candidates = [
+        DEFAULT_EMBEDDING_MODEL,
+        "BAAI/bge-m3",
         "intfloat/multilingual-e5-small",
         "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         "sentence-transformers/all-MiniLM-L6-v2",

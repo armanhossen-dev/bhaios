@@ -1,4 +1,4 @@
-"""Chat sessions, streaming Socratic Guide-First inference, and RAG citation endpoints."""
+"""100% Offline Chat sessions, Intelligent Model Router, streaming Socratic inference & RAG citations."""
 
 from __future__ import annotations
 
@@ -11,18 +11,16 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from ..config import DEFAULT_QWEN_MODEL
 from ..db import db_session, get_setting, new_id, row_to_dict
-from ..ollama_client import (
-    parse_hint_ladder,
-    stream_gemini_chat,
-    strip_hint_tags,
-)
+from ..ollama_client import parse_hint_ladder, strip_hint_tags
 from ..rag import clean_bangla_text, retrieve_relevant_chunks
 from ..services.bhai_agent import (
     build_bhai_system_prompt,
     load_student_course_context,
     stream_with_fallback,
 )
+from ..services.model_router import route_model
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -49,15 +47,16 @@ class CreateChatRequest(BaseModel):
     title: str = "New Study Session"
     subject: str = "General"
     mode: str = "guide"
-    model: str = "qwen2.5:3b"
+    model: str = DEFAULT_QWEN_MODEL
 
 
 class ChatStreamRequest(BaseModel):
     chat_id: str | None = None
     message: str
     mode: str = "guide"
-    model: str = "qwen2.5:3b"
-    vision_model: str = "llava-phi3:latest"
+    model: str = DEFAULT_QWEN_MODEL
+    intelligence_mode: str | None = None  # auto | qwen | nemotron | lightweight
+    vision_model: str = DEFAULT_QWEN_MODEL
     image_base64: str | None = None
     doc_id: str | None = None
     course_id: str | None = None
@@ -73,12 +72,6 @@ class TruncateRequest(BaseModel):
 class SuggestRequest(BaseModel):
     language: str = "en"
     subject: str | None = None
-
-
-class FactCheckRequest(BaseModel):
-    question: str
-    answer: str
-    language: str = "en"
 
 
 @router.get("/chats")
@@ -137,7 +130,6 @@ def delete_chat(chat_id: str) -> dict:
 
 @router.post("/chats/{chat_id}/truncate")
 def truncate_chat_from_message(chat_id: str, req: TruncateRequest) -> dict:
-    """Delete a message and all subsequent messages in a chat (for Edit & Repeat)."""
     with db_session() as conn:
         target = conn.execute(
             "SELECT created_at FROM messages WHERE id = ? AND chat_id = ?",
@@ -178,7 +170,23 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
     if not user_text:
         raise HTTPException(status_code=400, detail="Message cannot be empty")
 
-    # Create or load chat
+    chunks = retrieve_relevant_chunks(user_text, top_k=4, doc_id=req.doc_id, course_id=req.course_id)
+    citations = [
+        {"doc_id": c["doc_id"], "filename": c["filename"], "page_num": c["page_num"], "score": c["score"]}
+        for c in chunks
+    ]
+
+    intel_mode = req.intelligence_mode or get_setting("ai_intelligence_mode", "auto")
+    routing = await route_model(
+        user_text=user_text,
+        intelligence_mode=intel_mode,
+        preferred_model=req.model,
+        ui_language=req.language,
+        agent_mode=req.agent_mode,
+        has_image=bool(req.image_base64),
+        has_docs=bool(chunks),
+    )
+
     chat_id = req.chat_id
     with db_session() as conn:
         if not chat_id:
@@ -190,7 +198,7 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
                 INSERT INTO chats (id, title, subject, mode, model, created_at, updated_at, course_id, agent_mode, answer_policy)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
-                (chat_id, title, subject, req.mode, req.model, now, now, req.course_id, req.agent_mode, req.answer_policy),
+                (chat_id, title, subject, req.mode, routing.selected_model, now, now, req.course_id, req.agent_mode, req.answer_policy),
             )
         else:
             existing = conn.execute("SELECT id FROM chats WHERE id = ?", (chat_id,)).fetchone()
@@ -198,11 +206,10 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
                 raise HTTPException(status_code=404, detail="Chat not found")
             conn.execute(
                 "UPDATE chats SET mode = ?, model = ?, agent_mode = ?, answer_policy = ?, updated_at = ? WHERE id = ?",
-                (req.mode, req.model, req.agent_mode, req.answer_policy, now, chat_id),
+                (req.mode, routing.selected_model, req.agent_mode, req.answer_policy, now, chat_id),
             )
 
         course_ctx = load_student_course_context(req.course_id)
-
         user_msg_id = new_id("msg")
         conn.execute(
             """
@@ -211,28 +218,14 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
             """,
             (user_msg_id, chat_id, user_text, now),
         )
-
         history_rows = conn.execute(
             "SELECT role, content FROM messages WHERE chat_id = ? ORDER BY created_at ASC",
             (chat_id,),
         ).fetchall()
 
-    # Course-scoped / Doc-scoped Local RAG retrieval
-    chunks = retrieve_relevant_chunks(user_text, top_k=4, doc_id=req.doc_id, course_id=req.course_id)
-    citations = [
-        {
-            "doc_id": c["doc_id"],
-            "filename": c["filename"],
-            "page_num": c["page_num"],
-            "score": c["score"],
-        }
-        for c in chunks
-    ]
-
-    # Strict Source-Only enforcement if no supporting material is found
     if req.answer_policy == "source_only" and not chunks and not req.image_base64:
         refusal = (
-            "আপনার আপলোড করা কোর্স নোট বা ডকুমেন্টে এই প্রশ্নের পর্যাপ্ত তথ্য পাওয়া যায়নি। অনুগ্রহ করে সংশ্লিষ্ট নোট আপলোড করুন অথবা General/Balanced মোডে চেষ্টা করুন।"
+            "আপনার আপলোড করা কোর্স নোট বা ডকুমেন্টে এই প্রশ্নের পর্যাপ্ত তথ্য পাওয়া যায়নি। অনুগ্রহ করে সংশ্লিষ্ট নোট আপলোড করুন অথবা Balanced মোডে চেষ্টা করুন।"
             if req.language == "bn"
             else "Your uploaded course materials do not contain sufficient information to answer this in **Source-Only** mode. Upload relevant notes or switch to **Balanced** mode."
         )
@@ -245,9 +238,32 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
             )
 
         async def refusal_stream():
-            yield json.dumps({"type": "meta", "chat_id": chat_id, "user_message_id": user_msg_id, "citations": []}) + "\n"
+            yield json.dumps(
+                {
+                    "type": "meta",
+                    "chat_id": chat_id,
+                    "user_message_id": user_msg_id,
+                    "citations": [],
+                    "routing": routing.to_dict(),
+                }
+            ) + "\n"
             yield json.dumps({"type": "token", "content": refusal}) + "\n"
-            yield json.dumps({"type": "done", "chat_id": chat_id, "message": {"id": asst_id, "chat_id": chat_id, "role": "assistant", "content": refusal, "hints": None, "citations": [], "tokens": 0, "created_at": done_t}}) + "\n"
+            yield json.dumps(
+                {
+                    "type": "done",
+                    "chat_id": chat_id,
+                    "message": {
+                        "id": asst_id,
+                        "chat_id": chat_id,
+                        "role": "assistant",
+                        "content": refusal,
+                        "hints": None,
+                        "citations": [],
+                        "tokens": 0,
+                        "created_at": done_t,
+                    },
+                }
+            ) + "\n"
 
         return StreamingResponse(refusal_stream(), media_type="application/x-ndjson")
 
@@ -268,27 +284,25 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
             msg_obj["images"] = [req.image_base64]
         ollama_messages.append(msg_obj)
 
-    active_model = req.vision_model if req.image_base64 else req.model
-    if req.model.startswith("gemini:"):
-        active_model = req.model
-
     async def event_stream():
         yield json.dumps(
-            {"type": "meta", "chat_id": chat_id, "user_message_id": user_msg_id, "citations": citations}
+            {
+                "type": "meta",
+                "chat_id": chat_id,
+                "user_message_id": user_msg_id,
+                "citations": citations,
+                "routing": routing.to_dict(),
+            }
         ) + "\n"
 
         full_response = ""
         total_tokens = 0
         try:
-            if active_model.startswith("gemini:"):
-                api_key = get_setting("google_api_key", "")
-                if not api_key:
-                    raise RuntimeError("Google API key not configured in Settings.")
-                stream = stream_gemini_chat(api_key, active_model.split(":", 1)[1], ollama_messages)
-            else:
-                stream = stream_with_fallback(active_model, ollama_messages)
-
-            async for chunk in stream:
+            async for chunk in stream_with_fallback(
+                routing.selected_model,
+                ollama_messages,
+                candidates_override=routing.candidates,
+            ):
                 delta = chunk.get("message", {}).get("content", "")
                 if delta:
                     full_response += delta
@@ -343,35 +357,3 @@ async def stream_chat(req: ChatStreamRequest) -> StreamingResponse:
         ) + "\n"
 
     return StreamingResponse(event_stream(), media_type="application/x-ndjson")
-
-
-@router.post("/chat/fact-check")
-async def fact_check_response(req: FactCheckRequest) -> dict:
-    """Use the optional Google Gemini API key to fact-check a local model's answer."""
-    api_key = get_setting("google_api_key", "")
-    if not api_key:
-        raise HTTPException(
-            status_code=400,
-            detail="Add a Google Gemini API key in Settings to use Fact-Check.",
-        )
-
-    lang_instr = "Respond in clean Unicode Bangla." if req.language == "bn" else "Respond concisely in English."
-    prompt = (
-        f"Fact-check this local AI study assistant response.\n"
-        f"Student question: {req.question}\n"
-        f"Local AI response: {req.answer}\n\n"
-        f"Verify factual accuracy, formulas, and logic. Point out any errors or confirm if correct in 2-4 bullet points. {lang_instr}"
-    )
-
-    chunks: list[str] = []
-    try:
-        async for evt in stream_gemini_chat(
-            api_key, "gemini-2.5-flash", [{"role": "user", "content": prompt}]
-        ):
-            delta = evt.get("message", {}).get("content", "")
-            if delta:
-                chunks.append(delta)
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Fact-check failed: {exc}") from exc
-
-    return {"report": clean_bangla_text("".join(chunks))}

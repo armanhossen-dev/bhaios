@@ -31,6 +31,7 @@ export const CommandPalette: React.FC = () => {
     { id: "tasks", label: t("tasks"), icon: "bx-list-check" },
     { id: "progress", label: t("progress"), icon: "bx-bar-chart-alt-2" },
     { id: "resources", label: t("resources"), icon: "bx-book-bookmark" },
+    { id: "models", label: t("models"), icon: "bx-chip" },
     { id: "settings", label: t("settings"), icon: "bx-cog" },
   ];
 

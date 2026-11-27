@@ -8,12 +8,14 @@ export type ViewId =
   | "study"
   | "speech"
   | "graph"
+  | "models"
   | "tasks"
   | "progress"
   | "resources"
   | "settings";
 
 export type ThemeMode = "system" | "light" | "dark";
+export type IntelligenceMode = "auto" | "qwen" | "nemotron" | "lightweight";
 export type Language = "en" | "bn";
 export type FontSize = "small" | "medium" | "large";
 export type StudyMode = "guide" | "answer";
@@ -348,4 +350,56 @@ export interface LectureTranscript {
   segments: Array<{ line: number; text: string }>;
   created_at: number;
   document_id?: string;
+}
+
+export interface RoutingMetadata {
+  selected_model: string;
+  role: string;
+  intelligence_mode: string;
+  intent: string;
+  language: string;
+  complexity: string;
+  reason: string;
+  fallback_used: boolean;
+  activity_steps: string[];
+}
+
+export interface ModelDashboardItem {
+  id: string;
+  display_name: string;
+  kind: "ollama_llm" | "embedding" | "stt" | "ocr" | "tts";
+  category: string;
+  size_gb: number;
+  min_ram_gb: number;
+  recommended_for: string;
+  license_note: string;
+  storage_path: string;
+  optional: boolean;
+  installed: boolean;
+  running: boolean;
+  status: "Ready" | "Running" | "Downloading" | "Unavailable" | "Error";
+  memory_gb: number;
+  compatible: boolean;
+  warnings: string[];
+  error?: string | null;
+}
+
+export interface ModelDashboardData {
+  ollama_online: boolean;
+  ollama_installed: boolean;
+  offline_mode: boolean;
+  intelligence_mode: IntelligenceMode;
+  context_window: number;
+  max_tokens: number;
+  model_timeout_sec: number;
+  ram_total_gb: number;
+  ram_used_gb: number;
+  storage: {
+    models_root: string;
+    ollama_models_path: string;
+    free_gb: number;
+    total_gb: number;
+    external_volumes: string[];
+  };
+  models: ModelDashboardItem[];
 }

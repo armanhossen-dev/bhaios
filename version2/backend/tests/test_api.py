@@ -136,18 +136,15 @@ def test_settings_and_bangla_sanitizer(client: TestClient):
     for valid_bn in ("বাংলা", "ইংরেজি", "হ্যাঁ", "চাঁদ", "দুঃখ", "অংশ", "ব্যাংক"):
         assert clean_bangla_text(valid_bn) == valid_bn
 
-    save = client.post("/api/settings", json={"google_api_key": "AIzaTestKey123456"})
+    save = client.post("/api/settings", json={"offline_mode": True, "ai_intelligence_mode": "auto"})
     assert save.status_code == 200
-    assert save.json()["has_google_api_key"] is True
+    assert save.json()["offline_mode"] is True
+    assert save.json()["ai_intelligence_mode"] == "auto"
 
     models = client.get("/api/models").json()
     names = [m["name"] for m in models["installed"]]
-    assert "gemini:gemini-2.5-flash" in names
+    assert not any(n.startswith("gemini:") for n in names)
     assert "qwen2.5:0.5b" not in names
-
-    clear = client.post("/api/settings", json={"google_api_key": ""})
-    assert clear.status_code == 200
-    assert clear.json()["has_google_api_key"] is False
 
     voice = client.get("/api/voice/models")
     assert voice.status_code == 200
@@ -156,6 +153,31 @@ def test_settings_and_bangla_sanitizer(client: TestClient):
     tts = client.get("/api/tts/models")
     assert tts.status_code == 200
     assert any(m["id"] == "facebook/mms-tts-ben" for m in tts.json()["models"])
+
+    # Voice transcribe endpoint test (valid WAV header + mocked faster-whisper)
+    import io
+    import wave
+    from unittest.mock import MagicMock, patch
+
+    wbuf = io.BytesIO()
+    with wave.open(wbuf, "wb") as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)
+        wf.setframerate(16000)
+        wf.writeframes(b"\x00\x00" * 1600)
+    fake_seg = MagicMock(text="ভাই বাংলা exam প্রস্তুতি")
+    fake_model = MagicMock()
+    fake_model.transcribe.return_value = ([fake_seg], MagicMock(language="bn"))
+    with patch("version2.backend.routers.voice._get_faster_whisper_bn_en", return_value=fake_model), \
+         patch("version2.backend.routers.voice._is_installed", return_value=True), \
+         patch("version2.backend.routers.voice.get_setting", side_effect=lambda k, d="": "" if k == "google_api_key" else "whisper-medium-bn-en-cs-faster"):
+        tr = client.post(
+            "/api/transcribe",
+            files={"file": ("voice.wav", wbuf.getvalue(), "audio/wav")},
+            data={"language": "auto"},
+        )
+    assert tr.status_code == 200
+    assert tr.json()["text"] == "ভাই বাংলা exam প্রস্তুতি"
 
 
 def test_v3_academics_study_codelab_and_dedup(client: TestClient):

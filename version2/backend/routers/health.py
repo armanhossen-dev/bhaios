@@ -20,7 +20,8 @@ START_TIME = time.time()
 
 
 class SettingsUpdate(BaseModel):
-    google_api_key: str | None = None
+    offline_mode: bool | None = None
+    ai_intelligence_mode: str | None = None
 
 
 class ResetWorkspaceRequest(BaseModel):
@@ -105,15 +106,18 @@ async def get_health() -> dict:
 
 @router.get("/settings")
 def read_settings() -> dict:
-    key = get_setting("google_api_key", "")
-    masked = f"{key[:6]}...{key[-4:]}" if len(key) > 10 else ("configured" if key else "")
-    return {"has_google_api_key": bool(key), "google_api_key_masked": masked}
+    return {
+        "offline_mode": os.environ.get("BHAIOS_OFFLINE_MODE", "1") == "1",
+        "ai_intelligence_mode": get_setting("ai_intelligence_mode", "auto"),
+    }
 
 
 @router.post("/settings")
 def update_settings(req: SettingsUpdate) -> dict:
-    if req.google_api_key is not None:
-        set_setting("google_api_key", req.google_api_key.strip())
+    if req.offline_mode is not None:
+        os.environ["BHAIOS_OFFLINE_MODE"] = "1" if req.offline_mode else "0"
+    if req.ai_intelligence_mode in ("auto", "qwen", "nemotron", "lightweight"):
+        set_setting("ai_intelligence_mode", req.ai_intelligence_mode)
     return read_settings()
 
 

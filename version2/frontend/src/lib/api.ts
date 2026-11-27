@@ -17,6 +17,7 @@ import type {
   KnowledgeEdge,
   KnowledgeGraphData,
   LectureTranscript,
+  ModelDashboardData,
   QuizSession,
   StudyDocument,
   StudyResource,
@@ -39,11 +40,11 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
   health: () => request<HealthTelemetry>("/api/health"),
   getSettings: () =>
-    request<{ has_google_api_key: boolean; google_api_key_masked: string }>("/api/settings"),
-  saveSettings: (google_api_key: string) =>
-    request<{ has_google_api_key: boolean; google_api_key_masked: string }>("/api/settings", {
+    request<{ offline_mode: boolean; ai_intelligence_mode: string }>("/api/settings"),
+  saveSettings: (payload: { offline_mode?: boolean; ai_intelligence_mode?: string }) =>
+    request<{ offline_mode: boolean; ai_intelligence_mode: string }>("/api/settings", {
       method: "POST",
-      body: JSON.stringify({ google_api_key }),
+      body: JSON.stringify(payload),
     }),
   exportWorkspace: async () => {
     const resp = await fetch("/api/settings/export");
@@ -59,6 +60,34 @@ export const api = {
   models: () =>
     request<{ ollama_online: boolean; installed: InstalledModel[]; suggested: SuggestedModel[] }>(
       "/api/models"
+    ),
+  modelsDashboard: () => request<ModelDashboardData>("/api/models/dashboard"),
+  unloadModel: (name: string) =>
+    request<{ unloaded: boolean; model: string }>("/api/models/unload", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    }),
+  testModel: (name: string) =>
+    request<{ ok: boolean; model: string; latency_ms?: number; reply?: string; error?: string }>(
+      "/api/models/test",
+      { method: "POST", body: JSON.stringify({ name }) }
+    ),
+  updateModelConfig: (payload: {
+    intelligence_mode?: string;
+    context_window?: number;
+    max_tokens?: number;
+    model_timeout_sec?: number;
+    custom_models_path?: string;
+    ollama_models_path?: string;
+    offline_mode?: boolean;
+  }) =>
+    request<ModelDashboardData>("/api/models/config", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  offlineAudit: () =>
+    request<{ offline_mode: boolean; blocked_outbound_attempts: Array<{ host: string; port?: number; timestamp: number }> }>(
+      "/api/models/offline-audit"
     ),
   deleteModel: (name: string) =>
     request<{ deleted: string }>(`/api/models/${encodeURIComponent(name)}`, { method: "DELETE" }),
@@ -109,11 +138,6 @@ export const api = {
     request<{ suggestions: string[] }>("/api/suggest", {
       method: "POST",
       body: JSON.stringify({ language }),
-    }),
-  factCheck: (question: string, answer: string, language: string) =>
-    request<{ report: string }>("/api/chat/fact-check", {
-      method: "POST",
-      body: JSON.stringify({ question, answer, language }),
     }),
 
   // Documents & Visual Studio
@@ -388,4 +412,14 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ course_id, hours_per_day, days_ahead, save_tasks }),
     }),
+  agentAuditLog: () =>
+    request<Array<{ id: string; action: string; arguments_json: string; approved: number; status: string; result_preview: string; created_at: number }>>(
+      "/api/bhai/agent/audit-log"
+    ),
+  agentApprovals: () =>
+    request<Array<{ id: string; action: string; target_path: string; details: string; status: string; created_at: number }>>(
+      "/api/bhai/agent/approvals"
+    ),
+  resolveAgentApproval: (id: string, approve: boolean) =>
+    request(`/api/bhai/agent/approvals/${id}`, { method: "POST", body: JSON.stringify({ approve }) }),
 };

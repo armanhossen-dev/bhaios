@@ -28,6 +28,9 @@ const SpeechView = lazy(() =>
 const KnowledgeGraphView = lazy(() =>
   import("./components/views/KnowledgeGraphView").then((m) => ({ default: m.KnowledgeGraphView }))
 );
+const ModelsView = lazy(() =>
+  import("./components/views/ModelsView").then((m) => ({ default: m.ModelsView }))
+);
 
 const Shell: React.FC = () => {
   const {
@@ -64,6 +67,10 @@ const Shell: React.FC = () => {
               {view === "workspace" && activeCourse
                 ? `${activeCourse.code} · ${activeCourse.title}`
                 : view}
+            </span>
+            <span className="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-semibold text-emerald-400">
+              <i className="bx bx-shield-quarter text-xs" />
+              LOCAL MODE — ALL PROCESSING ON THIS DEVICE
             </span>
           </div>
 
@@ -113,6 +120,7 @@ const Shell: React.FC = () => {
             {view === "study" && <StudyStudioView />}
             {view === "speech" && <SpeechView />}
             {view === "graph" && <KnowledgeGraphView />}
+            {view === "models" && <ModelsView />}
             {view === "tasks" && <TasksView />}
             {view === "progress" && <ProgressView />}
             {view === "resources" && <ResourcesView />}

@@ -10,6 +10,7 @@ import type {
   FontSize,
   HealthTelemetry,
   InstalledModel,
+  IntelligenceMode,
   Language,
   StudyDocument,
   StudyMode,
@@ -55,6 +56,8 @@ interface AppContextValue {
   refreshAcademics: () => Promise<void>;
   activeModel: string;
   setActiveModel: (m: string) => void;
+  intelligenceMode: IntelligenceMode;
+  setIntelligenceMode: (m: IntelligenceMode) => void;
   visionModel: string;
   setVisionModel: (m: string) => void;
   studyMode: StudyMode;
@@ -90,9 +93,10 @@ const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [view, setView] = useState<ViewId>("home");
-  const [theme, setThemeState] = useState<ThemeMode>(
-    () => (localStorage.getItem("bhaios_theme") as ThemeMode) || "dark"
-  );
+  const [theme, setThemeState] = useState<ThemeMode>(() => {
+    const saved = localStorage.getItem("bhaios_theme");
+    return saved === "system" || saved === "light" || saved === "dark" ? saved : "dark";
+  });
   const [language, setLanguageState] = useState<Language>(
     () => (localStorage.getItem("bhaios_lang") as Language) || "en"
   );
@@ -108,8 +112,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeCourseId, setActiveCourseIdState] = useState<string | null>(
     () => localStorage.getItem("bhaios_course_id") || null
   );
-  const [activeModel, setActiveModel] = useState("qwen2.5:3b");
-  const [visionModel, setVisionModel] = useState("llava-phi3:latest");
+  const [activeModel, setActiveModel] = useState("qwen3.5:4b");
+  const [intelligenceMode, setIntelligenceModeState] = useState<IntelligenceMode>(
+    () => (localStorage.getItem("bhaios_intel_mode") as IntelligenceMode) || "auto"
+  );
+  const [visionModel, setVisionModel] = useState("qwen3.5:4b");
   const [studyMode, setStudyMode] = useState<StudyMode>("guide");
   const [agentMode, setAgentMode] = useState<AgentMode>("tutor");
   const [answerPolicy, setAnswerPolicy] = useState<AnswerPolicy>("balanced");
@@ -157,6 +164,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setFontSize = (f: FontSize) => {
     setFontSizeState(f);
     localStorage.setItem("bhaios_font", f);
+  };
+
+  const setIntelligenceMode = (m: IntelligenceMode) => {
+    setIntelligenceModeState(m);
+    localStorage.setItem("bhaios_intel_mode", m);
+    api.saveSettings({ ai_intelligence_mode: m }).catch(() => {});
   };
 
   const t = useCallback(
@@ -405,6 +418,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         refreshAcademics,
         activeModel,
         setActiveModel,
+        intelligenceMode,
+        setIntelligenceMode,
         visionModel,
         setVisionModel,
         studyMode,

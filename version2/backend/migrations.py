@@ -278,3 +278,31 @@ def run_migrations(conn: sqlite3.Connection) -> None:
             "INSERT INTO schema_migrations (version, name, applied_at) VALUES (3, 'v3_fts5_and_indexes', ?)",
             (time.time(),),
         )
+
+    if 4 not in applied:
+        conn.executescript(
+            """
+            CREATE TABLE IF NOT EXISTS agent_audit_log (
+                id TEXT PRIMARY KEY,
+                action TEXT NOT NULL,
+                arguments_json TEXT DEFAULT '{}',
+                approved INTEGER NOT NULL DEFAULT 1,
+                status TEXT NOT NULL,
+                result_preview TEXT DEFAULT '',
+                created_at REAL NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS agent_pending_approvals (
+                id TEXT PRIMARY KEY,
+                action TEXT NOT NULL,
+                target_path TEXT NOT NULL,
+                details TEXT DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'pending',
+                created_at REAL NOT NULL
+            );
+            """
+        )
+        conn.execute(
+            "INSERT INTO schema_migrations (version, name, applied_at) VALUES (4, 'v3_agent_audit_and_approvals', ?)",
+            (time.time(),),
+        )

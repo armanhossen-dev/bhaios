@@ -25,10 +25,7 @@ export const SettingsView: React.FC = () => {
   const [pullStatus, setPullStatus] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [googleKeyInput, setGoogleKeyInput] = useState("");
-  const [hasGoogleKey, setHasGoogleKey] = useState(false);
-  const [maskedKey, setMaskedKey] = useState("");
-  const [savingKey, setSavingKey] = useState(false);
+  const [offlineMode, setOfflineMode] = useState(true);
   const [voiceModels, setVoiceModels] = useState<
     Array<{
       name: string;
@@ -71,8 +68,7 @@ export const SettingsView: React.FC = () => {
     api
       .getSettings()
       .then((s) => {
-        setHasGoogleKey(s.has_google_api_key);
-        setMaskedKey(s.google_api_key_masked);
+        setOfflineMode(s.offline_mode);
       })
       .catch(() => {});
     loadVoiceModels();
@@ -139,23 +135,11 @@ export const SettingsView: React.FC = () => {
     }
   };
 
-  const handleSaveGoogleKey = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSavingKey(true);
-    try {
-      const res = await api.saveSettings(googleKeyInput.trim());
-      setHasGoogleKey(res.has_google_api_key);
-      setMaskedKey(res.google_api_key_masked);
-      setGoogleKeyInput("");
-      await refreshModels();
-      pushNotification(
-        res.has_google_api_key
-          ? "Google Gemini API key saved. Gemini models added to selector."
-          : "Google API key cleared."
-      );
-    } finally {
-      setSavingKey(false);
-    }
+  const toggleOfflineMode = async () => {
+    const next = !offlineMode;
+    const res = await api.saveSettings({ offline_mode: next });
+    setOfflineMode(res.offline_mode);
+    pushNotification(res.offline_mode ? "Strict Offline Mode enabled (outbound network blocked)." : "Offline socket guard paused for installation.");
   };
 
   const handlePull = async (name: string) => {
@@ -297,55 +281,25 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-semibold flex items-center gap-2">
-                <i className="bx bx-key text-base text-amber-400" />
-                Google Gemini API Key (Optional)
-              </h2>
-              <p className="text-xs text-[var(--text-muted)] mt-0.5">
-                Add a Google AI Studio key to unlock Gemini 2.5 Flash/Pro & high-accuracy Bangla voice transcription. Leave empty for 100% offline mode.
-              </p>
-            </div>
-            {hasGoogleKey && (
-              <span className="text-xs font-mono px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400">
-                Connected ({maskedKey})
-              </span>
-            )}
+        <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-sm font-semibold flex items-center gap-2">
+              <i className="bx bx-shield-quarter text-base text-emerald-400" />
+              Strict Offline Mode (100% On-Device)
+            </h2>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Blocks all outbound non-localhost network connections during normal study use. Zero cloud APIs.
+            </p>
           </div>
-
-          <form onSubmit={handleSaveGoogleKey} className="flex flex-col sm:flex-row gap-2">
-            <input
-              type="password"
-              value={googleKeyInput}
-              onChange={(e) => setGoogleKeyInput(e.target.value)}
-              placeholder={hasGoogleKey ? "Enter new key to replace…" : "AIzaSy..."}
-              className="flex-1 px-3 py-2 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-sm font-mono outline-none focus:border-[var(--accent-blue)]"
-            />
-            <button
-              type="submit"
-              disabled={savingKey || !googleKeyInput.trim()}
-              className="px-4 py-2 rounded-xl bg-[var(--accent-blue)] text-white text-xs font-semibold cursor-pointer disabled:opacity-40"
-            >
-              {savingKey ? "Saving…" : "Save Key"}
-            </button>
-            {hasGoogleKey && (
-              <button
-                type="button"
-                onClick={async () => {
-                  const res = await api.saveSettings("");
-                  setHasGoogleKey(res.has_google_api_key);
-                  setMaskedKey("");
-                  await refreshModels();
-                  pushNotification("Google API key removed.");
-                }}
-                className="px-3 py-2 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-xs text-red-400 hover:border-red-400 cursor-pointer"
-              >
-                Clear
-              </button>
-            )}
-          </form>
+          <button
+            type="button"
+            onClick={toggleOfflineMode}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold cursor-pointer ${
+              offlineMode ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40" : "bg-amber-500/20 text-amber-400"
+            }`}
+          >
+            {offlineMode ? "Strict Offline: ON" : "Install Mode (Network Allowed)"}
+          </button>
         </div>
 
         <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 space-y-3">

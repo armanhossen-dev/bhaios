@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { api } from "../../lib/api";
-import type { ChatMessage, Citation, HintLadderData } from "../../types";
+import type { ChatMessage, Citation, HintLadderData, IntelligenceMode, RoutingMetadata } from "../../types";
 import { Composer } from "../Composer";
 import { HintLadder } from "../HintLadder";
 import { MarkdownMath } from "../MarkdownMath";
@@ -34,6 +34,8 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
     activeChatId,
     setActiveChatId,
     activeModel,
+    intelligenceMode,
+    setIntelligenceMode,
     visionModel,
     studyMode,
     agentMode,
@@ -55,8 +57,8 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
   const [streamingCitations, setStreamingCitations] = useState<Citation[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [factChecks, setFactChecks] = useState<Record<string, string>>({});
-  const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [routingMeta, setRoutingMeta] = useState<RoutingMetadata | null>(null);
+  const [activityExpanded, setActivityExpanded] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -107,6 +109,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
           message: text,
           mode: studyMode,
           model: activeModel,
+          intelligence_mode: intelligenceMode,
           vision_model: visionModel,
           image_base64: imageBase64 || null,
           doc_id: activeDoc?.id || null,
@@ -140,6 +143,7 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
               setActiveChatId(evt.chat_id);
             }
             if (evt.citations) setStreamingCitations(evt.citations);
+            if (evt.routing) setRoutingMeta(evt.routing);
           } else if (evt.type === "token") {
             setStreamingText((prev) => prev + evt.content);
           } else if (evt.type === "error") {
@@ -174,25 +178,9 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
     await sendMessage(msg.content);
   };
 
-  const handleFactCheck = async (msgIndex: number, msg: ChatMessage) => {
-    const prevUser = [...messages.slice(0, msgIndex)].reverse().find((m) => m.role === "user");
-    const question = prevUser?.content || "Verify this explanation";
-    setCheckingId(msg.id);
-    try {
-      const res = await api.factCheck(question, msg.content, language);
-      setFactChecks((prev) => ({ ...prev, [msg.id]: res.report }));
-    } catch (err) {
-      pushNotification((err as Error).message);
-    } finally {
-      setCheckingId(null);
-    }
-  };
-
-  const isCloudModel = activeModel.startsWith("gemini:");
-
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
-      {/* Compact Grounding & Agent Header */}
+      {/* Compact Grounding, Model Router & Local Privacy Header */}
       <div className="px-4 md:px-6 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/50 flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
           {activeCourse && (
@@ -201,14 +189,45 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
             </Badge>
           )}
           <Badge tone="neutral">{agentMode.replace("_", " ")}</Badge>
-          {isCloudModel && (
-            <Badge tone="amber">
-              <i className="bx bx-cloud text-xs" /> Cloud API ({activeModel.replace("gemini:", "")})
-            </Badge>
-          )}
+          <Badge tone="emerald">
+            <i className="bx bx-shield-quarter text-xs" />
+            LOCAL MODE
+          </Badge>
+          <div className="flex items-center bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-md p-0.5 text-[11px]">
+            {(
+              [
+                { id: "auto", label: "Auto" },
+                { id: "qwen", label: "Qwen" },
+                { id: "nemotron", label: "Nemotron" },
+                { id: "lightweight", label: "Lite" },
+              ] as Array<{ id: IntelligenceMode; label: string }>
+            ).map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setIntelligenceMode(opt.id)}
+                className={`px-2 py-0.5 rounded font-semibold cursor-pointer ${
+                  intelligenceMode === opt.id
+                    ? "bg-[var(--accent-blue)] text-white"
+                    : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-1 text-[11px]">
+        <div className="flex items-center gap-1.5 text-[11px]">
+          {routingMeta && (
+            <button
+              type="button"
+              onClick={() => setActivityExpanded((v) => !v)}
+              className="px-2 py-1 rounded-md border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:border-[var(--accent-blue)] cursor-pointer font-mono"
+            >
+              {routingMeta.selected_model} · {activityExpanded ? "Hide Activity" : "Activity"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setAnswerPolicy(answerPolicy === "source_only" ? "balanced" : "source_only")}
@@ -222,6 +241,21 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
           </button>
         </div>
       </div>
+
+      {activityExpanded && routingMeta && (
+        <div className="px-4 md:px-6 py-2 border-b border-[var(--border-subtle)] bg-[var(--bg-base)] text-[11px] flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-wrap text-[var(--text-secondary)]">
+            {(routingMeta.activity_steps || []).map((st, idx) => (
+              <span key={idx} className="inline-flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                {st}
+              </span>
+            ))}
+            <span className="text-emerald-400 font-semibold">· {isStreaming ? "Processing" : "Completed"}</span>
+          </div>
+          <span className="font-mono text-[var(--text-muted)] truncate">{routingMeta.reason}</span>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6">
         {messages.length === 0 && !isStreaming ? (
@@ -302,37 +336,19 @@ export const ChatView: React.FC<{ courseIdOverride?: string | null }> = ({
                         <button
                           type="button"
                           onClick={() => api.speak(msg.content, language).catch(() => {})}
-                          title="Read aloud (Hugging Face MMS-TTS)"
+                          title="Read aloud (Offline TTS)"
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-[var(--accent-blue)] text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--accent-blue)] transition cursor-pointer"
                         >
                           <i className="bx bx-volume-full text-xs text-[var(--accent-blue)]" />
                           Listen
                         </button>
-                        <button
-                          type="button"
-                          disabled={checkingId === msg.id}
-                          onClick={() => handleFactCheck(messages.indexOf(msg), msg)}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--bg-elevated)] border border-[var(--border-subtle)] hover:border-amber-400 text-[11px] font-medium text-[var(--text-secondary)] hover:text-amber-400 transition cursor-pointer disabled:opacity-50"
-                        >
-                          <i className="bx bx-check-shield text-xs text-amber-400" />
-                          {checkingId === msg.id ? "Fact-checking…" : "Fact-check (Gemini)"}
-                        </button>
                       </div>
                       {msg.tokens > 0 && (
                         <div className="text-[10px] font-mono text-[var(--text-muted)]">
-                          {msg.tokens} tokens · {isCloudModel ? "cloud" : "local"}
+                          {msg.tokens} tokens · local
                         </div>
                       )}
                     </div>
-
-                    {factChecks[msg.id] && (
-                      <div className="mt-2 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 text-xs space-y-1">
-                        <div className="font-semibold text-amber-400 flex items-center gap-1">
-                          <i className="bx bx-check-shield text-sm" /> Gemini Fact-Check
-                        </div>
-                        <MarkdownMath content={factChecks[msg.id]} />
-                      </div>
-                    )}
                   </div>
                 )}
               </div>

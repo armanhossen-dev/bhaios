@@ -58,6 +58,7 @@ export const Sidebar: React.FC = () => {
         { id: "tasks", label: t("tasks"), icon: "bx-list-check" },
         { id: "progress", label: t("progress"), icon: "bx-bar-chart-alt-2" },
         { id: "resources", label: t("resources"), icon: "bx-book-bookmark" },
+        { id: "models", label: t("models"), icon: "bx-chip" },
         { id: "settings", label: t("settings"), icon: "bx-cog" },
       ],
     },
@@ -113,7 +114,7 @@ export const Sidebar: React.FC = () => {
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           className="hidden md:inline-flex items-center justify-center p-1.5 rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-muted)] cursor-pointer shrink-0"
         >
-          <i className={`bx ${sidebarCollapsed ? "bx-dock-right" : "bx-dock-left"} text-base`} />
+          <i className={`bx ${sidebarCollapsed ? "bx-dock-right text-xl" : "bx-dock-left text-lg"}`} />
         </button>
         <button
           type="button"
@@ -151,11 +152,11 @@ export const Sidebar: React.FC = () => {
             navigate("chat");
           }}
           title={sidebarCollapsed ? t("newChat") : undefined}
-          className={`w-full flex items-center justify-center gap-2 py-1.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--accent-blue)] text-xs font-semibold transition cursor-pointer ${
-            sidebarCollapsed ? "px-0" : "px-3"
+          className={`w-full flex items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] hover:border-[var(--accent-blue)] text-xs font-semibold transition cursor-pointer ${
+            sidebarCollapsed ? "px-0 py-2" : "px-3 py-1.5"
           }`}
         >
-          <i className="bx bx-plus text-base text-[var(--accent-blue)]" />
+          <i className={`bx bx-plus text-[var(--accent-blue)] ${sidebarCollapsed ? "text-xl" : "text-lg"}`} />
           {!sidebarCollapsed && <span>{t("newChat")}</span>}
         </button>
       </div>
@@ -177,15 +178,15 @@ export const Sidebar: React.FC = () => {
                   type="button"
                   onClick={() => navigate(item.id)}
                   title={sidebarCollapsed ? item.label : undefined}
-                  className={`w-full flex items-center py-1.5 rounded-lg text-[13px] transition cursor-pointer ${
-                    sidebarCollapsed ? "justify-center px-0" : "gap-2.5 px-2.5"
+                  className={`w-full flex items-center rounded-lg text-[13px] transition cursor-pointer ${
+                    sidebarCollapsed ? "justify-center px-0 py-2" : "gap-2.5 px-2.5 py-1.5"
                   } ${
                     active
                       ? "bg-[var(--accent-blue)]/15 text-[var(--accent-blue)] font-semibold"
                       : "text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
                   }`}
                 >
-                  <i className={`bx ${item.icon} text-base shrink-0`} />
+                  <i className={`bx ${item.icon} ${sidebarCollapsed ? "text-xl" : "text-lg"} shrink-0`} />
                   {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
                 </button>
               );

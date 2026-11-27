@@ -32,17 +32,10 @@ def decode_qr_codes(image_bytes: bytes) -> list[str]:
 
 
 def _try_tesseract_bytes(image_bytes: bytes) -> str:
-    if not shutil.which("tesseract"):
-        return ""
-    try:
-        import io
-        import pytesseract
-        from PIL import Image
+    from ..ocr_pipeline import run_ocr_on_bytes
 
-        img = Image.open(io.BytesIO(image_bytes))
-        return pytesseract.image_to_string(img, lang="ben+eng") or ""
-    except Exception:
-        return ""
+    res = run_ocr_on_bytes(image_bytes, lang="ben+eng")
+    return res.get("text", "") if res.get("ok") else ""
 
 
 async def parse_image(

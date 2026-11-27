@@ -9,10 +9,11 @@ from typing import Any
 
 import httpx
 
-from ..config import OLLAMA_URL, WEAK_MODELS
+from ..config import DEFAULT_QWEN_MODEL, OLLAMA_URL, WEAK_MODELS
 from ..db import db_session, new_id
 from ..ollama_client import AGENT_MODE_HINTS, generate_ollama_once, stream_ollama_chat
 from ..rag import clean_bangla_text, retrieve_relevant_chunks
+from .model_manager import ensure_single_primary_llm
 
 # Patterns commonly used in indirect prompt injection inside uploaded documents
 _INJECTION_PATTERNS = [
@@ -239,13 +240,12 @@ async def resolve_ollama_model_with_fallback(preferred_model: str) -> tuple[str,
 
 
 async def generate_with_fallback(preferred_model: str, messages: list[dict[str, Any]]) -> tuple[str, int, str]:
-    """Run local Ollama generation with automatic fallback across installed models."""
+    """Run local Ollama generation with single-LLM memory guard & automatic fallback."""
     _, candidates = await resolve_ollama_model_with_fallback(preferred_model)
     last_err: Exception | None = None
     for model_name in candidates:
-        if model_name.startswith("gemini:"):
-            continue
         try:
+            await ensure_single_primary_llm(model_name)
             content, tokens = await generate_ollama_once(model_name, messages)
             return clean_bangla_text(content), tokens, model_name
         except Exception as exc:
@@ -253,15 +253,17 @@ async def generate_with_fallback(preferred_model: str, messages: list[dict[str, 
     raise RuntimeError(f"All local Ollama models failed ({last_err})")
 
 
-async def stream_with_fallback(preferred_model: str, messages: list[dict[str, Any]]):
-    """Yield Ollama stream chunks with fallback if primary model fails before streaming starts."""
-    _, candidates = await resolve_ollama_model_with_fallback(preferred_model)
+async def stream_with_fallback(preferred_model: str, messages: list[dict[str, Any]], candidates_override: list[str] | None = None):
+    """Yield Ollama stream chunks with single-LLM guard & fallback if primary fails."""
+    if candidates_override:
+        candidates = candidates_override
+    else:
+        _, candidates = await resolve_ollama_model_with_fallback(preferred_model)
     last_err: Exception | None = None
     for model_name in candidates:
-        if model_name.startswith("gemini:"):
-            continue
         emitted = False
         try:
+            await ensure_single_primary_llm(model_name)
             async for chunk in stream_ollama_chat(model_name, messages):
                 emitted = True
                 yield chunk
@@ -273,7 +275,7 @@ async def stream_with_fallback(preferred_model: str, messages: list[dict[str, An
     raise RuntimeError(f"All local Ollama models failed ({last_err})")
 
 
-async def generate_course_roadmap(course_id: str, model: str = "qwen2.5:3b", ui_language: str = "en") -> dict[str, Any]:
+async def generate_course_roadmap(course_id: str, model: str = DEFAULT_QWEN_MODEL, ui_language: str = "en") -> dict[str, Any]:
     """Build 'Teach Me This Course' chapter-by-chapter roadmap grounded in syllabus & materials."""
     ctx = load_student_course_context(course_id)
     if not ctx:

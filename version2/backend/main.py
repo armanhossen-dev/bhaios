@@ -10,6 +10,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .config import FRONTEND_DIST_DIR
+from .core.offline_guard import install_offline_socket_guard
 from .db import init_db
 from .routers import (
     academics,
@@ -32,6 +33,7 @@ from speech_engine.api import router as speech_router
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    install_offline_socket_guard()
     init_db()
     yield
 

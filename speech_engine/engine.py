@@ -162,8 +162,6 @@ class BanglishSpeechEngine:
                     "threshold": cfg.vad_sensitivity,
                     "min_silence_duration_ms": self.config.min_silence_ms,
                 },
-                repetition_penalty=1.1,
-                no_repeat_ngram_size=3,
                 condition_on_previous_text=False,
             )
             results: list[dict[str, Any]] = []

@@ -17,8 +17,10 @@ from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 
 from ..config import MODELS_DIR, STT_DIR, TTS_DIR
+from ..core.offline_guard import allow_install_network
 from ..db import get_setting, set_setting
 from ..rag import clean_bangla_text
+from ..services.tts_engine import is_tts_installed, synthesize_speech_wav
 
 router = APIRouter(prefix="/api", tags=["voice"])
 _whisper_cache: dict[str, object] = {}
@@ -162,25 +164,26 @@ async def download_voice_model(req: VoiceModelAction) -> StreamingResponse:
     async def event_stream():
         yield json.dumps({"status": f"Downloading '{req.name}'…"}) + "\n"
         try:
-            if req.name == "whisper-medium-bn-en-cs-faster":
-                from huggingface_hub import snapshot_download
+            with allow_install_network():
+                if req.name == "whisper-medium-bn-en-cs-faster":
+                    from huggingface_hub import snapshot_download
 
-                await asyncio.to_thread(
-                    snapshot_download,
-                    repo_id="kayees/whisper-medium-bn-en-cs-faster",
-                    local_dir=str(STT_DIR / "whisper-medium-bn-en-cs-faster"),
-                )
-            elif req.name == "titu_stt_bn_conformer_large":
-                from huggingface_hub import hf_hub_download
+                    await asyncio.to_thread(
+                        snapshot_download,
+                        repo_id="kayees/whisper-medium-bn-en-cs-faster",
+                        local_dir=str(STT_DIR / "whisper-medium-bn-en-cs-faster"),
+                    )
+                elif req.name == "titu_stt_bn_conformer_large":
+                    from huggingface_hub import hf_hub_download
 
-                await asyncio.to_thread(
-                    hf_hub_download,
-                    repo_id="hishab/titu_stt_bn_conformer_large",
-                    filename="titu_stt_bn_conformer_large.nemo",
-                    local_dir=str(STT_DIR),
-                )
-            else:
-                await asyncio.to_thread(_get_whisper, req.name)
+                    await asyncio.to_thread(
+                        hf_hub_download,
+                        repo_id="hishab/titu_stt_bn_conformer_large",
+                        filename="titu_stt_bn_conformer_large.nemo",
+                        local_dir=str(STT_DIR),
+                    )
+                else:
+                    await asyncio.to_thread(_get_whisper, req.name)
             set_setting("active_whisper_model", req.name)
             yield json.dumps({"status": "ready", "active": req.name}) + "\n"
         except Exception as exc:
@@ -217,41 +220,6 @@ def delete_voice_model(name: str) -> dict:
     return {"deleted": name}
 
 
-async def _transcribe_with_gemini(
-    api_key: str, audio_bytes: bytes, mime_type: str, language: str
-) -> str:
-    b64 = base64.b64encode(audio_bytes).decode("utf-8")
-    lang_hint = (
-        "Bangla (Bengali script)"
-        if language == "bn"
-        else (
-            "English"
-            if language == "en"
-            else "Bangla or English (preserve exact spoken language)"
-        )
-    )
-    payload = {
-        "contents": [
-            {
-                "role": "user",
-                "parts": [
-                    {
-                        "text": f"Transcribe this audio accurately in {lang_hint}. Return ONLY the transcribed text with zero extra commentary."
-                    },
-                    {"inlineData": {"mimeType": mime_type or "audio/webm", "data": b64}},
-                ],
-            }
-        ]
-    }
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        resp = await client.post(url, json=payload)
-        resp.raise_for_status()
-        data = resp.json()
-        parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
-        return "".join(p.get("text", "") for p in parts).strip()
-
-
 @router.post("/transcribe")
 async def transcribe_audio(
     file: UploadFile = File(...),
@@ -260,17 +228,6 @@ async def transcribe_audio(
     raw_bytes = await file.read()
     if not raw_bytes:
         raise HTTPException(status_code=400, detail="Empty audio recording")
-
-    google_key = get_setting("google_api_key", "")
-    if google_key:
-        try:
-            txt = await _transcribe_with_gemini(
-                google_key, raw_bytes, file.content_type or "audio/webm", language
-            )
-            if txt:
-                return {"text": clean_bangla_text(txt), "language": language, "engine": "gemini"}
-        except Exception:
-            pass
 
     ext_map = {
         "audio/webm": ".webm",
@@ -403,6 +360,8 @@ class TtsDownloadRequest(BaseModel):
 class TtsSpeakRequest(BaseModel):
     text: str
     language: str = "auto"
+    speed: float = 1.0
+    save_file: bool = False
 
 
 def _tts_local_dir(model_id: str) -> str:
@@ -410,8 +369,7 @@ def _tts_local_dir(model_id: str) -> str:
 
 
 def _tts_installed(model_id: str) -> bool:
-    d = _tts_local_dir(model_id)
-    return os.path.isdir(d) and os.path.exists(os.path.join(d, "config.json"))
+    return is_tts_installed(model_id)
 
 
 def _load_hf_tts(model_id: str):
@@ -420,8 +378,9 @@ def _load_hf_tts(model_id: str):
 
         local_dir = _tts_local_dir(model_id)
         source = local_dir if _tts_installed(model_id) else model_id
-        tokenizer = AutoTokenizer.from_pretrained(source)
-        model = VitsModel.from_pretrained(source)
+        with allow_install_network():
+            tokenizer = AutoTokenizer.from_pretrained(source)
+            model = VitsModel.from_pretrained(source)
         if not _tts_installed(model_id):
             os.makedirs(local_dir, exist_ok=True)
             tokenizer.save_pretrained(local_dir)
@@ -455,36 +414,20 @@ async def download_tts_model(req: TtsDownloadRequest) -> StreamingResponse:
 
 @router.post("/tts/speak")
 async def speak_text(req: TtsSpeakRequest):
-    clean = re.sub(r"[`*_#$]+", " ", req.text).strip()[:600]
-    if not clean:
-        raise HTTPException(status_code=400, detail="Empty text")
-
-    has_bangla = bool(re.search(r"[\u0980-\u09FF]", clean))
-    model_id = (
-        "facebook/mms-tts-ben"
-        if (req.language == "bn" or has_bangla)
-        else "facebook/mms-tts-eng"
-    )
-
-    if not _tts_installed(model_id):
-        raise HTTPException(
-            status_code=404,
-            detail=f"HF TTS model {model_id} not downloaded yet. Download it in Settings.",
+    try:
+        wav_bytes, engine_used, saved_path = await asyncio.to_thread(
+            synthesize_speech_wav,
+            req.text,
+            language=req.language,
+            speed=req.speed,
+            save_file=req.save_file,
         )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
 
-    def _synthesize() -> bytes:
-        import numpy as np
-        import scipy.io.wavfile as wavfile
-        import torch
-
-        tokenizer, model = _load_hf_tts(model_id)
-        inputs = tokenizer(clean, return_tensors="pt")
-        with torch.no_grad():
-            waveform = model(**inputs).waveform[0].cpu().numpy()
-        pcm = np.int16(np.clip(waveform, -1.0, 1.0) * 32767)
-        buf = io.BytesIO()
-        wavfile.write(buf, rate=model.config.sampling_rate, data=pcm)
-        return buf.getvalue()
-
-    wav_bytes = await asyncio.to_thread(_synthesize)
-    return Response(content=wav_bytes, media_type="audio/wav")
+    headers = {"X-TTS-Engine": engine_used}
+    if saved_path:
+        headers["X-TTS-Saved-Path"] = saved_path
+    return Response(content=wav_bytes, media_type="audio/wav", headers=headers)
