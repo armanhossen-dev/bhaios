@@ -942,6 +942,7 @@ function updateFocusTimerUI() {
   const navPill = document.getElementById('navbarFocusTimer');
   const navText = document.getElementById('navbarTimerText');
   const btnFocus = document.getElementById('btnStartFocus');
+  const bigLabel = document.getElementById('focusCardDuration');
   const formatted = formatTimer(state.focusRemainingSecs);
 
   if (navText) navText.textContent = formatted;
@@ -954,19 +955,24 @@ function updateFocusTimerUI() {
       ? `<i class="bx bx-pause"></i> Pause focus (${formatted})`
       : `<i class="bx bx-play"></i> ${state.focusRemainingSecs < state.focusDurationMins * 60 ? `Resume (${formatted})` : 'Start focus session'}`;
   }
+  if (bigLabel) {
+    bigLabel.textContent = state.focusRunning || state.focusRemainingSecs < state.focusDurationMins * 60
+      ? formatted
+      : `${state.focusDurationMins} min`;
+  }
 }
 
 function setFocusDuration(mins) {
   state.focusDurationMins = mins;
-  if (!state.focusRunning) {
-    state.focusRemainingSecs = mins * 60;
+  state.focusRemainingSecs = mins * 60;
+  if (state.focusRunning) {
+    clearInterval(state.focusInterval);
+    state.focusRunning = false;
   }
   updateFocusTimerUI();
   document.querySelectorAll('.focus-opt-btn, .focus-chip').forEach((b) => {
     b.classList.toggle('active', Number(b.dataset.mins) === mins);
   });
-  const bigLabel = document.getElementById('focusCardDuration');
-  if (bigLabel) bigLabel.textContent = `${mins} min`;
   showToast(`Focus timer set to ${mins} minutes`);
 }
 
@@ -2303,7 +2309,7 @@ function init() {
     const { prompt, completion, total } = state.sessionTokens;
     showToast(`Tokens — ${prompt} in · ${completion} out · ${total} total`);
   });
-  document.getElementById('btnManageReminders').addEventListener('click', () => switchScreen('settings'));
+  document.getElementById('btnManageReminders')?.addEventListener('click', () => switchScreen('settings'));
 
   // Progress quick review CTA
   document.getElementById('btnQuickReview').addEventListener('click', () => {
@@ -2338,6 +2344,7 @@ function init() {
   refreshSystemHealth();
   setInterval(refreshSystemHealth, 4000);
   updateRightClock();
+  updateFocusTimerUI();
   renderNotifications();
   renderRightUploadedFiles();
   renderSavedChats();
