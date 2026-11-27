@@ -1835,7 +1835,14 @@ i.bx {
   display: none;
   flex-direction: column;
   gap: 3px;
-  z-index: 85;
+  z-index: 130;
+}
+
+#chatModeWrap .mode-dropdown-menu {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: auto;
+  right: 0;
 }
 
 .mode-dropdown-wrap.open .mode-dropdown-menu {

@@ -24,7 +24,7 @@ function escapeHtml(str) {
 
 const state = {
   screen: 'chat',
-  chatMode: 'guide', // 'guide' | 'answer'
+  chatMode: localStorage.getItem('bhaios_chat_mode') || 'guide', // 'guide' | 'answer'
   uiLang: localStorage.getItem('bhaios_lang') || 'en', // 'en' | 'bn'
   fontSize: localStorage.getItem('bhaios_font_size') || 'medium', // 'small' | 'medium' | 'large'
   themePref: 'dark', // 'system' | 'light' | 'dark'
@@ -351,8 +351,10 @@ function renderSnippets() {
   renderRightUploadedFiles();
 }
 
-function setChatMode(mode) {
+function setChatMode(mode, showFeedback = true) {
+  if (!mode) return;
   state.chatMode = mode;
+  localStorage.setItem('bhaios_chat_mode', mode);
   const isGuide = mode === 'guide';
 
   const gBtn = document.getElementById('btnModeGuide');
@@ -385,7 +387,9 @@ function setChatMode(mode) {
     item.classList.toggle('active', item.dataset.setMode === mode);
   });
 
-  showToast(isGuide ? 'Guide Mode: Socratic hints' : 'Answer Mode: Direct answers');
+  if (showFeedback) {
+    showToast(isGuide ? 'Switched to Guide Mode (Socratic hints)' : 'Switched to Answer Mode (Direct answers)');
+  }
 }
 
 function detectChatSubject(messages) {
@@ -1963,20 +1967,30 @@ function init() {
     if (!wasOpen) wrap.classList.add('open');
   };
 
-  document.getElementById('btnWelcomeMode')?.addEventListener('click', (e) => {
+  const handleModeBtnClick = (e, wrapId) => {
     e.stopPropagation();
-    toggleModeWrap('welcomeModeWrap');
+    if (e.target.closest('.bx-chevron-down')) {
+      toggleModeWrap(wrapId);
+      return;
+    }
+    const nextMode = state.chatMode === 'guide' ? 'answer' : 'guide';
+    setChatMode(nextMode);
+    document.querySelectorAll('.mode-dropdown-wrap.open').forEach((w) => w.classList.remove('open'));
+  };
+
+  document.getElementById('btnWelcomeMode')?.addEventListener('click', (e) => {
+    handleModeBtnClick(e, 'welcomeModeWrap');
   });
 
   document.getElementById('btnEffortMode')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleModeWrap('chatModeWrap');
+    handleModeBtnClick(e, 'chatModeWrap');
   });
 
   document.querySelectorAll('.mode-dropdown-item').forEach((item) => {
     item.addEventListener('click', (e) => {
       e.stopPropagation();
-      setChatMode(item.dataset.setMode);
+      const mode = item.dataset.setMode || item.closest('[data-set-mode]')?.dataset.setMode;
+      if (mode) setChatMode(mode);
       document.querySelectorAll('.mode-dropdown-wrap.open').forEach((w) => w.classList.remove('open'));
     });
   });
@@ -2337,6 +2351,7 @@ function init() {
   // Initial Render
   applyFontSize(state.fontSize);
   applyLanguage(state.uiLang);
+  setChatMode(state.chatMode, false);
   updateActiveModelLabels();
   const tokEl = document.getElementById('tokenUsageText');
   if (tokEl) tokEl.textContent = `${(state.sessionTokens.total || 0).toLocaleString()} tok`;
